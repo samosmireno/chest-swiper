@@ -1,51 +1,60 @@
-import type { SessionResult } from './game/sessionResult'
+import type { SessionResult } from "./types";
+import { computeSessionStats } from "./utils/sessionStats";
 
 export interface LeaderboardEntry {
-  username: string
-  email?: string
-  caseId: string
-  score: number
-  correct: number
-  total: number
-  sessionId: string
-  timestamp: number
+  username: string;
+  email?: string;
+  score: number; // correct * 100 + maxStreak * 50
+  correct: number;
+  total: number;
+  maxStreak: number;
+  sessionId: string; // stable identity for the session
+  timestamp: number; // Date.now() at session end — for display/sorting
 }
 
-const LEADERBOARD_KEY = 'detect_leaderboard'
+const LEADERBOARD_KEY = "wwys_leaderboard";
 
-function load(): LeaderboardEntry[] {
+function loadLeaderboard(): LeaderboardEntry[] {
   try {
-    const raw = localStorage.getItem(LEADERBOARD_KEY)
-    return raw ? (JSON.parse(raw) as LeaderboardEntry[]) : []
+    const stored = localStorage.getItem(LEADERBOARD_KEY);
+    return stored ? JSON.parse(stored) : [];
   } catch {
-    return []
+    return [];
   }
 }
 
-function save(entries: LeaderboardEntry[]): void {
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries))
+function saveLeaderboard(entries: LeaderboardEntry[]): void {
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
 }
 
-export function getLeaderboard(caseId?: string): LeaderboardEntry[] {
-  const entries = load()
-  return entries
-    .filter((e) => !caseId || e.caseId === caseId)
-    .sort((a, b) => b.score - a.score)
+export function calculateScore(correct: number, maxStreak: number): number {
+  return correct * 100 + maxStreak * 50;
+}
+
+export function getLeaderboard(): LeaderboardEntry[] {
+  return loadLeaderboard().sort((a, b) => b.score - a.score);
 }
 
 export function addLeaderboardEntry(entry: LeaderboardEntry): void {
-  save([...load(), entry])
+  saveLeaderboard([...loadLeaderboard(), entry]);
 }
 
-export function buildLeaderboardEntry(result: SessionResult): LeaderboardEntry {
+export function buildLeaderboardEntry(
+  username: string,
+  email: string,
+  results: SessionResult[],
+  maxStreak: number,
+  sessionId: string,
+): LeaderboardEntry {
+  const { correct, total } = computeSessionStats(results);
   return {
-    username: result.identity?.name ?? 'Table',
-    email: result.identity?.email || undefined,
-    caseId: result.cases[0]?.caseId ?? '',
-    score: result.total.score,
-    correct: result.total.correct,
-    total: result.total.total,
-    sessionId: result.sessionId,
-    timestamp: result.completedAt,
-  }
+    username,
+    email: email || undefined,
+    score: calculateScore(correct, maxStreak),
+    correct,
+    total,
+    maxStreak,
+    sessionId,
+    timestamp: Date.now(),
+  };
 }

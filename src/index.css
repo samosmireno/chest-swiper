@@ -1,12 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap");
 @import "tailwindcss";
 
-/* Short-viewport tiers — fit the app into shallow embeds (e.g. summit meeting
-   software where a bottom nav bar leaves ~600px of usable height). `short`
-   trims spacing/type; `shorter` shrinks the hero cards too so nothing clips. */
-@custom-variant short (@media (max-height: 840px));
-@custom-variant shorter (@media (max-height: 680px));
-
 @theme {
   --font-sans:
     "Avenir Next", "Avenir", ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -79,16 +73,6 @@
   --color-dark-900: #0d0900;
   --color-dark-950: #080600;
 }
-
-/* Register the .btn-3d gradient vars as <color> so a class swap (e.g.
-   blue → green) cross-fades the gradient instead of snapping. */
-@property --btn-top { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-mid { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-low { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-bot { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-border { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-lip { syntax: "<color>"; inherits: false; initial-value: transparent; }
-@property --btn-glow { syntax: "<color>"; inherits: false; initial-value: transparent; }
 
 @layer base {
   :root {
@@ -203,92 +187,5 @@
       0 4px 12px rgba(2, 132, 199, 0.3),
       inset 0 1px 0 rgba(140, 210, 255, 0.7),
       inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  }
-
-  /* Chunky 3D pressable answer buttons (endo GameScreen style), driven by
-     per-variant CSS vars so every option colour shares one base. */
-  .btn-3d {
-    border: 2px solid var(--btn-border);
-    border-radius: 8px;
-    background: linear-gradient(
-      to bottom,
-      var(--btn-top) 0%,
-      var(--btn-mid) 30%,
-      var(--btn-low) 70%,
-      var(--btn-bot) 100%
-    );
-    box-shadow:
-      0 5px 0 var(--btn-lip),
-      0 8px 25px var(--btn-glow),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-    transition:
-      transform 0.08s ease,
-      box-shadow 0.08s ease,
-      opacity 0.25s ease,
-      --btn-top 0.25s ease,
-      --btn-mid 0.25s ease,
-      --btn-low 0.25s ease,
-      --btn-bot 0.25s ease,
-      --btn-border 0.25s ease,
-      --btn-lip 0.25s ease,
-      --btn-glow 0.25s ease;
-  }
-  .btn-3d:active:not(:disabled) {
-    transform: translateY(4px);
-    box-shadow:
-      0 1px 0 var(--btn-lip),
-      0 4px 12px var(--btn-glow),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-  }
-
-  .btn-3d-blue {
-    --btn-top: #60a5fa; --btn-mid: #3b82f6; --btn-low: #1d4ed8; --btn-bot: #1e3a8a;
-    --btn-border: #2563eb; --btn-lip: #16266b; --btn-glow: rgba(37, 99, 235, 0.5);
-  }
-  .btn-3d-purple {
-    --btn-top: #c084fc; --btn-mid: #a855f7; --btn-low: #7e22ce; --btn-bot: #581c87;
-    --btn-border: #9333ea; --btn-lip: #3b0764; --btn-glow: rgba(168, 85, 247, 0.5);
-  }
-  .btn-3d-magenta {
-    --btn-top: #f0abfc; --btn-mid: #e879f9; --btn-low: #c026d3; --btn-bot: #86198f;
-    --btn-border: #d946ef; --btn-lip: #4a044e; --btn-glow: rgba(217, 70, 239, 0.5);
-  }
-  .btn-3d-amber {
-    --btn-top: #fcd34d; --btn-mid: #f59e0b; --btn-low: #b45309; --btn-bot: #78350f;
-    --btn-border: #d97706; --btn-lip: #451a03; --btn-glow: rgba(217, 119, 6, 0.5);
-  }
-  .btn-3d-cyan {
-    --btn-top: #67e8f9; --btn-mid: #06b6d4; --btn-low: #0e7490; --btn-bot: #155e75;
-    --btn-border: #0891b2; --btn-lip: #083344; --btn-glow: rgba(8, 145, 178, 0.5);
-  }
-  .btn-3d-green {
-    --btn-top: #86efac; --btn-mid: #22c55e; --btn-low: #15803d; --btn-bot: #14532d;
-    --btn-border: #16a34a; --btn-lip: #052e16; --btn-glow: rgba(34, 197, 94, 0.55);
-  }
-  .btn-3d-red {
-    --btn-top: #fca5a5; --btn-mid: #ef4444; --btn-low: #b91c1c; --btn-bot: #7f1d1d;
-    --btn-border: #dc2626; --btn-lip: #450a0a; --btn-glow: rgba(239, 68, 68, 0.55);
-  }
-  .btn-3d-muted {
-    --btn-top: rgba(255, 255, 255, 0.14); --btn-mid: rgba(255, 255, 255, 0.1);
-    --btn-low: rgba(255, 255, 255, 0.06); --btn-bot: rgba(255, 255, 255, 0.04);
-    --btn-border: rgba(255, 255, 255, 0.15); --btn-lip: rgba(0, 0, 0, 0.4);
-    --btn-glow: rgba(0, 0, 0, 0);
-    /* Non-answers recede once the verdict lands (always disabled here, so the
-       :active translateY never fights this transform). */
-    opacity: 0.55;
-    transform: scale(0.98);
-  }
-
-  /* One-shot emphasis on the correct / chosen button when the verdict lands. */
-  @keyframes verdict-pop {
-    0% { transform: scale(1); }
-    45% { transform: scale(1.03); }
-    100% { transform: scale(1); }
-  }
-  .btn-3d-pop {
-    animation: verdict-pop 0.28s ease-out;
   }
 }

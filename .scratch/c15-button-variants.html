@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>c15 button variants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root { --font-display: "Barlow Condensed", "Impact", sans-serif; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 50% 0%, #2a0a4a 0%, #12001f 60%, #08000f 100%);
+    color: #fff;
+    font-family: var(--font-display);
+    padding: 32px 16px 80px;
+  }
+  h1 { text-align: center; letter-spacing: 0.12em; font-weight: 900; margin: 0 0 6px; }
+  .sub { text-align: center; opacity: 0.6; font-size: 13px; margin-bottom: 32px; font-family: sans-serif; }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .variant {
+    width: 380px;        /* representative phone-ish container width */
+    max-width: 100%;
+  }
+  .variant h2 {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #c9a3ff;
+    margin: 0 0 4px;
+  }
+  .variant p.note {
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0.6;
+    margin: 0 0 14px;
+  }
+
+  .row { display: flex; align-items: stretch; gap: 12px; width: 100%; }
+
+  .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+    text-align: center;
+  }
+  .btn .txt {
+    margin: 0 auto;
+    min-width: 0;
+    text-balance: balance;
+    text-wrap: balance;
+  }
+  .btn .arrow { flex-shrink: 0; }
+
+  .btn-monitor {
+    background: linear-gradient(to bottom, #ffe080 0%, #f0a000 30%, #c07800 70%, #9a5e00 100%);
+    box-shadow: 0 5px 0 #5a3000, 0 8px 25px rgba(200,130,0,0.5), inset 0 1px 0 rgba(255,240,150,0.7), inset 0 -2px 0 rgba(0,0,0,0.3);
+    border: 2px solid #d4860c;
+    color: #ffe082;
+    text-shadow: 0 0 12px rgba(255,200,0,0.9), 0 1px 0 rgba(0,0,0,0.5);
+  }
+  .btn-screen {
+    background: linear-gradient(to bottom, #60c8f0 0%, #0284c7 30%, #0157a0 70%, #013570 100%);
+    box-shadow: 0 5px 0 #012050, 0 8px 25px rgba(2,132,199,0.5), inset 0 1px 0 rgba(140,210,255,0.7), inset 0 -2px 0 rgba(0,0,0,0.3);
+    border: 2px solid #0157a0;
+    color: #dbeafe;
+    text-shadow: 0 0 12px rgba(56,189,248,0.9), 0 1px 0 rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+  <h1>c15 — LEFT / RIGHT OPTION BUTTONS</h1>
+  <p class="sub">Container fixed at 380px (≈ phone). Left: "…2 separate infusion courses (12 consecutive days each), within 6 months of each other" · Right: "…single, one-time infusion course of 14-consecutive days"</p>
+
+  <div class="grid">
+
+    <!-- 0 · Current -->
+    <div class="variant">
+      <h2>0 · Current (baseline)</h2>
+      <p class="note">font clamp(0.8–1.2rem) · text max 22ch · min-height 80px. The longest label overflows / feels cramped.</p>
+      <div class="row" id="v0"></div>
+    </div>
+
+    <!-- A · Shrink text -->
+    <div class="variant">
+      <h2>A · Shrink text only</h2>
+      <p class="note">Smaller font clamp(0.62–0.92rem), same width/height. Buttons stay symmetrical; text just gets smaller.</p>
+      <div class="row" id="vA"></div>
+    </div>
+
+    <!-- B · Wider text + small shrink -->
+    <div class="variant">
+      <h2>B · Wider text area + slight shrink</h2>
+      <p class="note">Raise inner text max to 30ch and font clamp(0.7–1.0rem) so it uses the full button width before wrapping.</p>
+      <div class="row" id="vB"></div>
+    </div>
+
+    <!-- C · Taller buttons, comfortable text -->
+    <div class="variant">
+      <h2>C · Taller buttons, comfortable text</h2>
+      <p class="note">min-height 110px, font clamp(0.72–1.05rem). More vertical room for wrapping; text stays readable.</p>
+      <div class="row" id="vC"></div>
+    </div>
+
+  </div>
+
+<script>
+  const LEFT = "Teplizumab requires 2 separate infusion courses (12 consecutive days each), within 6 months of each other";
+  const RIGHT = "Teplizumab requires a single, one-time infusion course of 14-consecutive days";
+
+  function render(id, { font, ch, minH }) {
+    const row = document.getElementById(id);
+    row.innerHTML = `
+      <button class="btn btn-monitor" style="${minH ? `min-height:${minH}px;` : ''}font-size:${font}">
+        <span class="arrow">&#9668;</span>
+        <span class="txt" style="${ch ? `max-width:${ch}ch;` : ''}">${LEFT}</span>
+      </button>
+      <button class="btn btn-screen" style="${minH ? `min-height:${minH}px;` : ''}font-size:${font}">
+        <span class="txt" style="${ch ? `max-width:${ch}ch;` : ''}">${RIGHT}</span>
+        <span class="arrow">&#9658;</span>
+      </button>`;
+  }
+
+  render('v0', { font: 'clamp(0.8rem, 4.5vw, 1.2rem)', ch: 22, minH: 80 });
+  render('vA', { font: 'clamp(0.62rem, 3.4vw, 0.92rem)', ch: 22, minH: 80 });
+  render('vB', { font: 'clamp(0.7rem, 3.8vw, 1.0rem)', ch: 30, minH: 80 });
+  render('vC', { font: 'clamp(0.72rem, 3.9vw, 1.05rem)', ch: 30, minH: 110 });
+</script>
+</body>
+</html>

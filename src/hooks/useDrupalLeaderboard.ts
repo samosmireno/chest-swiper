@@ -1,73 +1,118 @@
-import { useEffect, useState } from 'react'
-import type { LeaderboardEntry } from '../leaderboard'
-import { getLeaderboard } from '../leaderboard'
-import { DRUPAL_RESULTS_URL, LEADERBOARD_POLL_MS, LEADERBOARD_WINDOW_MS } from '../config'
-import { submissions, rowCase, type RawSubmission } from '../submissions'
+import { useState, useEffect } from "react";
+import type { LeaderboardEntry } from "../leaderboard";
+import { getLeaderboard } from "../leaderboard";
+import { DRUPAL_RESULTS_URL, APP_VERSION, LEADERBOARD_WINDOW_MS } from "../config";
+import { fetchRemoteSubmissions } from "../utils/remoteSubmissions";
+import type { RawSubmission } from "../utils/remoteSubmissions";
 
-// Local-storage fallback mirror of the remote withinWindow gate: only entries
-// completed within the rolling display window belong on the board, so stale
-// rows from a prior summit/day never leak in when there's no remote data yet.
-function recentLocal(caseId: string): LeaderboardEntry[] {
-  return getLeaderboard(caseId).filter((e) => Date.now() - e.timestamp < LEADERBOARD_WINDOW_MS)
-}
-
-function transform(subs: RawSubmission[]): LeaderboardEntry[] {
+function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
   return subs
     .map((sub) => ({
-      username: String(sub.participant_name ?? ''),
+      username: String(sub.username ?? ""),
       email: sub.email ? String(sub.email) : undefined,
-      caseId: rowCase(sub) ?? '',
-      score: Number(sub.total_score),
-      correct: Number(sub.total_correct),
-      total: Number(sub.total_questions),
-      sessionId: String(sub.session_id ?? sub.submitted_at),
+      score: Number(sub.score),
+      correct: Number(sub.cards_correct),
+      total: Number(sub.cards_total),
+      maxStreak: Number(sub.max_streak),
+      // Prefer the round-tripped session_id (stable, exact); fall back to
+      // submitted_at for rows from backends without a session_id column.
+      sessionId: sub.session_id ? String(sub.session_id) : String(sub.submitted_at),
       timestamp: new Date(String(sub.submitted_at)).getTime(),
     }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Scopes entries to the current summit by dropping anything older than
+ * LEADERBOARD_WINDOW_MS before the newest entry. Anchoring on the newest
+ * entry (rather than the device clock) keeps the board correct even if the
+ * kiosk clock is wrong. `anchorFloor` lets the just-finished player's local
+ * timestamp define the anchor before their row round-trips from the backend,
+ * so the first player of a new summit doesn't see the previous summit's board.
+ */
+function withinWindow(
+  entries: LeaderboardEntry[],
+  anchorFloor?: number
+): LeaderboardEntry[] {
+  if (entries.length === 0) return entries;
+  const anchor = Math.max(...entries.map((e) => e.timestamp), anchorFloor ?? 0);
+  const cutoff = anchor - LEADERBOARD_WINDOW_MS;
+  return entries.filter((e) => e.timestamp >= cutoff);
 }
 
 function attachCurrentPlayer(
   entries: LeaderboardEntry[],
-  sessionId: string,
-  caseId: string,
+  lastSessionId: string
 ): LeaderboardEntry[] {
-  const local = getLeaderboard(caseId).find((e) => e.sessionId === sessionId)
-  if (!local) return entries
-  const idx = entries.findIndex((e) => e.sessionId === sessionId)
-  if (idx >= 0) return entries
-  return [...entries, local].sort((a, b) => b.score - a.score)
+  const local = getLeaderboard().find((e) => e.sessionId === lastSessionId);
+  if (!local) return entries;
+
+  // Exact join when session_id round-tripped; otherwise fall back to the
+  // username + timestamp window (backends without a session_id column).
+  const exactIdx = entries.findIndex((e) => e.sessionId === lastSessionId);
+  const idx =
+    exactIdx >= 0
+      ? exactIdx
+      : entries.findIndex(
+          (e) =>
+            e.username === local.username &&
+            Math.abs(e.timestamp - local.timestamp) < 10_000
+        );
+
+  // Already indexed by Drupal: re-tag the remote row with our stable
+  // sessionId so it highlights as the current player.
+  if (idx >= 0) {
+    const result = [...entries];
+    result[idx] = { ...result[idx], sessionId: lastSessionId };
+    return result;
+  }
+
+  // The submit POST races the leaderboard GET and usually loses, so the
+  // player's row isn't in the remote results yet. Splice in the local entry
+  // (which already holds the correct score and sessionId) so they always see
+  // their own result; a later fetch will match-and-re-tag it via the branch above.
+  return [...entries, local].sort((a, b) => b.score - a.score);
 }
 
-export function useDrupalLeaderboard(
-  sessionId: string,
-  caseId: string,
-): { entries: LeaderboardEntry[]; loading: boolean } {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>(() => recentLocal(caseId))
-  const [loading, setLoading] = useState(!!DRUPAL_RESULTS_URL)
+export function useDrupalLeaderboard(lastSessionId: string): {
+  entries: LeaderboardEntry[];
+  loading: boolean;
+} {
+  const [entries, setEntries] = useState<LeaderboardEntry[]>(() =>
+    withinWindow(getLeaderboard())
+  );
+  const [loading, setLoading] = useState(!!DRUPAL_RESULTS_URL);
 
   useEffect(() => {
-    if (!DRUPAL_RESULTS_URL) return
-    let cancelled = false
+    if (!DRUPAL_RESULTS_URL) return;
 
-    const tick = async () => {
+    (async () => {
       try {
-        const subs = (await submissions.fetchResults()).filter((s) => rowCase(s) === caseId)
-        if (cancelled || subs.length === 0) return
-        let result = transform(subs)
-        if (sessionId) result = attachCurrentPlayer(result, sessionId, caseId)
-        setEntries(result)
+        const subs = await fetchRemoteSubmissions();
+
+        if (subs.length === 0) {
+          console.info(`[wwys] No remote data for v${APP_VERSION} — using local`);
+          return;
+        }
+
+        // Anchor the window on the just-finished player so the first player
+        // of a new summit doesn't inherit the previous summit's board.
+        const anchorFloor = lastSessionId
+          ? getLeaderboard().find((e) => e.sessionId === lastSessionId)?.timestamp
+          : undefined;
+
+        // Window before splicing the current player in, so they're never
+        // filtered out — they define the anchor and are always shown.
+        let result = withinWindow(transformSubmissions(subs), anchorFloor);
+        if (lastSessionId) {
+          result = attachCurrentPlayer(result, lastSessionId);
+        }
+        setEntries(result);
       } finally {
-        if (!cancelled) setLoading(false)
+        setLoading(false);
       }
-    }
+    })();
+  }, [lastSessionId]);
 
-    tick()
-    const id = setInterval(tick, LEADERBOARD_POLL_MS)
-    return () => {
-      cancelled = true
-      clearInterval(id)
-    }
-  }, [sessionId, caseId])
-
-  return { entries, loading }
+  return { entries, loading };
 }

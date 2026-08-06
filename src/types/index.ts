@@ -1,70 +1,57 @@
-export interface AnswerOption {
-  id: string
+export type SwipeSide = 'left' | 'right'
+
+export type CardTopic = 'screening' | 'staging' | 'teplizumab' | 'monitoring'
+
+export interface ProfileField {
   label: string
+  value: string
 }
 
-export interface CaseQuestion {
-  id: string                 // e.g. "c1q1"
-  prompt: string
-  context?: string[]         // "case continuation" labs/history shown above the prompt
-  options: AnswerOption[]    // 2–5
-  correctOptionId: string
-  explanation?: string       // optional; empty for v1 (faculty deliver rationale live)
-  weight?: number            // optional override; default = options.length * 50
+export interface PatientProfile {
+  id: string
+
+  ageSex: string
+  image: string
+  fields: ProfileField[]
+
+  // The two clinical choices — labels are case-specific
+  leftOption: string
+  rightOption: string
+  // Set when the option labels are unusually long, so the swipe buttons use
+  // a smaller font (and wider layout on desktop) to fit the text.
+  longOptions?: boolean
+  correctSide: SwipeSide
+
+  topic: CardTopic
+  explanation: string
 }
 
-export interface CaseDiscussion {
-  context?: string[]
-  prompts: string[]
-}
-
-export interface CaseIntro {
-  narrative: string[]
-  breakout: string[]
-  image?: string
-  ageSex?: string            // e.g. "11-year-old girl" — shown as card subtitle
-}
-
-export interface SummitCase {
-  id: string                 // "case1"
-  patientName: string
-  intro: CaseIntro
-  questions: CaseQuestion[]
-  discussion: CaseDiscussion
-}
-
-export type Step =
-  | { kind: 'home' }
-  | { kind: 'intro'; caseIndex: number }
-  | { kind: 'question'; caseIndex: number; questionIndex: number }
-  | { kind: 'discussion'; caseIndex: number }
-  | { kind: 'summary' }
-
-export type IdentityType = 'user' | 'team'
-
-export interface Identity {
-  name: string
-  email: string
-  specialty: string
-  type: IdentityType
-}
-
-export interface AnswerRecord {
-  questionId: string
-  caseId: string
-  chosenOptionId: string
-  chosenLabel: string
+export interface SessionResult {
+  profileId: string
+  playerSide: SwipeSide
   correct: boolean
-  points: number      // base weight only (clean multiple of 50)
-  speedBonus: number  // 0 when incorrect
 }
+
+export interface CumulativeStats {
+  totalSessions: number
+  perCard: Record<string, { timesShown: number; timesCorrect: number }>
+}
+
+export type AppScreen = 'idle' | 'playing' | 'summary'
 
 export interface GameState {
-  steps: Step[]
-  cursor: number
-  answers: Record<string, AnswerRecord>   // keyed by questionId
-  identity: Identity | null
-  sessionId: string
-  startedAt: number | null
-  questionShownAt: number | null   // when the current question step became active
+  screen: AppScreen
+  deck: PatientProfile[]
+  currentIndex: number
+  sessionResults: SessionResult[]
+  lastResult: SessionResult | null
+  cumulativeStats: CumulativeStats
+  streak: number
+  // Player identity (set by SET_PLAYER before game starts)
+  firstName: string
+  lastName: string
+  email: string          // empty string means no email provided
+  specialty: string
+  maxStreak: number
+  lastSessionId: string
 }

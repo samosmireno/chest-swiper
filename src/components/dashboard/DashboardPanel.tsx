@@ -1,18 +1,28 @@
-import { SessionScore } from "./SessionScore";
-import { LeaderboardPanel } from "./LeaderboardPanel";
-import { SHOW_LEADERBOARD } from "../../config";
+import { SessionStats } from "./SessionStats";
+import { CommunityInsights } from "./CommunityInsights";
+import { computeSessionStats } from "../../utils/sessionStats";
+import type {
+  SessionResult,
+  CumulativeStats,
+} from "../../types";
+
+interface DashboardPanelProps {
+  sessionResults: SessionResult[];
+  cumulativeStats: CumulativeStats;
+}
 
 export function DashboardPanel({
-  focusCurrentPlayer = false,
-}: {
-  focusCurrentPlayer?: boolean;
-}) {
+  sessionResults,
+  cumulativeStats,
+}: DashboardPanelProps) {
+  const { correct, missed, accuracy } = computeSessionStats(sessionResults);
+
   return (
-    <div className="border-purple-accent/25 bg-panel/80 flex w-full flex-col border-l sm:w-64 sm:shrink-0 xl:w-96">
-      <SessionScore />
-      {SHOW_LEADERBOARD && (
-        <LeaderboardPanel focusCurrentPlayer={focusCurrentPlayer} />
-      )}
+    <div
+      className="flex min-h-screen w-full flex-col sm:min-h-0 sm:overflow-hidden sm:w-auto sm:flex-2 lg:flex-1 bg-panel/80 border-l border-purple-accent/25"
+    >
+      <SessionStats correct={correct} missed={missed} accuracy={accuracy} />
+      <CommunityInsights stats={cumulativeStats} />
     </div>
   );
 }

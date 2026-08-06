@@ -28,6 +28,4 @@ dist-ssr
 # Superpowers brainstorm session files
 .superpowers/
 *.7z
-
-# Slide decks / presentation source assets
 *.pptx

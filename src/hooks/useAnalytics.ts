@@ -1,27 +1,35 @@
-import ReactGA from 'react-ga4'
+import ReactGA from "react-ga4";
 
 interface GameCompletedParams {
-  score: number
-  correct: number
-  total: number
-  duration_seconds: number
+  score: number;
+  correct: number;
+  total: number;
+  accuracy_pct: number;
+  max_streak: number;
+  duration_seconds: number;
 }
 
-interface QuestionAnsweredParams {
-  question_id: string
-  chosen_label: string
-  correct: boolean
+interface CardDecisionParams {
+  profile_id: string;
+  patient_topic: string;
+  player_action: string;
+  correct: boolean;
+  streak_at_time: number;
+  card_index: number;
 }
 
 export function useAnalytics() {
   return {
-    trackGameStarted: (identityType: string) =>
-      ReactGA.event('summit_started', { identity_type: identityType }),
+    trackGameStarted: (username: string, hasEmail: boolean) =>
+      ReactGA.event("game_started", { username, has_email: hasEmail }),
 
     trackGameCompleted: (params: GameCompletedParams) =>
-      ReactGA.event('summit_completed', params),
+      ReactGA.event("game_completed", params),
 
-    trackQuestionAnswered: (params: QuestionAnsweredParams) =>
-      ReactGA.event('question_answered', params),
-  }
+    trackCardDecision: (params: CardDecisionParams) =>
+      ReactGA.event("card_decision", params),
+
+    trackStreakMilestone: (milestone: number) =>
+      ReactGA.event("streak_milestone", { milestone }),
+  };
 }
