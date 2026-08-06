@@ -2,15 +2,11 @@ import {
   createContext,
   useContext,
   useReducer,
-  useEffect,
-  useRef,
   type ReactNode,
 } from "react";
 import type { GameState, PatientProfile, SessionResult, CumulativeStats, SwipeSide } from "../types";
-import { useAnalytics } from "../hooks/useAnalytics";
 import { useSessionCompletion } from "../hooks/useSessionCompletion";
 import { loadCumulativeStats } from "../utils/statsStorage";
-import { STREAK_MILESTONES } from "../config";
 
 // ─── Actions ────────────────────────────────────────────────
 type GameAction =
@@ -170,11 +166,6 @@ export function GameProvider({
     cumulativeStats: loadCumulativeStats(),
   });
 
-  const { trackCardDecision, trackStreakMilestone } = useAnalytics();
-
-  const prevResultsLength = useRef(0);
-  const prevStreak = useRef(0);
-
   const {
     screen,
     lastSessionId,
@@ -185,48 +176,10 @@ export function GameProvider({
     specialty,
     sessionResults,
     maxStreak,
-    lastResult,
-    streak,
     deck,
   } = state;
 
   useSessionCompletion({ screen, lastSessionId, firstName, lastName, email, specialty, sessionResults, deck, maxStreak, cumulativeStats });
-
-  // Reset per-swipe tracking refs on each new session
-  useEffect(() => {
-    if (screen === "playing") {
-      prevResultsLength.current = 0;
-      prevStreak.current = 0;
-    }
-  }, [screen]);
-
-  // Track card decisions and streak milestones after each swipe
-  useEffect(() => {
-    if (!lastResult || sessionResults.length === prevResultsLength.current) return;
-    const swipedCardIndex = sessionResults.length - 1;
-    prevResultsLength.current = sessionResults.length;
-
-    const profile = deck.find((p) => p.id === lastResult.profileId);
-    if (profile) {
-      const chosenLabel =
-        lastResult.playerSide === "left"
-          ? profile.leftOption
-          : profile.rightOption;
-      trackCardDecision({
-        profile_id: lastResult.profileId,
-        patient_topic: profile.topic,
-        player_action: chosenLabel,
-        correct: lastResult.correct,
-        streak_at_time: streak,
-        card_index: swipedCardIndex,
-      });
-    }
-
-    if (streak > prevStreak.current && STREAK_MILESTONES.some((m) => m.streak === streak)) {
-      trackStreakMilestone(streak);
-    }
-    prevStreak.current = streak;
-  }, [sessionResults.length, lastResult, streak, deck, trackCardDecision, trackStreakMilestone]);
 
   return (
     <GameContext.Provider value={{ state, dispatch, profiles }}>

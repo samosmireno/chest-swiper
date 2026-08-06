@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "../context/GameContext";
-import { useAnalytics } from "../hooks/useAnalytics";
 import { shuffle } from "../utils/shuffle";
 import type { PatientProfile } from "../types";
 
@@ -74,7 +73,6 @@ interface StackCard {
 
 export function AttractScreen() {
   const { dispatch, profiles } = useGame();
-  const { trackGameStarted } = useAnalytics();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -142,7 +140,6 @@ export function AttractScreen() {
       specialty: specialtyValue,
     });
     dispatch({ type: "START_GAME", deck: shuffle(profiles) });
-    trackGameStarted(`${trimmedFirst} ${trimmedLast}`, trimmedEmail.length > 0);
   }
 
   return (

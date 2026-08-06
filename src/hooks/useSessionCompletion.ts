@@ -1,9 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { CumulativeStats, PatientProfile, SessionResult } from "../types";
 import { saveCumulativeStats } from "../utils/statsStorage";
-import { addLeaderboardEntry, buildLeaderboardEntry, calculateScore } from "../leaderboard";
-import { computeSessionStats } from "../utils/sessionStats";
-import { useAnalytics } from "./useAnalytics";
+import { addLeaderboardEntry, buildLeaderboardEntry } from "../leaderboard";
 import { useWebformSubmission } from "./useWebformSubmission";
 
 interface SessionCompletionState {
@@ -31,16 +29,8 @@ export function useSessionCompletion({
   maxStreak,
   cumulativeStats,
 }: SessionCompletionState): void {
-  const { trackGameCompleted } = useAnalytics();
   const { submitSession } = useWebformSubmission();
-  const gameStartedAt = useRef<number | null>(null);
   const savedSessionId = useRef("");
-
-  useEffect(() => {
-    if (screen === "playing") {
-      gameStartedAt.current = Date.now();
-    }
-  }, [screen]);
 
   useEffect(() => {
     if (
@@ -57,18 +47,6 @@ export function useSessionCompletion({
       buildLeaderboardEntry(username, email, sessionResults, maxStreak, lastSessionId),
     );
     submitSession({ firstName, lastName, email, specialty, sessionResults, deck, maxStreak, sessionId: lastSessionId });
-
-    const { correct, total } = computeSessionStats(sessionResults);
-    trackGameCompleted({
-      score: calculateScore(correct, maxStreak),
-      correct,
-      total,
-      accuracy_pct: Math.round((correct / total) * 100),
-      max_streak: maxStreak,
-      duration_seconds: gameStartedAt.current
-        ? Math.round((Date.now() - gameStartedAt.current) / 1000)
-        : 0,
-    });
   }, [
     screen,
     lastSessionId,
@@ -80,7 +58,6 @@ export function useSessionCompletion({
     sessionResults,
     maxStreak,
     deck,
-    trackGameCompleted,
     submitSession,
   ]);
 }
