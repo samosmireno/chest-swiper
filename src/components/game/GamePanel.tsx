@@ -28,10 +28,10 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
   const isLastCard = currentIndex === deck.length - 1;
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-start gap-4 border-r-0 border-b border-gray-100 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:justify-center sm:gap-8 sm:border-b-0 sm:px-6 sm:pt-16 sm:pb-6">
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-start gap-4 border-r-0 border-b border-gray-100 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:border-b-0 sm:px-6 sm:pt-5 sm:pb-6">
       <StreakBanner streak={streak} />
 
-      <div className="w-full sm:absolute sm:top-5 sm:right-6 sm:left-6 sm:w-auto">
+      <div className="w-full">
         <ProgressBar
           current={currentIndex}
           total={deck.length}
@@ -39,7 +39,8 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
         />
       </div>
 
-      <div className="flex flex-col items-center gap-4">
+      {/* Cards center in the space left below the progress bar */}
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-4">
         <div className="relative">
           <CardStack
             ref={cardStackRef}

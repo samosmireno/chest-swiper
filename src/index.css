@@ -111,6 +111,16 @@
     font-size: max(16px, min(100vw / 90, 100vh / 50.625));
   }
 
+  /* Short landscape viewports (sub-810px tall laptops, browser chrome eating
+     height): shrink proportionally instead of clamping at 16px, so the
+     rem-sized card stack keeps clear of the progress diamonds. Scoped to sm+
+     so the stacked mobile layout keeps its 16px root. */
+  @media (min-width: 640px) and (max-height: 810px) {
+    html {
+      font-size: max(12px, min(100vw / 90, 100vh / 50.625));
+    }
+  }
+
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-gold-500) var(--color-purple-900);

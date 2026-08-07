@@ -33,9 +33,10 @@ export function SwipeGuide({
         SWIPE A CARD
       </span>
 
-      <div className="flex w-full items-stretch gap-3">
+      {/* lg+: equal-width grid columns sized to the wider label (w-fit + 1fr tracks) */}
+      <div className="flex w-full items-stretch justify-center gap-3 lg:grid lg:w-fit lg:auto-cols-fr lg:grid-flow-col lg:gap-6">
         <button
-          className={`btn-monitor font-display text-gold-200 flex min-h-16 min-w-0 flex-1 cursor-pointer items-center gap-2 px-4 py-3 font-black tracking-[0.06em] outline-none focus:outline-none focus-visible:outline-none md:min-h-20 md:px-5 md:py-4 ${labelFontClass}`}
+          className={`btn-monitor font-display text-gold-200 flex min-h-16 min-w-0 flex-1 cursor-pointer items-center gap-2 px-4 py-3 font-black tracking-[0.06em] outline-none focus:outline-none focus-visible:outline-none md:min-h-20 md:px-5 md:py-4 lg:flex-none lg:px-10 ${labelFontClass}`}
           onClick={() => onTap("left")}
           style={{
             textShadow: "0 0 12px rgba(255,200,0,0.9), 0 1px 0 rgba(0,0,0,0.5)",
@@ -51,7 +52,7 @@ export function SwipeGuide({
         </button>
 
         <button
-          className={`btn-screen font-display flex min-h-16 min-w-0 flex-1 cursor-pointer items-center gap-2 px-4 py-3 font-black tracking-[0.06em] text-blue-100 outline-none focus:outline-none focus-visible:outline-none md:min-h-20 md:px-5 md:py-4 ${labelFontClass}`}
+          className={`btn-screen font-display flex min-h-16 min-w-0 flex-1 cursor-pointer items-center gap-2 px-4 py-3 font-black tracking-[0.06em] text-blue-100 outline-none focus:outline-none focus-visible:outline-none md:min-h-20 md:px-5 md:py-4 lg:flex-none lg:px-10 ${labelFontClass}`}
           onClick={() => onTap("right")}
           style={{
             textShadow:
