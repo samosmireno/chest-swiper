@@ -1,15 +1,3 @@
-// ─── Kiosk scaling ───────────────────────────────────────────
-// The UI is designed at 1440×810 (16:9). On screens where BOTH dimensions
-// exceed the threshold, the design canvas is scaled to fill the display.
-// 1440 matches typical laptop viewport proportions, so a 2560×1440 display
-// (scale 1.78×) and a 3840×2160 display (scale 2.67×) both look like the laptop.
-// Kiosk mode only triggers when BOTH width AND height exceed the threshold,
-// so any screen ≤1920 wide uses the normal responsive layout.
-export const KIOSK_DESIGN_W = 1440;
-export const KIOSK_DESIGN_H = 810;
-export const KIOSK_THRESHOLD_W = 1920;
-export const KIOSK_THRESHOLD_H = 1080;
-
 // ─── Streak milestones ────────────────────────────────────────
 // Sorted ascending. Each entry triggers a banner and an optional custom label.
 export const STREAK_MILESTONES: { streak: number; label: string }[] = [

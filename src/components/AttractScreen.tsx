@@ -35,7 +35,7 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
 
       <div className="relative flex h-40 shrink-0 flex-col justify-end p-3 text-center">
         <p
-          className="text-gold-500 text-[10px] font-semibold tracking-[0.2em] uppercase"
+          className="text-gold-500 text-[0.625rem] font-semibold tracking-[0.2em] uppercase"
           style={{ textShadow: "0 0 8px rgba(0,0,0,0.9)" }}
         >
           Patient Profile
@@ -52,7 +52,7 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
         <div className="space-y-1.5">
           {profile.fields.slice(0, 2).map((field) => (
             <div key={field.label}>
-              <p className="text-gold-500 text-[9px] font-semibold tracking-[0.15em] uppercase">
+              <p className="text-gold-500 text-[0.5625rem] font-semibold tracking-[0.15em] uppercase">
                 {field.label}
               </p>
               <p className="line-clamp-2 text-xs text-gray-300">
@@ -205,7 +205,7 @@ export function AttractScreen() {
                       <MiniCard profile={profile} />
                     ) : stackPos === 1 ? (
                       <div className="h-full w-full p-5">
-                        <p className="text-gold-500 text-[10px] font-semibold tracking-[0.2em] uppercase">
+                        <p className="text-gold-500 text-[0.625rem] font-semibold tracking-[0.2em] uppercase">
                           Patient Profile
                         </p>
                         <p className="mt-1 text-sm font-bold text-gray-400">
@@ -249,7 +249,7 @@ export function AttractScreen() {
               "What is your next clinical action?",
             ].map((text, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[9px] font-bold text-purple-300">
+                <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[0.5625rem] font-bold text-purple-300">
                   {i + 1}
                 </span>
                 <span className="text-sm leading-snug text-white/75">
@@ -258,7 +258,7 @@ export function AttractScreen() {
               </div>
             ))}
             <div className="flex items-start gap-2.5">
-              <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[9px] font-bold text-purple-300">
+              <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[0.5625rem] font-bold text-purple-300">
                 3
               </span>
               <div className="flex w-full flex-col gap-1">
@@ -327,7 +327,7 @@ export function AttractScreen() {
 
           {/* Specialty selection */}
           <div className="border-purple-accent/30 flex flex-col gap-1.5 rounded-2xl border bg-white/5 px-4 py-3 text-left">
-            <p className="text-gold-500 mb-0.5 text-[10px] font-semibold tracking-[0.18em] uppercase">
+            <p className="text-gold-500 mb-0.5 text-[0.625rem] font-semibold tracking-[0.18em] uppercase">
               What is your specialty?
             </p>
             {SPECIALTIES.map((option) => (
@@ -376,7 +376,7 @@ export function AttractScreen() {
             </AnimatePresence>
           </div>
 
-          <p className="text-center text-[10px] leading-relaxed text-white/45">
+          <p className="text-center text-[0.625rem] leading-relaxed text-white/45">
             By entering your email you consent to your data being collected for
             research purposes.
           </p>

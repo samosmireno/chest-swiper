@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { PatientCard } from "./PatientCard";
 import type { PatientProfile, SwipeSide } from "../../types";
+import { uiScale } from "../../utils/uiScale";
 
 // ─── DraggableCard ────────────────────────────────────────────
 
@@ -23,13 +24,14 @@ interface DraggableCardProps {
 const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
   ({ profile, onSwipe }, ref) => {
     const x = useMotionValue(0);
-    const rotate = useTransform(x, [-300, 0, 300], [-12, 0, 12]);
-    const rightOpacity = useTransform(x, [0, 80, 150], [0, 0.7, 1]);
-    const leftOpacity = useTransform(x, [-150, -80, 0], [1, 0.7, 0]);
+    const s = uiScale();
+    const rotate = useTransform(x, [-300 * s, 0, 300 * s], [-12, 0, 12]);
+    const rightOpacity = useTransform(x, [0, 80 * s, 150 * s], [0, 0.7, 1]);
+    const leftOpacity = useTransform(x, [-150 * s, -80 * s, 0], [1, 0.7, 0]);
     const controls = useAnimation();
 
     const commitSwipe = async (side: SwipeSide) => {
-      const targetX = side === "right" ? 600 : -600;
+      const targetX = (side === "right" ? 600 : -600) * uiScale();
       await controls.start({
         x: targetX,
         opacity: 0,
@@ -44,10 +46,11 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
       _event: MouseEvent | TouchEvent | PointerEvent,
       info: PanInfo,
     ) => {
-      const flick = Math.abs(info.velocity.x) > 500;
-      if (info.offset.x > 80 || (flick && info.velocity.x > 0)) {
+      const scale = uiScale();
+      const flick = Math.abs(info.velocity.x / scale) > 500;
+      if (info.offset.x / scale > 80 || (flick && info.velocity.x > 0)) {
         commitSwipe("right");
-      } else if (info.offset.x < -80 || (flick && info.velocity.x < 0)) {
+      } else if (info.offset.x / scale < -80 || (flick && info.velocity.x < 0)) {
         commitSwipe("left");
       } else {
         controls.start({
@@ -110,6 +113,7 @@ interface CardStackProps {
 export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
   ({ deck, currentIndex, onSwipe, locked = false }, ref) => {
     const draggableCardRef = useRef<DraggableCardHandle>(null);
+    const s = uiScale();
 
     useImperativeHandle(ref, () => ({
       triggerSwipe: (side) => draggableCardRef.current?.triggerSwipe(side),
@@ -119,7 +123,7 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
     const visibleProfiles = deck.slice(currentIndex, currentIndex + 3);
 
     return (
-      <div className="relative h-100 w-76 sm:w-[320px] md:h-120 md:w-110">
+      <div className="relative h-100 w-76 sm:w-80 md:h-120 md:w-110">
         {[...visibleProfiles].reverse().map((profile, reversedIndex) => {
           const stackPosition = visibleProfiles.length - 1 - reversedIndex;
           const isTop = stackPosition === 0;
@@ -146,14 +150,14 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
               className="pointer-events-none absolute inset-0"
               initial={{
                 scale: 1 - (stackPosition + 1) * 0.04,
-                y: (stackPosition + 1) * 8,
+                y: (stackPosition + 1) * 8 * s,
                 rotate: (stackPosition + 1) % 2 === 0 ? -2 : 2,
                 opacity: 0,
                 zIndex: -stackPosition,
               }}
               animate={{
                 scale: 1 - stackPosition * 0.04,
-                y: stackPosition * 8,
+                y: stackPosition * 8 * s,
                 rotate: stackPosition % 2 === 0 ? -2 : 2,
                 opacity: 1 - stackPosition * 0.3,
                 zIndex: -stackPosition,

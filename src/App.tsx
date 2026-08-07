@@ -1,12 +1,10 @@
 import { Component, type ReactNode } from "react";
-import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { GameProvider, useGame } from "./context/GameContext";
 import { profiles } from "./data/profiles";
 import { AttractScreen } from "./components/AttractScreen";
 import { GameScreen } from "./components/GameScreen";
 import { SummaryView } from "./components/SummaryView";
-import { useKioskScale } from "./hooks/useKioskScale";
-import { KIOSK_DESIGN_W, KIOSK_DESIGN_H } from "./config";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -108,37 +106,10 @@ const GameContent = () => (
 );
 
 function App() {
-  const scale = useKioskScale();
-
-  if (scale === null) {
-    // Normal responsive layout for ≤1920×1080
-    return (
-      <ErrorBoundary>
-        <div className="relative h-screen w-screen overflow-hidden">
-          <GameContent />
-        </div>
-      </ErrorBoundary>
-    );
-  }
-
-  // Kiosk scaling for >1920×1080 — centers a fixed 1200×840 canvas
   return (
     <ErrorBoundary>
-      <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-black">
-        <MotionConfig
-          transformPagePoint={(p) => ({ x: p.x / scale, y: p.y / scale })}
-        >
-          <div
-            className="relative shrink-0 origin-center overflow-hidden"
-            style={{
-              width: KIOSK_DESIGN_W,
-              height: KIOSK_DESIGN_H,
-              transform: `scale(${scale})`,
-            }}
-          >
-            <GameContent />
-          </div>
-        </MotionConfig>
+      <div className="relative h-screen w-screen overflow-hidden">
+        <GameContent />
       </div>
     </ErrorBoundary>
   );

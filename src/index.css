@@ -101,6 +101,16 @@
     );
   }
 
+  /* Large-screen scaling: the design targets 1440×810 at a 16px root. On
+     bigger viewports the root font-size grows to fill the tighter axis
+     (1440/16 = 90, 810/16 = 50.625), so every rem-based Tailwind size scales
+     with it. Below 1440×810 the root stays 16px and the breakpoints handle
+     layout as before. Media queries are immune (rem in @media uses the
+     initial font-size), so sm/md/lg still key off real viewport pixels. */
+  html {
+    font-size: max(16px, min(100vw / 90, 100vh / 50.625));
+  }
+
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-gold-500) var(--color-purple-900);

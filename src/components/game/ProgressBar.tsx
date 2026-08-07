@@ -71,7 +71,7 @@ const counterStyle: React.CSSProperties = {
   color: "white",
   letterSpacing: "0.05em",
   padding: "1px 10px",
-  minWidth: "54px",
+  minWidth: "3.375rem",
   textAlign: "center",
   lineHeight: 1.3,
   textShadow: "var(--text-shadow-white-sm)",

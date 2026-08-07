@@ -83,7 +83,7 @@ export function StreakBanner({ streak }: StreakBannerProps) {
             {/* Label stack */}
             <div className="flex flex-col items-start">
               <span
-                className="font-display text-[9px] font-bold tracking-[0.22em] text-white/65 uppercase"
+                className="font-display text-[0.5625rem] font-bold tracking-[0.22em] text-white/65 uppercase"
               >
                 STREAK
               </span>

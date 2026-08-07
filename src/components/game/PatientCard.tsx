@@ -22,7 +22,7 @@ export function PatientCard({ profile }: PatientCardProps) {
             "linear-gradient(160deg, var(--color-dark-800) 0%, var(--color-dark-900) 60%, var(--color-dark-950) 100%)",
           backgroundImage:
             "linear-gradient(160deg, var(--color-dark-800) 0%, var(--color-dark-900) 100%), linear-gradient(rgba(255,190,40,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,190,40,0.04) 1px, transparent 1px)",
-          backgroundSize: "100% 100%, 24px 24px, 24px 24px",
+          backgroundSize: "100% 100%, 1.5rem 1.5rem, 1.5rem 1.5rem",
         }}
       >
         {/* Cinematic hero — photo and its darkening layer are continuous
