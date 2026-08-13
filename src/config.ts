@@ -28,7 +28,7 @@ const DRUPAL_ORIGIN = import.meta.env.DEV
   ? "/drupal-api"
   : "https://detect-t1d-insightstoaction.impetusdigital.com";
 
-export const DRUPAL_SUBMIT_URL = `${DRUPAL_ORIGIN}/webform_rest/submit?_format=json`;
+export const DRUPAL_SUBMIT_URL = ""; //`${DRUPAL_ORIGIN}/webform_rest/submit?_format=json`;
 export const DRUPAL_CSRF_URL = `${DRUPAL_ORIGIN}/session/token`;
 export const DRUPAL_RESULTS_URL = `${DRUPAL_ORIGIN}/api/wwys_results_data_endo`;
 export const DRUPAL_WEBFORM_ID = "who_would_you_swipe_results_endo";
@@ -38,4 +38,4 @@ export const APP_VERSION = "1.2";
 // Receives submissions when Drupal is unavailable (empty URL or non-2xx/network error).
 // Set to the Apps Script web app URL after deploying sheets/wwys-fallback.gs.
 export const SHEETS_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbyUZIPKz36HRSY-Wa-Lz_8IfQJp_vZxa1CcCD9kzD-zwbAnc0XpVjnJtIulbaYar9oz/exec";
+  "https://script.google.com/macros/s/AKfycbzxBaIQ2Mp8JymKhxWBxY60VVU4TR5LMqLo9pECG4ucpqfSBxdUsHP8v5DqHa4InglGeA/exec";
