@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { gameReducer, initialState } from './GameContext'
+import { gameReducer, initialState } from './gameReducer'
 import { buildLeaderboardEntry } from '../leaderboard'
 import { profiles } from '../data/profiles'
 

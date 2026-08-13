@@ -7,7 +7,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { useGame } from "../../context/GameContext";
+import { useGame } from "../../context/useGame";
 import type { CumulativeStats, PatientProfile } from "../../types";
 
 interface CommunityInsightsProps {

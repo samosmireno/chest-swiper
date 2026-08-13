@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { GameProvider, useGame } from "./context/GameContext";
+import { GameProvider } from "./context/GameContext";
+import { useGame } from "./context/useGame";
 import { profiles } from "./data/profiles";
 import { AttractScreen } from "./components/AttractScreen";
 import { GameScreen } from "./components/GameScreen";

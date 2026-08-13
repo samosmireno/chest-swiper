@@ -1,4 +1,4 @@
-import { useGame } from "../context/GameContext";
+import { useGame } from "../context/useGame";
 import { calculateScore } from "../leaderboard";
 import { computeSessionStats } from "../utils/sessionStats";
 import type { PatientProfile, SessionResult } from "../types";

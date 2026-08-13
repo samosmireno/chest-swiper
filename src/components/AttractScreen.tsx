@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGame } from "../context/GameContext";
+import { useGame } from "../context/useGame";
 import { shuffle } from "../utils/shuffle";
 import type { PatientProfile } from "../types";
 

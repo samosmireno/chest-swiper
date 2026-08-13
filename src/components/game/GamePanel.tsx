@@ -5,7 +5,7 @@ import { ProgressBar } from "./ProgressBar";
 import { SwipeGuide } from "./SwipeGuide";
 import { StreakBanner } from "./StreakBanner";
 import { RationaleOverlay } from "./RationaleOverlay";
-import { useGame } from "../../context/GameContext";
+import { useGame } from "../../context/useGame";
 import type { PatientProfile, SwipeSide } from "../../types";
 
 interface GamePanelProps {

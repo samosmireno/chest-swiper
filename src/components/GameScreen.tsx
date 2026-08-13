@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGame } from "../context/GameContext";
+import { useGame } from "../context/useGame";
 import { useCommunityStats } from "../hooks/useCommunityStats";
 import { shuffle } from "../utils/shuffle";
 import { GamePanel } from "./game/GamePanel";

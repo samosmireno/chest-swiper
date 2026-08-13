@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGame } from "../context/GameContext";
+import { useGame } from "../context/useGame";
 import { useDrupalLeaderboard } from "../hooks/useDrupalLeaderboard";
 import { LEADERBOARD_PAGE_SIZE } from "../config";
 
