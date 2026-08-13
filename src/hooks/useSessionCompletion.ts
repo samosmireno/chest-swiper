@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import type { CumulativeStats, PatientProfile, SessionResult } from "../types";
 import { saveCumulativeStats } from "../utils/statsStorage";
 import { addLeaderboardEntry, buildLeaderboardEntry } from "../leaderboard";
-import { useWebformSubmission } from "./useWebformSubmission";
+import { useSheetsSubmission } from "./useSheetsSubmission";
 
 interface SessionCompletionState {
   screen: "idle" | "playing" | "summary";
@@ -29,7 +29,7 @@ export function useSessionCompletion({
   maxStreak,
   cumulativeStats,
 }: SessionCompletionState): void {
-  const { submitSession } = useWebformSubmission();
+  const { submitSession } = useSheetsSubmission();
   const savedSessionId = useRef("");
 
   useEffect(() => {

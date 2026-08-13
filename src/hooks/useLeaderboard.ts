@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { LeaderboardEntry } from "../leaderboard";
 import { getLeaderboard } from "../leaderboard";
-import { DRUPAL_RESULTS_URL, APP_VERSION, LEADERBOARD_WINDOW_MS } from "../config";
+import { SHEETS_WEBHOOK_URL, APP_VERSION, LEADERBOARD_WINDOW_MS } from "../config";
 import { fetchRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
 
@@ -15,7 +15,7 @@ function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
       total: Number(sub.cards_total),
       maxStreak: Number(sub.max_streak),
       // Prefer the round-tripped session_id (stable, exact); fall back to
-      // submitted_at for rows from backends without a session_id column.
+      // submitted_at for rows written before the session_id column existed.
       sessionId: sub.session_id ? String(sub.session_id) : String(sub.submitted_at),
       timestamp: new Date(String(sub.submitted_at)).getTime(),
     }))
@@ -27,7 +27,7 @@ function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
  * LEADERBOARD_WINDOW_MS before the newest entry. Anchoring on the newest
  * entry (rather than the device clock) keeps the board correct even if the
  * kiosk clock is wrong. `anchorFloor` lets the just-finished player's local
- * timestamp define the anchor before their row round-trips from the backend,
+ * timestamp define the anchor before their row round-trips from the sheet,
  * so the first player of a new summit doesn't see the previous summit's board.
  */
 function withinWindow(
@@ -48,7 +48,7 @@ function attachCurrentPlayer(
   if (!local) return entries;
 
   // Exact join when session_id round-tripped; otherwise fall back to the
-  // username + timestamp window (backends without a session_id column).
+  // username + timestamp window (rows without a session_id value).
   const exactIdx = entries.findIndex((e) => e.sessionId === lastSessionId);
   const idx =
     exactIdx >= 0
@@ -59,7 +59,7 @@ function attachCurrentPlayer(
             Math.abs(e.timestamp - local.timestamp) < 10_000
         );
 
-  // Already indexed by Drupal: re-tag the remote row with our stable
+  // Already landed in the sheet: re-tag the remote row with our stable
   // sessionId so it highlights as the current player.
   if (idx >= 0) {
     const result = [...entries];
@@ -74,17 +74,17 @@ function attachCurrentPlayer(
   return [...entries, local].sort((a, b) => b.score - a.score);
 }
 
-export function useDrupalLeaderboard(lastSessionId: string): {
+export function useLeaderboard(lastSessionId: string): {
   entries: LeaderboardEntry[];
   loading: boolean;
 } {
   const [entries, setEntries] = useState<LeaderboardEntry[]>(() =>
     withinWindow(getLeaderboard())
   );
-  const [loading, setLoading] = useState(!!DRUPAL_RESULTS_URL);
+  const [loading, setLoading] = useState(!!SHEETS_WEBHOOK_URL);
 
   useEffect(() => {
-    if (!DRUPAL_RESULTS_URL) return;
+    if (!SHEETS_WEBHOOK_URL) return;
 
     (async () => {
       try {

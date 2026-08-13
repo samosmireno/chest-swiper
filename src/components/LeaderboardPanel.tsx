@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useGame } from "../context/useGame";
-import { useDrupalLeaderboard } from "../hooks/useDrupalLeaderboard";
+import { useLeaderboard } from "../hooks/useLeaderboard";
 import { LEADERBOARD_PAGE_SIZE } from "../config";
 
 export function LeaderboardPanel() {
   const { state } = useGame();
-  const { entries, loading } = useDrupalLeaderboard(state.lastSessionId);
+  const { entries, loading } = useLeaderboard(state.lastSessionId);
   const [page, setPage] = useState(0);
 
   const totalPages = Math.max(
@@ -17,7 +17,7 @@ export function LeaderboardPanel() {
     ? entries.findIndex((e) => e.sessionId === state.lastSessionId)
     : -1;
 
-  // Scroll to current player's page once entries arrive from Drupal.
+  // Scroll to current player's page once entries arrive from the sheet.
   // Also resets page when entries change so we never end up out of range.
   useEffect(() => {
     if (currentPlayerIndex >= 0) {

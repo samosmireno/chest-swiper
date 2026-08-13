@@ -1,10 +1,10 @@
-// Who Would You Screen? — Google Sheets fallback receiver
+// Who Would You Screen? — Google Sheets results store (primary storage)
+// POST appends a submission row; GET returns all rows as JSON.
 // Deploy as: Extensions → Apps Script → Deploy → New deployment
 //   Type: Web app | Execute as: Me | Who has access: Anyone
 // Copy the deployment URL into SHEETS_WEBHOOK_URL in src/config.ts
 
 const COLUMNS = [
-  "webform_id",
   "app_version",
   "username",
   "email",

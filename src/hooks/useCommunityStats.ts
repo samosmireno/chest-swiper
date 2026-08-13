@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { CumulativeStats } from "../types";
-import { DRUPAL_RESULTS_URL } from "../config";
+import { SHEETS_WEBHOOK_URL } from "../config";
 import { fetchRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
 
@@ -28,10 +28,10 @@ export function useCommunityStats(fallback: CumulativeStats): {
   loading: boolean;
 } {
   const [data, setData] = useState<CumulativeStats | null>(null);
-  const [loading, setLoading] = useState(!!DRUPAL_RESULTS_URL);
+  const [loading, setLoading] = useState(!!SHEETS_WEBHOOK_URL);
 
   useEffect(() => {
-    if (!DRUPAL_RESULTS_URL) return;
+    if (!SHEETS_WEBHOOK_URL) return;
 
     (async () => {
       try {
