@@ -1,17 +1,24 @@
+import { memo } from "react";
 import type { PatientProfile } from "../../types";
 
 interface PatientCardProps {
   profile: PatientProfile;
 }
 
-export function PatientCard({ profile }: PatientCardProps) {
+/* Memoized: profiles are static module data, so stack cards skip the
+   re-render every SWIPE/ADVANCE dispatch triggers app-wide. */
+export const PatientCard = memo(function PatientCard({
+  profile,
+}: PatientCardProps) {
   return (
     /* Metallic bronze/gold frame — gradient background with padding acts as the border */
     <div
       className="bg-metallic-border relative h-full w-full rounded-xl p-1"
       style={{
+        /* Single outer glow: a second 60px blur layer here cost more GPU
+           raster time than everything else on mobile combined. */
         boxShadow:
-          "0 0 30px rgba(180,130,0,0.35), 0 0 60px rgba(100,60,0,0.2), inset 0 0 8px rgba(255,200,50,0.1)",
+          "0 0 32px rgba(170,115,0,0.42), inset 0 0 8px rgba(255,200,50,0.1)",
       }}
     >
       {/* Dark interior with subtle grid texture */}
@@ -85,7 +92,7 @@ export function PatientCard({ profile }: PatientCardProps) {
       </div>
     </div>
   );
-}
+});
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (

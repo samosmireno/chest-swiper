@@ -3,6 +3,12 @@
 // Deploy as: Extensions → Apps Script → Deploy → New deployment
 //   Type: Web app | Execute as: Me | Who has access: Anyone
 // Copy the deployment URL into SHEETS_WEBHOOK_URL in src/config.ts
+//
+// Schema change (speed bonus, v1.3): speed_bonus and card_p*_ms columns are
+// new. The header row only auto-writes into an EMPTY sheet — add the new
+// columns to the live header by hand (or clear row 1 on a fresh sheet)
+// before updating the deployment, or new rows will misalign against the
+// old 1.2-era header.
 
 const COLUMNS = [
   "app_version",
@@ -14,6 +20,7 @@ const COLUMNS = [
   "cards_correct",
   "cards_total",
   "max_streak",
+  "speed_bonus",
   "card_p1_correct",
   "card_p2_correct",
   "card_p3_correct",
@@ -29,6 +36,21 @@ const COLUMNS = [
   "card_p13_correct",
   "card_p14_correct",
   "card_p15_correct",
+  "card_p1_ms",
+  "card_p2_ms",
+  "card_p3_ms",
+  "card_p4_ms",
+  "card_p5_ms",
+  "card_p6_ms",
+  "card_p7_ms",
+  "card_p8_ms",
+  "card_p9_ms",
+  "card_p10_ms",
+  "card_p11_ms",
+  "card_p12_ms",
+  "card_p13_ms",
+  "card_p14_ms",
+  "card_p15_ms",
   "session_id",
 ];
 

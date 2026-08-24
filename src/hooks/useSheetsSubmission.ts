@@ -1,6 +1,6 @@
 import type { PatientProfile, SessionResult } from "../types";
 import { APP_VERSION, SHEETS_WEBHOOK_URL } from "../config";
-import { calculateScore } from "../leaderboard";
+import { calculateScore, computeSpeedBonus } from "../leaderboard";
 
 interface SubmitSessionParams {
   firstName: string;
@@ -24,7 +24,8 @@ function buildPayload({
   sessionId,
 }: SubmitSessionParams): Record<string, string | number> {
   const cardsCorrect = sessionResults.filter((r) => r.correct).length;
-  const score = calculateScore(cardsCorrect, maxStreak);
+  const speedBonus = computeSpeedBonus(sessionResults);
+  const score = calculateScore(cardsCorrect, maxStreak, speedBonus);
 
   const payload: Record<string, string | number> = {
     app_version: APP_VERSION,
@@ -37,12 +38,14 @@ function buildPayload({
     cards_correct: cardsCorrect,
     cards_total: deck.length,
     max_streak: maxStreak,
+    speed_bonus: speedBonus,
   };
 
-  // Sheet columns are card_p{n}_correct; profile IDs are c{n} — strip prefix and rekey
+  // Sheet columns are card_p{n}_*; profile IDs are c{n} — strip prefix and rekey
   for (const result of sessionResults) {
     const n = result.profileId.replace(/^[a-z]+/, "");
     payload[`card_p${n}_correct`] = result.correct ? "yes" : "no";
+    payload[`card_p${n}_ms`] = result.elapsedMs;
   }
 
   return payload;

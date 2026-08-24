@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -18,7 +18,7 @@ export interface DraggableCardHandle {
 
 interface DraggableCardProps {
   profile: PatientProfile;
-  onSwipe: (side: SwipeSide) => void;
+  onSwipe: (side: SwipeSide, elapsedMs: number) => void;
 }
 
 const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
@@ -29,15 +29,25 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
     const rightOpacity = useTransform(x, [0, 80 * s, 150 * s], [0, 0.7, 1]);
     const leftOpacity = useTransform(x, [-150 * s, -80 * s, 0], [1, 0.7, 0]);
     const controls = useAnimation();
+    // Speed-bonus clock start. The top card is unmounted while the rationale
+    // overlay is open and mounts (keyed by profile) the moment it becomes
+    // interactive, so mount time IS the "card shown" edge.
+    const shownAtRef = useRef(0);
+    useEffect(() => {
+      shownAtRef.current = performance.now();
+    }, []);
 
     const commitSwipe = async (side: SwipeSide) => {
+      // Clock stops at the commit, before the fly-off animation, so the
+      // 300ms animation isn't charged to the player.
+      const elapsedMs = Math.round(performance.now() - shownAtRef.current);
       const targetX = (side === "right" ? 600 : -600) * uiScale();
       await controls.start({
         x: targetX,
         opacity: 0,
         transition: { duration: 0.3, ease: "easeOut" },
       });
-      onSwipe(side);
+      onSwipe(side, elapsedMs);
     };
 
     useImperativeHandle(ref, () => ({ triggerSwipe: commitSwipe }));
@@ -50,7 +60,10 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
       const flick = Math.abs(info.velocity.x / scale) > 500;
       if (info.offset.x / scale > 80 || (flick && info.velocity.x > 0)) {
         commitSwipe("right");
-      } else if (info.offset.x / scale < -80 || (flick && info.velocity.x < 0)) {
+      } else if (
+        info.offset.x / scale < -80 ||
+        (flick && info.velocity.x < 0)
+      ) {
         commitSwipe("left");
       } else {
         controls.start({
@@ -62,30 +75,32 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
 
     return (
       <motion.div
-        className="absolute inset-0 cursor-grab active:cursor-grabbing"
+        className="touch-none! absolute inset-0 cursor-grab active:cursor-grabbing"
         style={{ x, rotate, willChange: "transform" }}
         animate={controls}
         drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.25}
+        dragMomentum={false}
         onDragEnd={handleDragEnd}
       >
         <PatientCard profile={profile} />
 
-        {/* Right-swipe stamp */}
+        {/* Right-swipe stamp. willChange promotes it to its own compositor
+            layer: its opacity changes every dragged frame, and without the
+            layer that repaint re-rasterizes the whole card — glow shadows
+            included — which is what dropped mid-range phones to ~35fps. */}
         <motion.div
           className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-xl bg-sky-500/20 px-6 pb-6"
-          style={{ opacity: rightOpacity }}
+          style={{ opacity: rightOpacity, willChange: "opacity" }}
         >
           <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-sky-300 sm:text-lg">
             {profile.rightOption} →
           </span>
         </motion.div>
 
-        {/* Left-swipe stamp */}
+        {/* Left-swipe stamp — same layer promotion as the right stamp */}
         <motion.div
           className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-xl bg-yellow-500/20 px-6 pb-6"
-          style={{ opacity: leftOpacity }}
+          style={{ opacity: leftOpacity, willChange: "opacity" }}
         >
           <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-yellow-300 sm:text-lg">
             ← {profile.leftOption}
@@ -106,7 +121,7 @@ export interface CardStackHandle {
 interface CardStackProps {
   deck: PatientProfile[];
   currentIndex: number;
-  onSwipe: (side: SwipeSide) => void;
+  onSwipe: (side: SwipeSide, elapsedMs: number) => void;
   locked?: boolean;
 }
 
@@ -148,6 +163,7 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
             <motion.div
               key={profile.id}
               className="pointer-events-none absolute inset-0"
+              style={{ willChange: "transform, opacity" }}
               initial={{
                 scale: 1 - (stackPosition + 1) * 0.04,
                 y: (stackPosition + 1) * 8 * s,

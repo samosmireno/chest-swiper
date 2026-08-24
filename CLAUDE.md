@@ -9,15 +9,25 @@ npm run dev       # Start dev server (Vite HMR)
 npm run build     # Type-check then bundle for production (tsc -b && vite build)
 npm run lint      # ESLint across the project
 npm run preview   # Serve the production build locally
+npm test          # Vitest (watch mode; `npx vitest run` for one-shot)
 ```
-
-No test runner is configured yet.
 
 ## Stack
 
-- React 19 + TypeScript, bundled with Vite
+- React 19 + TypeScript, bundled with Vite; Tailwind v4, Framer Motion, Recharts
 - Entry point: `src/main.tsx` → `src/App.tsx`
-- The app is currently a blank shell (`App` returns `<></>`); all product logic is yet to be built.
+
+## What the app is
+
+"Swipe or Miss: T1D Decisions" — a kiosk swipe game of type 1 diabetes
+screening/staging cases. Flow: attract screen with player form
+(`AttractScreen`) → shuffled 15-card deck, swipe/tap per card with rationale
+overlay → summary with score + leaderboard. Case content lives in
+`src/data/profiles.ts`. Scoring is correct×100 + maxStreak×10 plus a hidden
+speed bonus, weighted so accuracy can never be outranked (see `src/config.ts`;
+proven exhaustively in `src/leaderboard.test.ts`). Results POST to a Google
+Apps Script webhook (`sheets/wwys-results.gs`, URL in `src/config.ts`); bump
+`APP_VERSION` there whenever card content or scoring changes.
 
 ## Agent skills
 

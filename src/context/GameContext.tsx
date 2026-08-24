@@ -1,9 +1,13 @@
-import { useReducer, type ReactNode } from "react";
+import { useMemo, useReducer, type ReactNode } from "react";
 import type { PatientProfile } from "../types";
 import { useSessionCompletion } from "../hooks/useSessionCompletion";
 import { loadCumulativeStats } from "../utils/statsStorage";
 import { gameReducer, initialState } from "./gameReducer";
-import { GameContext } from "./useGame";
+import {
+  GameDispatchContext,
+  GameScreenContext,
+  GameStateContext,
+} from "./useGame";
 
 export function GameProvider({
   children,
@@ -32,9 +36,15 @@ export function GameProvider({
 
   useSessionCompletion({ screen, lastSessionId, firstName, lastName, email, specialty, sessionResults, deck, maxStreak, cumulativeStats });
 
+  const dispatchValue = useMemo(() => ({ dispatch, profiles }), [profiles]);
+
   return (
-    <GameContext.Provider value={{ state, dispatch, profiles }}>
-      {children}
-    </GameContext.Provider>
+    <GameDispatchContext.Provider value={dispatchValue}>
+      <GameScreenContext.Provider value={state.screen}>
+        <GameStateContext.Provider value={state}>
+          {children}
+        </GameStateContext.Provider>
+      </GameScreenContext.Provider>
+    </GameDispatchContext.Provider>
   );
 }

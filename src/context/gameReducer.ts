@@ -4,7 +4,7 @@ import type { GameState, SessionResult, CumulativeStats, PatientProfile, SwipeSi
 export type GameAction =
   | { type: "START_GAME"; deck: PatientProfile[] }
   | { type: "SET_PLAYER"; firstName: string; lastName: string; email: string; specialty: string }
-  | { type: "SWIPE"; profileId: string; side: SwipeSide }
+  | { type: "SWIPE"; profileId: string; side: SwipeSide; elapsedMs: number }
   | { type: "ADVANCE" }
   | { type: "RESET" };
 
@@ -68,6 +68,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         profileId: action.profileId,
         playerSide: action.side,
         correct,
+        elapsedMs: action.elapsedMs,
       };
       const newResults = [...state.sessionResults, result];
       const newStreak = correct ? state.streak + 1 : 0;

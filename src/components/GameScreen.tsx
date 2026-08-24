@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGame } from "../context/useGame";
+import { useGameDispatch, useGameState } from "../context/useGame";
 import { useCommunityStats } from "../hooks/useCommunityStats";
 import { shuffle } from "../utils/shuffle";
 import { GamePanel } from "./game/GamePanel";
@@ -7,7 +7,8 @@ import { DashboardPanel } from "./dashboard/DashboardPanel";
 import type { SwipeSide } from "../types";
 
 export function GameScreen() {
-  const { state, dispatch, profiles } = useGame();
+  const state = useGameState();
+  const { dispatch, profiles } = useGameDispatch();
   const { deck, currentIndex, sessionResults, cumulativeStats } = state;
   const { stats: communityStats } = useCommunityStats(cumulativeStats);
 
@@ -16,10 +17,10 @@ export function GameScreen() {
     if (deck.length === 0) dispatch({ type: "START_GAME", deck: shuffle(profiles) });
   }, [deck.length, dispatch, profiles]);
 
-  const handleSwipe = (side: SwipeSide) => {
+  const handleSwipe = (side: SwipeSide, elapsedMs: number) => {
     const profile = deck[currentIndex];
     if (!profile) return;
-    dispatch({ type: "SWIPE", profileId: profile.id, side });
+    dispatch({ type: "SWIPE", profileId: profile.id, side, elapsedMs });
   };
 
   const handleAdvance = () => dispatch({ type: "ADVANCE" });
@@ -35,6 +36,7 @@ export function GameScreen() {
       <DashboardPanel
         sessionResults={sessionResults}
         cumulativeStats={communityStats}
+        profiles={profiles}
       />
     </div>
   );

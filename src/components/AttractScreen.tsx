@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGame } from "../context/useGame";
+import { useGameDispatch } from "../context/useGame";
+import { prefetchRemoteSubmissions } from "../utils/remoteSubmissions";
 import { shuffle } from "../utils/shuffle";
 import type { PatientProfile } from "../types";
 
@@ -72,12 +73,18 @@ interface StackCard {
 }
 
 export function AttractScreen() {
-  const { dispatch, profiles } = useGame();
+  const { dispatch, profiles } = useGameDispatch();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [otherText, setOtherText] = useState("");
+
+  // Warm the shared submissions fetch during form entry so the game-screen
+  // panel (chart or leaderboard) mounts with data instead of updating mid-play.
+  useEffect(() => {
+    prefetchRemoteSubmissions();
+  }, []);
 
   const [stack, setStack] = useState<StackCard[]>([
     { id: 0, profileIdx: 0 },
@@ -190,8 +197,10 @@ export function AttractScreen() {
                       : { type: "spring", stiffness: 300, damping: 25 }
                   }
                   style={{
-                    boxShadow:
-                      "0 0 24px rgba(180,130,0,0.3), 0 0 48px rgba(100,60,0,0.15)",
+                    /* Single blur layer + own compositor layer: this card bobs
+                       forever, so its texture must not re-rasterize per frame */
+                    boxShadow: "0 0 26px rgba(170,115,0,0.35)",
+                    willChange: "transform",
                   }}
                 >
                   <div

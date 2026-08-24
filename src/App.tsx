@@ -1,11 +1,13 @@
 import { Component, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GameProvider } from "./context/GameContext";
-import { useGame } from "./context/useGame";
+import { useGameScreen } from "./context/useGame";
 import { profiles } from "./data/profiles";
 import { AttractScreen } from "./components/AttractScreen";
 import { GameScreen } from "./components/GameScreen";
 import { SummaryView } from "./components/SummaryView";
+import { FpsMeter } from "./components/FpsMeter";
+import { perfFlags } from "./utils/perfFlags";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -45,16 +47,18 @@ const screenTransition = {
 };
 
 function GameRouter() {
-  const { state } = useGame();
+  // Screen-only subscription: play-time dispatches (swipes, timer ticks)
+  // never re-render the tree from the router down.
+  const screen = useGameScreen();
 
   return (
     <AnimatePresence mode="wait">
-      {state.screen === "idle" && (
+      {screen === "idle" && (
         <motion.div key="idle" className="h-full w-full" {...screenTransition}>
           <AttractScreen />
         </motion.div>
       )}
-      {state.screen === "playing" && (
+      {screen === "playing" && (
         <motion.div
           key="playing"
           className="h-full w-full"
@@ -63,7 +67,7 @@ function GameRouter() {
           <GameScreen />
         </motion.div>
       )}
-      {state.screen === "summary" && (
+      {screen === "summary" && (
         <motion.div
           key="summary"
           className="h-full w-full"
@@ -77,6 +81,15 @@ function GameRouter() {
 }
 
 function BackgroundVideo() {
+  if (perfFlags.novideo) {
+    return (
+      <img
+        className="absolute inset-0 h-full w-full object-cover"
+        src="./bg_fallback.jpg"
+        alt=""
+      />
+    );
+  }
   return (
     <video
       className="absolute inset-0 h-full w-full object-cover"
@@ -103,13 +116,16 @@ const GameContent = () => (
         <GameRouter />
       </GameProvider>
     </div>
+    {perfFlags.fps && <FpsMeter />}
   </>
 );
 
 function App() {
   return (
     <ErrorBoundary>
-      <div className="relative h-screen w-screen overflow-hidden">
+      {/* dvh: tracks the visual viewport on mobile so the collapsing URL bar
+          doesn't clip the layout or cause jumps */}
+      <div className="relative h-dvh w-screen overflow-hidden">
         <GameContent />
       </div>
     </ErrorBoundary>

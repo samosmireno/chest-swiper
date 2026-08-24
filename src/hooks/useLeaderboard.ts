@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { LeaderboardEntry } from "../leaderboard";
 import { getLeaderboard } from "../leaderboard";
 import { SHEETS_WEBHOOK_URL, APP_VERSION, LEADERBOARD_WINDOW_MS } from "../config";
-import { fetchRemoteSubmissions } from "../utils/remoteSubmissions";
+import { getRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
 
 function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
@@ -88,7 +88,7 @@ export function useLeaderboard(lastSessionId: string): {
 
     (async () => {
       try {
-        const subs = await fetchRemoteSubmissions();
+        const subs = await getRemoteSubmissions();
 
         if (subs.length === 0) {
           console.info(`[wwys] No remote data for v${APP_VERSION} — using local`);

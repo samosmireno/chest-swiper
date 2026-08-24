@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { CumulativeStats } from "../types";
 import { SHEETS_WEBHOOK_URL } from "../config";
-import { fetchRemoteSubmissions } from "../utils/remoteSubmissions";
+import { getRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
 
 function transformSubmissions(submissions: RawSubmission[]): CumulativeStats {
@@ -11,6 +11,9 @@ function transformSubmissions(submissions: RawSubmission[]): CumulativeStats {
     for (const [key, value] of Object.entries(sub)) {
       const match = key.match(/^card_(.+)_correct$/);
       if (!match) continue;
+      // Apps Script writes "" for cards absent from a submission — those
+      // blanks must not count as shown or they dilute the miss rates.
+      if (value !== "yes" && value !== "no") continue;
       const profileId = `c${match[1].replace(/^p/, "")}`;
       const existing = perCard[profileId] ?? { timesShown: 0, timesCorrect: 0 };
       perCard[profileId] = {
@@ -33,16 +36,18 @@ export function useCommunityStats(fallback: CumulativeStats): {
   useEffect(() => {
     if (!SHEETS_WEBHOOK_URL) return;
 
-    (async () => {
-      try {
-        const subs = await fetchRemoteSubmissions();
-        if (subs.length > 0) {
-          setData(transformSubmissions(subs));
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
+    // Normally already in flight from the attract screen's prefetch;
+    // getRemoteSubmissions self-starts to cover demo mode, which skips
+    // straight to the game.
+    let cancelled = false;
+    getRemoteSubmissions().then((subs) => {
+      if (cancelled) return;
+      if (subs.length > 0) setData(transformSubmissions(subs));
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { stats: data ?? fallback, loading };

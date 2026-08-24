@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
-import { useGame } from "../context/useGame";
+import { useState } from "react";
+import { useGameState } from "../context/useGame";
 import { useLeaderboard } from "../hooks/useLeaderboard";
 import { LEADERBOARD_PAGE_SIZE } from "../config";
 
 export function LeaderboardPanel() {
-  const { state } = useGame();
+  const state = useGameState();
   const { entries, loading } = useLeaderboard(state.lastSessionId);
-  const [page, setPage] = useState(0);
+  // null until the player paginates manually; until then the board follows
+  // the current player's page automatically as entries arrive.
+  const [pageOverride, setPageOverride] = useState<number | null>(null);
 
   const totalPages = Math.max(
     1,
@@ -17,15 +19,13 @@ export function LeaderboardPanel() {
     ? entries.findIndex((e) => e.sessionId === state.lastSessionId)
     : -1;
 
-  // Scroll to current player's page once entries arrive from the sheet.
-  // Also resets page when entries change so we never end up out of range.
-  useEffect(() => {
-    if (currentPlayerIndex >= 0) {
-      setPage(Math.floor(currentPlayerIndex / LEADERBOARD_PAGE_SIZE));
-    } else {
-      setPage(0);
-    }
-  }, [currentPlayerIndex, entries.length]);
+  const autoPage =
+    currentPlayerIndex >= 0
+      ? Math.floor(currentPlayerIndex / LEADERBOARD_PAGE_SIZE)
+      : 0;
+
+  // Clamp so a changing entry list can never leave the page out of range.
+  const page = Math.min(pageOverride ?? autoPage, totalPages - 1);
 
   const pageEntries = entries.slice(
     page * LEADERBOARD_PAGE_SIZE,
@@ -101,7 +101,7 @@ export function LeaderboardPanel() {
           className="flex h-14 shrink-0 items-center justify-between px-4 border-t border-purple-accent/20"
         >
           <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            onClick={() => setPageOverride(Math.max(0, page - 1))}
             disabled={page === 0}
             className="font-display tracking-[0.15em] rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors disabled:opacity-30 text-white/55 bg-white/10"
           >
@@ -111,7 +111,7 @@ export function LeaderboardPanel() {
             {page + 1} / {totalPages}
           </span>
           <button
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            onClick={() => setPageOverride(Math.min(totalPages - 1, page + 1))}
             disabled={page === totalPages - 1}
             className="font-display tracking-[0.15em] rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors disabled:opacity-30 text-white/55 bg-white/10"
           >

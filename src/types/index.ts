@@ -30,6 +30,8 @@ export interface SessionResult {
   profileId: string
   playerSide: SwipeSide
   correct: boolean
+  // Time from the card becoming interactive to the swipe/tap commit
+  elapsedMs: number
 }
 
 export interface CumulativeStats {

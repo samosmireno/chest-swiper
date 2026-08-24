@@ -1,5 +1,5 @@
-import { useGame } from "../context/useGame";
-import { calculateScore } from "../leaderboard";
+import { useGameDispatch, useGameState } from "../context/useGame";
+import { calculateScore, computeSpeedBonus, scoreBreakdown } from "../leaderboard";
 import { computeSessionStats } from "../utils/sessionStats";
 import type { PatientProfile, SessionResult } from "../types";
 
@@ -9,6 +9,57 @@ function describePatient(p: PatientProfile): string {
 
 function labelForSide(profile: PatientProfile, side: "left" | "right"): string {
   return side === "left" ? profile.leftOption : profile.rightOption;
+}
+
+function ScoreBreakdown({
+  correct,
+  total,
+  maxStreak,
+  speedBonus,
+}: {
+  correct: number;
+  total: number;
+  maxStreak: number;
+  speedBonus: number;
+}) {
+  const parts = scoreBreakdown(correct, maxStreak, speedBonus);
+  // Speed stays a bare value — the per-card timer is never disclosed.
+  const rows = [
+    { label: "Accuracy", detail: `${correct}/${total}`, value: `${parts.accuracy}` },
+    { label: "Best streak", detail: `${maxStreak}`, value: `+${parts.streak}` },
+    { label: "Speed bonus", detail: null, value: `+${parts.speedBonus}` },
+  ];
+
+  return (
+    <div
+      className="border-purple-accent/45 rounded-2xl border bg-purple-900/90 px-5 py-2"
+      style={{
+        boxShadow:
+          "0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset",
+      }}
+    >
+      {rows.map((row) => (
+        <div
+          key={row.label}
+          className="flex items-baseline justify-between border-b border-white/10 py-3 last:border-b-0"
+        >
+          <span className="font-display text-sm font-black tracking-[0.15em] text-white/85 uppercase">
+            {row.label}
+          </span>
+          <span className="flex items-baseline gap-4">
+            {row.detail !== null && (
+              <span className="font-mono text-sm font-semibold text-white/50">
+                {row.detail}
+              </span>
+            )}
+            <span className="min-w-18 text-right text-xl font-black text-white tabular-nums">
+              {row.value}
+            </span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function ResultCard({
@@ -98,11 +149,13 @@ function ResultCard({
 }
 
 export function SummaryPanel() {
-  const { state, dispatch } = useGame();
+  const state = useGameState();
+  const { dispatch } = useGameDispatch();
   const { sessionResults, deck } = state;
 
   const { correct, total } = computeSessionStats(sessionResults);
-  const score = calculateScore(correct, state.maxStreak);
+  const speedBonus = computeSpeedBonus(sessionResults);
+  const score = calculateScore(correct, state.maxStreak, speedBonus);
 
   const profileMap = new Map<string, PatientProfile>(
     deck.map((p) => [p.id, p]),
@@ -123,6 +176,12 @@ export function SummaryPanel() {
       {/* Scrollable card list */}
       <div className="bg-panel/75 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-lg flex-col gap-4 p-4 pb-8">
+          <ScoreBreakdown
+            correct={correct}
+            total={total}
+            maxStreak={state.maxStreak}
+            speedBonus={speedBonus}
+          />
           {sessionResults.map((result, i) => {
             const profile = profileMap.get(result.profileId);
             if (!profile) return null;

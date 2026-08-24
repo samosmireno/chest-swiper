@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   BarChart,
   Bar,
@@ -7,11 +8,11 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { useGame } from "../../context/useGame";
 import type { CumulativeStats, PatientProfile } from "../../types";
 
 interface CommunityInsightsProps {
   stats: CumulativeStats;
+  profiles: PatientProfile[];
 }
 
 interface ChartRow {
@@ -151,8 +152,14 @@ function GlowBar(props: {
   );
 }
 
-export function CommunityInsights({ stats }: CommunityInsightsProps) {
-  const { profiles } = useGame();
+/* Memoized off the game context: `stats` is referentially stable between
+   sessions and `profiles` is static, so per-swipe dispatches skip the whole
+   Recharts subtree. Default export so DashboardPanel can React.lazy this
+   module, keeping recharts out of the main bundle. */
+export default memo(function CommunityInsights({
+  stats,
+  profiles,
+}: CommunityInsightsProps) {
   const data = getMostMissed(stats, profiles);
 
   return (
@@ -213,6 +220,6 @@ export function CommunityInsights({ stats }: CommunityInsightsProps) {
       </p>
     </div>
   );
-}
+});
 
 export { BAR_COLORS };

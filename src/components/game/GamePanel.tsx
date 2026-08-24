@@ -5,19 +5,21 @@ import { ProgressBar } from "./ProgressBar";
 import { SwipeGuide } from "./SwipeGuide";
 import { StreakBanner } from "./StreakBanner";
 import { RationaleOverlay } from "./RationaleOverlay";
-import { useGame } from "../../context/useGame";
+import { useGameState } from "../../context/useGame";
 import type { PatientProfile, SwipeSide } from "../../types";
 
 interface GamePanelProps {
   deck: PatientProfile[];
   currentIndex: number;
-  onSwipe: (side: SwipeSide) => void;
+  onSwipe: (side: SwipeSide, elapsedMs: number) => void;
   onAdvance: () => void;
 }
 
+const noop = () => {};
+
 export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelProps) {
   const cardStackRef = useRef<CardStackHandle>(null);
-  const { state } = useGame();
+  const state = useGameState();
   const { streak, lastResult, sessionResults } = state;
   const results = sessionResults.map((r) => r.correct);
   const currentProfile = deck[currentIndex];
@@ -28,7 +30,7 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
   const isLastCard = currentIndex === deck.length - 1;
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-start gap-4 border-r-0 border-b border-gray-100 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:border-b-0 sm:px-6 sm:pt-5 sm:pb-6">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-start gap-4 border-r-0 border-b border-gray-100 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:border-b-0 sm:px-6 sm:pt-5 sm:pb-6">
       <StreakBanner streak={streak} />
 
       <div className="w-full">
@@ -49,6 +51,26 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
             onSwipe={onSwipe}
             locked={overlayOpen}
           />
+          {/* One-time pre-warm: lay out the overlay's text styles while the
+              first card idles. Its first real mount otherwise pays font
+              shaping for all its styles in one frame, mid-fly-off (measured
+              ~130ms of Layout at 20x CPU throttle; ~4ms once warm).
+              visibility:hidden → laid out, never painted, no hit-testing. */}
+          {currentProfile && sessionResults.length === 0 && (
+            <div className="invisible absolute inset-0" aria-hidden>
+              <RationaleOverlay
+                profile={currentProfile}
+                result={{
+                  profileId: currentProfile.id,
+                  playerSide: "left",
+                  correct: false,
+                  elapsedMs: 0,
+                }}
+                isLastCard={false}
+                onAdvance={noop}
+              />
+            </div>
+          )}
           <AnimatePresence>
             {overlayOpen && currentProfile && lastResult && (
               <RationaleOverlay
@@ -61,8 +83,15 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
           </AnimatePresence>
         </div>
 
-        <div className="w-full">
-          {currentProfile && !overlayOpen && (
+        {/* Faded + inert while the overlay is open, never unmounted — removing
+            it from the flow reflows the whole column mid-animation. */}
+        <div
+          inert={overlayOpen}
+          className={`w-full transition-opacity duration-150 ${
+            overlayOpen ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {currentProfile && (
             <SwipeGuide
               leftOption={currentProfile.leftOption}
               rightOption={currentProfile.rightOption}

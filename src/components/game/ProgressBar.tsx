@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type React from "react";
 
 interface ProgressBarProps {
@@ -6,7 +7,9 @@ interface ProgressBarProps {
   results?: boolean[];
 }
 
-function Diamond({
+/* Memoized: only the 1-2 diamonds whose props change re-render per swipe;
+   the double drop-shadow filters make each one pricier than it looks. */
+const Diamond = memo(function Diamond({
   filled,
   isCurrent,
   result,
@@ -37,15 +40,17 @@ function Diamond({
             : "var(--color-purple-500)"
           : "var(--color-purple-950)";
 
+  /* One drop-shadow per diamond, not two — each shadow is a separate filter
+     pass, and these repaint mid-animation on every swipe. */
   const glow =
     result === true
-      ? "drop-shadow(0 0 4px var(--color-blue-400)) drop-shadow(0 0 10px var(--color-blue-400))"
+      ? "drop-shadow(0 0 6px var(--color-blue-400))"
       : result === false
-        ? "drop-shadow(0 0 4px var(--color-red-400)) drop-shadow(0 0 10px var(--color-red-400))"
+        ? "drop-shadow(0 0 6px var(--color-red-400))"
         : isCurrent
-          ? "drop-shadow(0 0 4px var(--color-magenta-500)) drop-shadow(0 0 10px var(--color-magenta-500))"
+          ? "drop-shadow(0 0 6px var(--color-magenta-500))"
           : filled
-            ? "drop-shadow(0 0 3px var(--color-purple-400)) drop-shadow(0 0 7px var(--color-purple-400))"
+            ? "drop-shadow(0 0 5px var(--color-purple-400))"
             : "none";
 
   return (
@@ -62,7 +67,7 @@ function Diamond({
       />
     </svg>
   );
-}
+});
 
 const counterStyle: React.CSSProperties = {
   fontFamily: "var(--font-display)",

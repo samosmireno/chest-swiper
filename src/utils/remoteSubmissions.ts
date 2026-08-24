@@ -14,7 +14,7 @@ function matchesVersion(sub: RawSubmission): boolean {
  * Returns [] if SHEETS_WEBHOOK_URL is not configured, the fetch fails,
  * or no rows match APP_VERSION.
  */
-export async function fetchRemoteSubmissions(): Promise<RawSubmission[]> {
+async function fetchRemoteSubmissions(): Promise<RawSubmission[]> {
   if (!SHEETS_WEBHOOK_URL) return [];
 
   try {
@@ -27,4 +27,32 @@ export async function fetchRemoteSubmissions(): Promise<RawSubmission[]> {
     console.warn("[wwys] Sheets fetch failed", err);
     return [];
   }
+}
+
+// One shared fetch per attract→game→summary cycle: the community-stats chart
+// and both leaderboard mounts (game screen and summary) read the same response
+// instead of each issuing their own GET.
+let pending: Promise<RawSubmission[]> | null = null;
+
+/**
+ * Starts a fresh shared fetch. Called from the attract screen so the response
+ * lands while the player is still filling the form — if it only began when
+ * the game screen mounted, it would arrive seconds into play and the
+ * consumer's data mount would block a random frame (measured landing
+ * mid-drag on the chart panel). Refetches on every call: the kiosk cycles
+ * many sessions per page load, and each attract visit should pull fresh
+ * community numbers.
+ */
+export function prefetchRemoteSubmissions(): void {
+  if (!SHEETS_WEBHOOK_URL) return;
+  pending = fetchRemoteSubmissions();
+}
+
+/**
+ * The current cycle's submissions. Self-starts if no prefetch ran (demo mode
+ * skips the attract screen). Never rejects — resolves [] on failure.
+ */
+export function getRemoteSubmissions(): Promise<RawSubmission[]> {
+  if (!pending) pending = fetchRemoteSubmissions();
+  return pending;
 }
