@@ -1,304 +1,335 @@
 import type { PatientProfile } from "../types";
 
+// 12 cases from documents/cases.pptx: 6 severe asthma (biologic selection)
+// followed by 6 COPD (GOLD 2026 escalation). Field values keep the slides'
+// abbreviations (FeNO, EOS, IgE, FEV1, CAAT) as printed on the cards.
 export const profiles: PatientProfile[] = [
   {
     id: "c1",
-    ageSex: "27-year-old female",
-    image: "./patients/c1.webp",
+    ageSex: "Khloe, 24-year-old female",
+    image: "./patients/khloe.webp",
     fields: [
-      { label: "BMI", value: "31 kg/m²" },
-      { label: "Labs", value: "FPG = 95 mg/dL, HbA1c = 4.9%" },
       {
         label: "History",
-        value:
-          "Hashimoto's (self), celiac disease (parent), type 2 diabetes (maternal grandfather)",
+        value: "Diagnosed with asthma at age 20; eczema in childhood",
       },
+      {
+        label: "Treatment",
+        value:
+          "Budesonide/formoterol (160 mcg/4.5 mcg), tiotropium, and a rescue inhaler",
+      },
+      {
+        label: "Recent",
+        value: "ED visit 2 months ago due to shortness of breath",
+      },
+      { label: "Labs", value: "FeNO = 50 ppb, EOS = 389 cells/μL" },
     ],
-    leftOption: "Monitor",
-    rightOption: "Screen for T1D",
-    correctSide: "right",
-    topic: "screening",
+    leftOption: "Add a biologic",
+    rightOption: "Optimize current management",
+    correctSide: "left",
+    topic: "asthma",
     explanation:
-      "Personal or family history of other autoimmune conditions (e.g. Hashimoto's and celiac disease) may warrant screening for T1D with islet autoantibodies.",
+      "Elevated blood eosinophil and FeNO levels, the recent ED visit, and poor control of symptoms despite high-dose maintenance treatment warrant shared decision-making about adding a biologic to treat Khloe's severe asthma.",
   },
   {
     id: "c2",
-    ageSex: "9-year-old female",
-    image: "./patients/c2.webp",
+    ageSex: "Kevin, 7-year-old male",
+    image: "./patients/kevin.webp",
     fields: [
-      { label: "Autoantibodies", value: "IA-2 positive (confirmed)" },
-      { label: "Labs", value: "FPG = 94 mg/dL, HbA1c = 5.1%" },
-      { label: "History", value: "family history of T1D" },
-    ],
-    leftOption: "Pre-T1D",
-    rightOption: "Stage 1 T1D",
-    correctSide: "left",
-    topic: "staging",
-    explanation:
-      "The presence of 1 confirmed autoantibody and family history of T1D indicate that this patient is at higher risk of developing T1D. Because she doesn't have 2 or more confirmed islet autoantibodies, she is not yet in stage 1 T1D.",
-  },
-  {
-    id: "c3",
-    ageSex: "14-year-old male",
-    image: "./patients/c3.webp",
-    fields: [
-      { label: "Autoantibodies", value: "ZnT8 & GAD-65 positive (confirmed)" },
-      { label: "Labs", value: "2-h PG = 144 mg/dL" },
-      { label: "Symptoms", value: "no symptoms of diabetes" },
-    ],
-    leftOption: "Stage 1 T1D",
-    rightOption: "Stage 2 T1D",
-    correctSide: "right",
-    topic: "staging",
-    explanation:
-      "Based on the presence of 2 confirmed autoantibodies, dysglycemia on OGTT and no symptoms, this patient is likely in stage 2 T1D.",
-  },
-  {
-    id: "c4",
-    ageSex: "25-year-old male",
-    image: "./patients/c4.webp",
-    fields: [
-      { label: "BMI", value: "24 kg/m²" },
       {
         label: "History",
-        value: "Diagnosed with T2D 1 year ago, history of celiac disease",
+        value: "Dog and peanut allergies; uses avoidance strategies",
       },
-      {
-        label: "Symptoms",
-        value:
-          "Unintentional weight loss, progressed to insulin treatment 7 months at diagnosis",
-      },
-      { label: "Labs", value: "A1c = 7.1%" },
-    ],
-    leftOption: "Intensify T2D treatment",
-    rightOption: "Screen for T1D",
-    correctSide: "right",
-    topic: "screening",
-    explanation:
-      "Given some phenotypical risk factors that may overlap with those of T1D (younger age, normal BMI, faster progression to insulin treatment), it is plausible that this patient may have been misdiagnosed with T2D and may have T1D instead.",
-  },
-  {
-    id: "c5",
-    ageSex: "12-year-old female",
-    image: "./patients/c5.webp",
-    fields: [
-      { label: "Autoantibodies", value: "IA-2 & GAD-65 positive (confirmed)" },
-      { label: "Labs", value: "2-h PG = 156 mg/dL, HbA1c = 5.8%" },
-    ],
-    leftOption: "Stage 1 or Stage 2 T1D",
-    rightOption: "Stage 3 T1D",
-    correctSide: "left",
-    topic: "staging",
-    explanation:
-      "Based on the presence of 2 confirmed autoantibodies and dysglycemia, this patient can be in either stage 1 or stage 2 T1D depending on symptom status.",
-  },
-  {
-    id: "c6",
-    ageSex: "43-year-old female",
-    image: "./patients/c6.webp",
-    fields: [
-      { label: "BMI", value: "29 kg/m²" },
-      { label: "Autoantibodies", value: "GAD-65 positive (confirmed)" },
-      { label: "Labs", value: "FPG = 148 mg/dL" },
-      { label: "Symptoms", value: "fatigue, increased thirst and urination" },
-    ],
-    leftOption: "Stage 1 or Stage 2 T1D",
-    rightOption: "Stage 3 T1D",
-    correctSide: "right",
-    topic: "staging",
-    explanation:
-      "Based on values for overt hyperglycemia and symptom status, this patient is likely in stage 3 T1D, despite having 1 confirmed autoantibody, which in adults with T1D may become absent.",
-  },
-  {
-    id: "c7",
-    ageSex: "19-year-old male",
-    image: "./patients/c7.webp",
-    fields: [
-      {
-        label: "Autoantibodies",
-        value: "IAA, IA-2, ZnT8 & GAD-65 positive (confirmed)",
-      },
-      { label: "Labs", value: "2-h PG = 126 mg/dL" },
-      { label: "Symptoms", value: "no symptoms of diabetes" },
-    ],
-    leftOption: "Stage 1 T1D",
-    rightOption: "Stage 2 T1D",
-    correctSide: "left",
-    topic: "staging",
-    explanation:
-      "This patient has 4 confirmed islet autoantibodies, with normoglycemia and no symptoms, and hence, is likely to be in stage 1 T1D.",
-  },
-  {
-    id: "c8",
-    ageSex: "11-year-old female",
-    image: "./patients/c8.webp",
-    fields: [
-      { label: "Autoantibodies", value: "IAA & IA-2 positive (confirmed)" },
-      { label: "Labs", value: "FPG = 110 mg/dL" },
-      { label: "Symptoms", value: "no symptoms of diabetes" },
-    ],
-    leftOption: "Monitor",
-    rightOption: "Consider teplizumab",
-    correctSide: "right",
-    topic: "teplizumab",
-    explanation:
-      "This patient is likely to be in stage 2 T1D based on the presence of 2 islet autoantibodies, dysglycemia, and no symptoms of diabetes, and may warrant treatment with teplizumab to delay progression to stage 3 T1D.",
-  },
-  {
-    id: "c9",
-    ageSex: "7-year-old male",
-    image: "./patients/c9.webp",
-    fields: [
-      {
-        label: "Autoantibodies",
-        value: "IA-2, ZnT8 & GAD-65 positive (confirmed)",
-      },
-      { label: "Labs", value: "2-h PG = 212 mg/dL" },
-      { label: "Symptoms", value: "fatigue and recent weight loss" },
-    ],
-    leftOption: "Start insulin",
-    rightOption: "Start teplizumab",
-    correctSide: "left",
-    topic: "teplizumab",
-    explanation:
-      "This patient is likely in stage 3 T1D, and insulin initiation may be necessary.",
-  },
-  {
-    id: "c10",
-    ageSex: "20-year-old female",
-    image: "./patients/c10.webp",
-    fields: [
-      { label: "Autoantibodies", value: "IAA & GAD-65 positive (confirmed)" },
-      { label: "Labs", value: "FPG = 85 mg/dL, HbA1c = 5.2%" },
-      { label: "Symptoms", value: "no symptoms of diabetes" },
-      {
-        label: "History",
-        value: "no family history of T1D or other autoimmune conditions",
-      },
-    ],
-    leftOption: "50% lifetime risk of clinical T1D",
-    rightOption: "100% lifetime risk of clinical T1D",
-    correctSide: "right",
-    topic: "staging",
-    explanation:
-      "Based on the presence of 2 confirmed islet autoantibodies, this patient has a nearly 100% lifetime risk of developing clinical (stage 3) T1D, regardless of normoglycemia, current symptom status, or lack of family history of T1D or other autoimmune conditions.",
-  },
-  {
-    id: "c11",
-    ageSex: "5-year-old male",
-    image: "./patients/c11.webp",
-    fields: [
-      {
-        label: "Autoantibodies",
-        value: "Tested negative for all 4 autoantibodies (confirmed)",
-      },
-      { label: "Labs", value: "FPG = 79 mg/dL, HbA1c = 5.1%" },
-      { label: "Symptoms", value: "no symptoms of diabetes" },
-      { label: "History", value: "family history of T1D" },
-    ],
-    leftOption: "Rescreen in 1 year",
-    rightOption: "Rescreen around 9 years of age",
-    correctSide: "left",
-    topic: "screening",
-    explanation:
-      "Given the increased risk of developing T1D due to family history, as well as younger age, rescreening in 1 year with islet autoantibodies is recommended in this patient.",
-  },
-  {
-    id: "c12",
-    ageSex: "17-year-old female",
-    image: "./patients/c12.webp",
-    fields: [
+      { label: "Symptoms", value: "Frequently wakes at night coughing" },
       {
         label: "Treatment",
         value:
-          "Confirmed stage 2 T1D and currently on day 3 of teplizumab infusions",
-      },
-      {
-        label: "Monitoring",
-        value:
-          "all labs normal, no infection concerns, but observed decreased lymphocyte count (ALC of 510/µL, down from 1,900/µL at baseline)",
-      },
-    ],
-    leftOption: "Permanently discontinue teplizumab",
-    rightOption: "Continue teplizumab with monitoring",
-    correctSide: "right",
-    topic: "monitoring",
-    explanation:
-      "Since lymphopenia is usually transient with teplizumab, it is recommended to continue the infusion protocol and monitor ALC levels. However, if ALC levels are <500 cells/µL for 1 week or longer, permanent discontinuation is recommended.",
-  },
-  {
-    id: "c13",
-    ageSex: "26-year-old female",
-    image: "./patients/c13.webp",
-    fields: [
-      {
-        label: "Treatment",
-        value:
-          "Confirmed stage 2 T1D and currently on day 12 of teplizumab infusions",
-      },
-      {
-        label: "Monitoring",
-        value:
-          "new fever, worsening fatigue, EBV PCR: high-level viremia (from negative at baseline)",
-      },
-    ],
-    leftOption: "Permanently discontinue teplizumab",
-    rightOption: "Continue teplizumab with monitoring",
-    correctSide: "left",
-    topic: "monitoring",
-    explanation:
-      "Given the laboratory evidence of potential EBV reactivation or infection, treatment with teplizumab should be discontinued.",
-  },
-  {
-    id: "c14",
-    ageSex: "8-year-old female",
-    image: "./patients/c14.webp",
-    fields: [
-      {
-        label: "Symptoms",
-        value:
-          "2-week history of mild fatigue, polyuria and some unintentional weight loss",
-      },
-      {
-        label: "Autoantibodies",
-        value: "GAD-65 & IA-2 positive (confirmed)",
+          "Budesonide/formoterol (80 mcg/4.5 mcg); albuterol 3–4 times/week; correct inhaler technique",
       },
       {
         label: "Labs",
-        value:
-          "2-hr OGTT = 285 mg/dL, HbA1c = 7.9%, C-peptide = 0.4 pmol/mL (mixed-meal tolerance test)",
+        value: "FeNO = 35 ppb, EOS = 150 cells/μL, IgE = 300 IU/mL",
       },
     ],
-    leftOption: "Start Insulin Injections",
-    rightOption: "Start Insulin Injections + Teplizumab",
-    correctSide: "right",
-    topic: "teplizumab",
+    leftOption: "Omalizumab",
+    rightOption: "Mepolizumab",
+    correctSide: "left",
+    topic: "asthma",
     explanation:
-      "Based on laboratory values and symptoms, this patient has stage 3 T1D. In addition to starting insulin injections, after the patient’s symptoms and glycemic parameters have stabilized, this patient may also be an appropriate candidate for teplizumab treatment to delay the decline in endogenous insulin production.",
+      "Given his atopic tendencies, food allergies, and under-controlled asthma despite adequate inhaler technique, omalizumab, which targets IgE, is the better choice over mepolizumab, which targets IL-5, as an add-on biologic.",
   },
   {
-    id: "c15",
-    ageSex: "10-year-old male",
-    image: "./patients/c15.webp",
+    id: "c3",
+    ageSex: "Miles, 13-year-old male",
+    image: "./patients/miles.webp",
+    fields: [
+      {
+        label: "History",
+        value: "Asthma since age 8; atopic dermatitis with frequent flares",
+      },
+      {
+        label: "Symptoms",
+        value:
+          "Breathless during soccer practice; rescue inhaler 4–5 days/week",
+      },
+      {
+        label: "Treatment",
+        value: "Fluticasone/vilanterol (200 mcg/25 mcg) and albuterol rescue",
+      },
+      {
+        label: "Labs",
+        value: "FeNO = 38 ppb, EOS = 168 cells/μL, IgE = 5 IU/mL",
+      },
+    ],
+    leftOption: "Omalizumab",
+    rightOption: "Dupilumab",
+    correctSide: "right",
+    topic: "asthma",
+    explanation:
+      "Elevated FeNO and EOS levels, along with worsening symptoms despite treatment, suggest poorly controlled severe asthma with ongoing type 2 inflammation. His history of atopic dermatitis makes dupilumab an attractive choice over omalizumab as an add-on biologic, as dupilumab is indicated to treat atopic dermatitis and asthma.",
+  },
+  {
+    id: "c4",
+    ageSex: "Claire, 47-year-old female",
+    image: "./patients/claire.webp",
+    fields: [
+      {
+        label: "History",
+        value: "Asthma since age 32; former smoker, tobacco-free for 10 years",
+      },
+      {
+        label: "Comorbidities",
+        value: "Insulin-dependent diabetes, nasal polyps, seasonal allergies",
+      },
+      {
+        label: "Treatment",
+        value:
+          "High-dose fluticasone/salmeterol; 1 exacerbation 8 months ago",
+      },
+      {
+        label: "Labs",
+        value: "FeNO = 45 ppb, EOS = 550 cells/μL, IgE = 22 IU/mL",
+      },
+    ],
+    leftOption: "Anti-IgE",
+    rightOption: "Anti–IL-5/IL-5R",
+    correctSide: "right",
+    topic: "asthma",
+    explanation:
+      "Elevated FeNO and EOS levels and a recent exacerbation despite current treatment suggest severe uncontrolled asthma that could be treated with a biologic. Steroid avoidance should be prioritized given her diabetes, and her biomarkers suggest ongoing eosinophilic inflammation, making an anti–IL-5 the preferred option over an anti-IgE — her IgE level is below the recommended dosing range for anti-IgE treatment.",
+  },
+  {
+    id: "c5",
+    ageSex: "Luis, 19-year-old male",
+    image: "./patients/luis.webp",
     fields: [
       {
         label: "History",
         value:
-          "Diagnosed with stage 3 T1D 3 weeks ago and started on basal-bolus insulin injections",
+          "Asthma since age 8; new college student; missed his last follow-up",
       },
       {
-        label: "Follow-up",
+        label: "Symptoms",
+        value: "Increased cough, chest tightness, and rescue inhaler use",
+      },
+      {
+        label: "Treatment",
         value:
-          "Family inquires about any potential treatment option in addition to insulin and have inquired about teplizumab. What should you counsel this family about expectations and time commitments with teplizumab infusions?",
+          "Budesonide/formoterol (160 mcg/4.5 mcg) 1 puff/day; albuterol as needed",
+      },
+      { label: "Labs", value: "FeNO = 18 ppb, EOS = 148 cells/μL" },
+    ],
+    leftOption: "Add a biologic",
+    rightOption: "Optimize current management",
+    correctSide: "right",
+    topic: "asthma",
+    explanation:
+      "Considering missed follow-up appointments and recent lifestyle changes, treatment optimization (eg, checking inhaler technique and adherence, considering a switch to maintenance and reliever therapy [MART]) is the recommended first course of action. While Luis could qualify for an anti-TSLP agent in the future, it might be too early to add on a biologic.",
+  },
+  {
+    id: "c6",
+    ageSex: "Owen, 8-year-old male",
+    image: "./patients/owen.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "Asthma diagnosed after a hospital stay; underweight (BMI 13.5)",
+      },
+      {
+        label: "Symptoms",
+        value:
+          "Wheezing and increased rescue-inhaler use; eating less due to reflux and food feeling stuck",
+      },
+      {
+        label: "Treatment",
+        value: "Budesonide/formoterol, albuterol as needed, omeprazole",
+      },
+      { label: "Labs", value: "FeNO = 23 ppb, EOS = 342 cells/μL" },
+    ],
+    leftOption: "Depemokimab",
+    rightOption: "Dupilumab",
+    correctSide: "right",
+    topic: "asthma",
+    explanation:
+      "Elevated FeNO and EOS levels despite current treatment suggest severe eosinophilic asthma that could be treated with an add-on biologic. His high eosinophil level and eating difficulties raise concern for eosinophilic esophagitis (EoE). Dupilumab is approved to treat severe asthma in patients age ≥6 years and EoE in patients ≥1 year, whereas depemokimab is approved to treat asthma in patients age ≥12 years.",
+  },
+  {
+    id: "c7",
+    ageSex: "Douglas, 68-year-old male",
+    image: "./patients/douglas.webp",
+    fields: [
+      {
+        label: "History",
+        value: "40-year former smoker; tobacco-free for 8 years",
+      },
+      {
+        label: "Exacerbations",
+        value: "3 moderate exacerbations in previous years, no hospitalizations",
+      },
+      {
+        label: "Treatment",
+        value: "Triple inhaled therapy (LABA + LAMA + ICS)",
+      },
+      { label: "Labs", value: "FEV1 = 52% predicted, EOS = 348 cells/μL" },
+    ],
+    leftOption: "Add a biologic",
+    rightOption: "Add roflumilast",
+    correctSide: "left",
+    topic: "copd",
+    explanation:
+      "According to GOLD 2026 recommendations, a patient on triple inhaled therapy experiencing ≥2 moderate (or 1 severe) exacerbations with a blood EOS ≥300 cells/μL should start biologic therapy with either dupilumab or mepolizumab. Roflumilast is recommended if the blood EOS is <100 cells/μL, FEV1 is <50%, and chronic bronchitis is present.",
+  },
+  {
+    id: "c8",
+    ageSex: "Mia, 63-year-old female",
+    image: "./patients/mia.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "COPD diagnosed 1 year ago; 46-year smoker — resumed smoking to cope with caregiving stress",
+      },
+      {
+        label: "Symptoms",
+        value: "No exacerbations since diagnosis and no bothersome symptoms",
+      },
+      { label: "Treatment", value: "Long-acting bronchodilator" },
+      {
+        label: "Labs",
+        value: "FEV1 = 83% predicted, EOS = 120 cells/μL, CAAT score = 8",
       },
     ],
-    leftOption:
-      "2 infusion courses (12 consecutive days each), within 6 months of each other",
-    rightOption: "One-time infusion course for 14-consecutive days",
+    leftOption: "Shared decision-making about adding an ICS",
+    rightOption: "Shared decision-making about smoking cessation support",
+    longOptions: true,
+    correctSide: "right",
+    topic: "copd",
+    explanation:
+      "Her history of no exacerbations and low symptom burden puts her in the Group A category of the GOLD 2026 Report, which recommends treatment with a bronchodilator. Her lack of bothersome symptoms does not warrant adding on additional pharmacotherapy. Discussions on ways to support permanent smoking cessation to prevent progression are essential to successful COPD management.",
+  },
+  {
+    id: "c9",
+    ageSex: "Ethel, 75-year-old female",
+    image: "./patients/ethel.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "COPD diagnosed 3 years ago; former smoker, tobacco-free for 15 years",
+      },
+      { label: "Comorbidities", value: "Asthma" },
+      {
+        label: "Treatment",
+        value: "LABA + LAMA; 2 moderate exacerbations in the past year",
+      },
+      { label: "Labs", value: "FEV1 = 58% predicted, EOS = 300 cells/μL" },
+    ],
+    leftOption: "Add a biologic",
+    rightOption: "Add ICS",
+    correctSide: "right",
+    topic: "copd",
+    explanation:
+      "The GOLD 2026 recommendation for patients experiencing exacerbations on LABA + LAMA therapy is to escalate therapy by adding ICS before adding a biologic.",
+  },
+  {
+    id: "c10",
+    ageSex: "Olivia, 82-year-old female",
+    image: "./patients/olivia.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "COPD diagnosed 4 years ago; 1 severe exacerbation 5 months ago",
+      },
+      {
+        label: "Comorbidities",
+        value: "Hay fever, joint pain, sinusitis requiring oral corticosteroids",
+      },
+      {
+        label: "Treatment",
+        value: "Triple inhaled therapy (LABA + LAMA + ICS)",
+      },
+      { label: "Labs", value: "FEV1 = 62% predicted, EOS = 989 cells/μL" },
+    ],
+    leftOption: "Mepolizumab",
+    rightOption: "Benralizumab",
+    correctSide: "left",
+    topic: "copd",
+    explanation:
+      "Her current symptoms, medical history, and current blood EOS are highly suggestive of eosinophilic granulomatosis with polyangiitis (EGPA) and require investigation. Her recent severe exacerbation warrants consideration of adding on a biologic. Only mepolizumab is approved to treat both COPD and EGPA; benralizumab is not approved to treat COPD or EGPA.",
+  },
+  {
+    id: "c11",
+    ageSex: "Rohit, 72-year-old male",
+    image: "./patients/rohit.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "Nonsmoker, former welder; COPD diagnosed 9 months ago; interstitial lung disease for 2 years",
+      },
+      {
+        label: "Recent",
+        value: "ER visit due to dyspnea 2 months ago",
+      },
+      {
+        label: "Treatment",
+        value: "Triple inhaled therapy and pirfenidone (antifibrotic)",
+      },
+      { label: "Labs", value: "FEV1 = 42% predicted, EOS = 89 cells/μL" },
+    ],
+    leftOption: "Shared decision-making about pulmonary rehabilitation",
+    rightOption: "Shared decision-making about adding a biologic",
     longOptions: true,
     correctSide: "left",
-    topic: "teplizumab",
+    topic: "copd",
     explanation:
-      "In the setting of newly-diagnosed stage 3 T1D, teplizumab is administered as 2 separate infusion courses (each being 12 consecutive days), spaced within 6 months of each other. This differs from teplizumab for delaying progression to stage 3 (in individuals with stage 2), which is a one-time infusion course of 14 consecutive days.",
+      "His COPD and ILD comorbidity and history of dyspnea require a multidisciplinary approach that might involve pulmonary rehabilitation. Adding a biologic is not warranted, given his low blood EOS level.",
+  },
+  {
+    id: "c12",
+    ageSex: "Lorenzo, 77-year-old male",
+    image: "./patients/lorenzo.webp",
+    fields: [
+      {
+        label: "History",
+        value:
+          "Vietnam veteran, former smoker; allergic fungal rhinosinusitis (AFRS) and COPD since age 68",
+      },
+      {
+        label: "Symptoms",
+        value:
+          "Increased wheezing and bronchitis despite treatment adherence",
+      },
+      { label: "Treatment", value: "Triple inhaled therapy" },
+      { label: "Labs", value: "FEV1 = 62% predicted, EOS = 489 cells/μL" },
+    ],
+    leftOption: "Dupilumab",
+    rightOption: "Mepolizumab",
+    correctSide: "left",
+    topic: "copd",
+    explanation:
+      "His history of AFRS, chronic bronchitis, and high EOS make dupilumab a better choice for an add-on biologic than mepolizumab. Only dupilumab is FDA-approved to treat both AFRS and COPD.",
   },
 ];

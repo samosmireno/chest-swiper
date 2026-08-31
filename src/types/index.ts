@@ -1,6 +1,6 @@
 export type SwipeSide = 'left' | 'right'
 
-export type CardTopic = 'screening' | 'staging' | 'teplizumab' | 'monitoring'
+export type CardTopic = 'asthma' | 'copd'
 
 export interface ProfileField {
   label: string

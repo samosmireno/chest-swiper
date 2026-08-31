@@ -101,12 +101,6 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
           )}
         </div>
       </div>
-
-      <img
-        src="./t1d-logo.webp"
-        alt="DETECT1D"
-        className="hidden h-auto w-40 object-contain sm:absolute sm:bottom-4 sm:left-4 sm:block"
-      />
     </div>
   );
 }

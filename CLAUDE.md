@@ -19,9 +19,10 @@ npm test          # Vitest (watch mode; `npx vitest run` for one-shot)
 
 ## What the app is
 
-"Swipe or Miss: T1D Decisions" — a kiosk swipe game of type 1 diabetes
-screening/staging cases. Flow: attract screen with player form
-(`AttractScreen`) → shuffled 15-card deck, swipe/tap per card with rationale
+"Swipe or Miss: Asthma & COPD Decisions" — a kiosk swipe game of severe
+asthma and COPD treatment cases (source deck: `documents/cases.pptx`). Flow:
+attract screen with player form
+(`AttractScreen`) → shuffled 12-card deck, swipe/tap per card with rationale
 overlay → summary with score + leaderboard. Case content lives in
 `src/data/profiles.ts`. Scoring is correct×100 + maxStreak×10 plus a hidden
 speed bonus, weighted so accuracy can never be outranked (see `src/config.ts`;

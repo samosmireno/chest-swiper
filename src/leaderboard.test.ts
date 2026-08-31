@@ -55,21 +55,21 @@ describe('scoring: accuracy always wins', () => {
     }
   })
 
-  it('holds in the binding case: 11/15 on an 11-streak vs 12/15 with the misses spread out', () => {
-    // Under the old 50-pt streak weight this reordered (1650+speed vs 1350).
-    const elevenStraight = session(
-      [...Array.from({ length: 11 }, () => true), false, false, false, false],
+  it('holds in the binding case: 8/12 on an 8-streak vs 9/12 with the misses spread out', () => {
+    // Under the old 50-pt streak weight this reordered (1204 vs 930).
+    const eightStraight = session(
+      [...Array.from({ length: 8 }, () => true), false, false, false, false],
       0,
     )
-    const twelveSpread = session(
+    const nineSpread = session(
       // Misses every fourth card cap the max streak at 3.
-      [true, true, true, false, true, true, true, false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, true, true, false, true, true, true, false],
       60_000,
     )
-    const a = calculateScore(11, 11, computeSpeedBonus(elevenStraight))
-    const b = calculateScore(12, 3, computeSpeedBonus(twelveSpread))
-    expect(a).toBe(1216)
-    expect(b).toBe(1230)
+    const a = calculateScore(8, 8, computeSpeedBonus(eightStraight))
+    const b = calculateScore(9, 3, computeSpeedBonus(nineSpread))
+    expect(a).toBe(884)
+    expect(b).toBe(930)
     expect(b).toBeGreaterThan(a)
   })
 

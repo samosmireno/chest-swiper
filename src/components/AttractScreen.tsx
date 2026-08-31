@@ -114,10 +114,11 @@ export function AttractScreen() {
   if (profiles.length === 0) return null;
 
   const SPECIALTIES = [
-    "Adult/general endocrinology or diabetology",
-    "Pediatric endocrinology or diabetology",
+    "Allergy/Immunology",
+    "Pediatrics",
     "Primary Care, Family Medicine, or Internal Medicine",
-    "Diabetes educator / CDCES",
+    "Pulmonology",
+    "Advanced Practice Provider",
     "Other",
   ];
 
@@ -244,7 +245,7 @@ export function AttractScreen() {
         >
           Swipe or Miss:
           <br />
-          T1D Decisions
+          Asthma & COPD Decisions
         </h1>
 
         {/* How-to-play */}

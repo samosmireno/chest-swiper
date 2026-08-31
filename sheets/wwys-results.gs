@@ -4,11 +4,10 @@
 //   Type: Web app | Execute as: Me | Who has access: Anyone
 // Copy the deployment URL into SHEETS_WEBHOOK_URL in src/config.ts
 //
-// Schema change (speed bonus, v1.3): speed_bonus and card_p*_ms columns are
-// new. The header row only auto-writes into an EMPTY sheet — add the new
-// columns to the live header by hand (or clear row 1 on a fresh sheet)
-// before updating the deployment, or new rows will misalign against the
-// old 1.2-era header.
+// Schema change (asthma/COPD deck, v2.0): 12 cards, so card_p13–p15 columns
+// are gone. The header row only auto-writes into an EMPTY sheet — deploy
+// against a fresh/cleared sheet, or new rows will misalign against a header
+// that still carries the 15-card columns.
 
 const COLUMNS = [
   "app_version",
@@ -33,9 +32,6 @@ const COLUMNS = [
   "card_p10_correct",
   "card_p11_correct",
   "card_p12_correct",
-  "card_p13_correct",
-  "card_p14_correct",
-  "card_p15_correct",
   "card_p1_ms",
   "card_p2_ms",
   "card_p3_ms",
@@ -48,9 +44,6 @@ const COLUMNS = [
   "card_p10_ms",
   "card_p11_ms",
   "card_p12_ms",
-  "card_p13_ms",
-  "card_p14_ms",
-  "card_p15_ms",
   "session_id",
 ];
 
