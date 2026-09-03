@@ -106,9 +106,10 @@ function BackgroundVideo() {
 const GameContent = () => (
   <>
     <BackgroundVideo />
+    {/* Flat 30% black scrim over the render so the glass panels and type
+        keep contrast without tinting the teal scene. */}
     <div
-      className="pointer-events-none absolute inset-0 z-3"
-      style={{ background: "var(--gradient-overlay)" }}
+      className="pointer-events-none absolute inset-0 z-3 bg-black/30"
       aria-hidden
     />
     <div className="relative z-10 h-full w-full">

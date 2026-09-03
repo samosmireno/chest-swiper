@@ -4,6 +4,7 @@ import { useGameDispatch } from "../context/useGame";
 import { prefetchRemoteSubmissions } from "../utils/remoteSubmissions";
 import { shuffle } from "../utils/shuffle";
 import type { PatientProfile } from "../types";
+import { EntryPanel, type PlayerEntry } from "./EntryPanel";
 
 const STACK_STYLES = [
   { rotate: 0, x: 0, opacity: 1 },
@@ -12,56 +13,47 @@ const STACK_STYLES = [
   { rotate: -18, x: -30, opacity: 0 },
 ];
 
+/* Attract-screen card — Figma "Card Client 1" (node 32:167), 238×363. The
+   game card's glass surface / glow ring / avatar frame at mini scale: avatar
+   65×80 (2px gradient stroke, r8) at (20,36), label DM Sans SemiBold 10/26
+   +2px, age Roboto Bold 12/24, bullets DM Sans 12/16 white with 4px gold
+   dots at x=14. Each of this deck's label/value fields takes one bullet row,
+   the label as a gold run ahead of the value (see PatientCard). Rendered
+   inside the .patient-card wrapper in the fan below. */
 function MiniCard({ profile }: { profile: PatientProfile }) {
   return (
-    <div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-[13px]"
-      style={{ background: "var(--color-dark-900)" }}
-    >
-      {/* Photo and its darkening layer are continuous absolute layers — no box
-          seam between image and body, so no half-lit photo row can show. */}
-      <img
-        src={profile.image}
-        alt={profile.ageSex}
-        className="pointer-events-none absolute inset-x-0 top-0 h-40 w-full object-cover object-top"
-        draggable={false}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent 24%, rgba(13,9,0,0.85) 42%, var(--color-dark-900) 50%, var(--color-dark-900) 100%)",
-        }}
-      />
-
-      <div className="relative flex h-40 shrink-0 flex-col justify-end p-3 text-center">
-        <p
-          className="text-gold-500 text-[0.625rem] font-semibold tracking-[0.2em] uppercase"
-          style={{ textShadow: "0 0 8px rgba(0,0,0,0.9)" }}
-        >
-          Patient Profile
-        </p>
-        <p
-          className="text-sm font-bold text-gray-100"
-          style={{ textShadow: "0 2px 6px rgba(0,0,0,0.95)" }}
-        >
-          {profile.ageSex}
-        </p>
+    <div className="relative z-10 flex h-full w-full flex-col">
+      <div className="flex shrink-0 items-start gap-2 pt-9 pr-3 pl-5">
+        <div className="bg-avatar-stroke h-20 w-[4.0625rem] shrink-0 rounded-lg p-0.5">
+          <img
+            src={profile.image}
+            alt={profile.ageSex}
+            className="pointer-events-none h-full w-full rounded-md object-cover"
+            draggable={false}
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="type-card-label text-gold-accent text-[0.625rem]/[1.625rem]">
+            Patient Profile
+          </p>
+          <p className="type-card-age text-off-white text-xs/6">
+            {profile.ageSex}
+          </p>
+        </div>
       </div>
 
-      <div className="relative min-h-0 flex-1 p-4">
-        <div className="space-y-1.5">
-          {profile.fields.slice(0, 2).map((field) => (
-            <div key={field.label}>
-              <p className="text-gold-500 text-[0.5625rem] font-semibold tracking-[0.15em] uppercase">
-                {field.label}
-              </p>
-              <p className="line-clamp-2 text-xs text-gray-300">
-                {field.value}
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-2 pt-4 pr-3 pb-4 pl-3.5">
+        {profile.fields.map((field) => (
+          <div key={field.label} className="flex items-start gap-1.5">
+            <span className="bg-gold-accent mt-1.5 h-1 w-1 shrink-0 rounded-full" />
+            <p className="type-card-body text-xs/4 text-white">
+              <span className="text-gold-accent font-semibold">
+                {field.label}:{" "}
+              </span>
+              {field.value}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -74,11 +66,6 @@ interface StackCard {
 
 export function AttractScreen() {
   const { dispatch, profiles } = useGameDispatch();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [specialty, setSpecialty] = useState("");
-  const [otherText, setOtherText] = useState("");
 
   // Warm the shared submissions fetch during form entry so the game-screen
   // panel (chart or leaderboard) mounts with data instead of updating mid-play.
@@ -113,47 +100,21 @@ export function AttractScreen() {
 
   if (profiles.length === 0) return null;
 
-  const SPECIALTIES = [
-    "Allergy/Immunology",
-    "Pediatrics",
-    "Primary Care, Family Medicine, or Internal Medicine",
-    "Pulmonology",
-    "Advanced Practice Provider",
-    "Other",
-  ];
-
-  const specialtyValue =
-    specialty === "Other"
-      ? otherText.trim()
-        ? `Other: ${otherText.trim()}`
-        : ""
-      : specialty;
-
-  const canStart =
-    firstName.trim() !== "" &&
-    lastName.trim() !== "" &&
-    specialtyValue !== "";
-
-  function handleStart(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canStart) return;
-    const trimmedFirst = firstName.trim();
-    const trimmedLast = lastName.trim();
-    const trimmedEmail = email.trim();
-    dispatch({
-      type: "SET_PLAYER",
-      firstName: trimmedFirst,
-      lastName: trimmedLast,
-      email: trimmedEmail,
-      specialty: specialtyValue,
-    });
+  function handleStart(player: PlayerEntry) {
+    dispatch({ type: "SET_PLAYER", ...player });
     dispatch({ type: "START_GAME", deck: shuffle(profiles) });
   }
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto px-6 py-10 sm:justify-center sm:flex-row sm:gap-16 sm:px-16 sm:py-0">
-      {/* Animated card fan */}
-      <div className="relative hidden h-72 w-56 shrink-0 sm:block sm:h-80 sm:w-60">
+      {/* Animated card fan. The front card stays centred on the screen as in
+          Figma "Frame 1"; the heading (node 148:357, "Card title" style)
+          hangs above it out of flow — its bottom 3rem (design: 47px) over the
+          card's top — so it doesn't push the fan down. */}
+      <div className="relative hidden h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
+        <p className="type-card-title text-off-white absolute bottom-full left-1/2 mb-12 -translate-x-1/2 whitespace-nowrap">
+          Complete All {profiles.length} Cases!
+        </p>
         <AnimatePresence>
           {[...stack].reverse().map(({ id, profileIdx }, reversedIdx) => {
             const stackPos = stack.length - 1 - reversedIdx;
@@ -188,42 +149,32 @@ export function AttractScreen() {
                     : { type: "spring", stiffness: 300, damping: 25, delay: 0 }
                 }
               >
-                {/* Bob wrapper contains ALL visuals so border + shadow bob together */}
+                {/* Bob wrapper IS the glass card so ring, shadow and content bob
+                    together. Its own compositor layer: it bobs forever, so the
+                    glow ring must not re-rasterize per frame. */}
                 <motion.div
-                  className="bg-metallic-border absolute inset-0 rounded-2xl p-0.75"
+                  className="patient-card patient-card-shadow absolute inset-0"
                   animate={isFront ? { y: [0, -8, 0] } : { y: 0 }}
                   transition={
                     isFront
                       ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
                       : { type: "spring", stiffness: 300, damping: 25 }
                   }
-                  style={{
-                    /* Single blur layer + own compositor layer: this card bobs
-                       forever, so its texture must not re-rasterize per frame */
-                    boxShadow: "0 0 26px rgba(170,115,0,0.35)",
-                    willChange: "transform",
-                  }}
+                  style={{ willChange: "transform" }}
                 >
-                  <div
-                    className="h-full w-full rounded-[13px]"
-                    style={{
-                      background:
-                        "linear-gradient(160deg, var(--color-dark-800) 0%, var(--color-dark-900) 60%, var(--color-dark-950) 100%)",
-                    }}
-                  >
-                    {isFront ? (
-                      <MiniCard profile={profile} />
-                    ) : stackPos === 1 ? (
-                      <div className="h-full w-full p-5">
-                        <p className="text-gold-500 text-[0.625rem] font-semibold tracking-[0.2em] uppercase">
-                          Patient Profile
-                        </p>
-                        <p className="mt-1 text-sm font-bold text-gray-400">
-                          {profile.ageSex}
-                        </p>
-                      </div>
-                    ) : null}
-                  </div>
+                  <div className="patient-card-glow" aria-hidden />
+                  {isFront ? (
+                    <MiniCard profile={profile} />
+                  ) : stackPos === 1 ? (
+                    <div className="relative z-10 h-full w-full pt-9 pl-5">
+                      <p className="type-card-label text-gold-accent text-[0.625rem]/[1.625rem]">
+                        Patient Profile
+                      </p>
+                      <p className="type-card-age text-off-white/60 text-xs/6">
+                        {profile.ageSex}
+                      </p>
+                    </div>
+                  ) : null}
                 </motion.div>
               </motion.div>
             );
@@ -231,179 +182,7 @@ export function AttractScreen() {
         </AnimatePresence>
       </div>
 
-      {/* Title + how-to-play + form — contained panel */}
-      <div
-        className="bg-panel/90 border-purple-accent/40 flex w-full max-w-md flex-col items-center gap-6 rounded-3xl border px-7 py-8 text-center backdrop-blur-lg sm:gap-7"
-        style={{
-          boxShadow:
-            "0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset",
-        }}
-      >
-        <h1
-          className="font-display text-3xl leading-tight font-black text-white sm:text-4xl"
-          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9)" }}
-        >
-          Swipe or Miss:
-          <br />
-          Asthma & COPD Decisions
-        </h1>
-
-        {/* How-to-play */}
-        <div className="w-full rounded-2xl px-4 py-2 text-left">
-          <p className="text-gold-500 mb-2.5 text-sm font-semibold tracking-[0.18em] uppercase">
-            How to Play
-          </p>
-          <div className="flex flex-col gap-2.5">
-            {[
-              "Read the patient's profile card",
-              "What is your next clinical action?",
-            ].map((text, i) => (
-              <div key={i} className="flex items-start gap-2.5">
-                <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[0.5625rem] font-bold text-purple-300">
-                  {i + 1}
-                </span>
-                <span className="text-sm leading-snug text-white/75">
-                  {text}
-                </span>
-              </div>
-            ))}
-            <div className="flex items-start gap-2.5">
-              <span className="bg-purple-accent/30 border-purple-accent/60 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border text-[0.5625rem] font-bold text-purple-300">
-                3
-              </span>
-              <div className="flex w-full flex-col gap-1">
-                <span className="text-sm leading-snug text-white/70">
-                  Swipe or tap to choose
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Player entry form */}
-        <form onSubmit={handleStart} className="flex w-full flex-col gap-3">
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="First name"
-              required
-              autoComplete="off"
-              className="border-purple-accent/55 min-w-0 flex-1 rounded-full border-[1.5px] bg-white/10 px-5 py-3 text-sm text-white transition-colors duration-150 outline-none placeholder:text-white/45"
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "rgba(155,48,255,1)";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(155,48,255,0.15)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = "rgba(155,48,255,0.55)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            />
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Last name"
-              required
-              autoComplete="off"
-              className="border-purple-accent/55 min-w-0 flex-1 rounded-full border-[1.5px] bg-white/10 px-5 py-3 text-sm text-white transition-colors duration-150 outline-none placeholder:text-white/45"
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "rgba(155,48,255,1)";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(155,48,255,0.15)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = "rgba(155,48,255,0.55)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            />
-          </div>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email (optional)"
-            autoComplete="off"
-            className="border-purple-accent/55 rounded-full border-[1.5px] bg-white/10 px-5 py-3 text-sm text-white transition-colors duration-150 outline-none placeholder:text-white/45"
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "rgba(155,48,255,1)";
-              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(155,48,255,0.15)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "rgba(155,48,255,0.55)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
-
-          {/* Specialty selection */}
-          <div className="border-purple-accent/30 flex flex-col gap-1.5 rounded-2xl border bg-white/5 px-4 py-3 text-left">
-            <p className="text-gold-500 mb-0.5 text-[0.625rem] font-semibold tracking-[0.18em] uppercase">
-              What is your specialty?
-            </p>
-            {SPECIALTIES.map((option) => (
-              <label
-                key={option}
-                className="flex cursor-pointer items-start gap-2.5"
-              >
-                <input
-                  type="radio"
-                  name="specialty"
-                  value={option}
-                  checked={specialty === option}
-                  onChange={() => setSpecialty(option)}
-                  className="accent-purple-500 mt-0.5 shrink-0"
-                />
-                <span className="text-xs leading-snug text-white/80">{option}</span>
-              </label>
-            ))}
-            <AnimatePresence>
-              {specialty === "Other" && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <input
-                    type="text"
-                    value={otherText}
-                    onChange={(e) => setOtherText(e.target.value)}
-                    placeholder="Please indicate your specialty"
-                    autoComplete="off"
-                    className="border-purple-accent/55 mt-1.5 w-full rounded-full border-[1.5px] bg-white/10 px-4 py-2 text-xs text-white outline-none placeholder:text-white/40"
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(155,48,255,1)";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(155,48,255,0.15)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(155,48,255,0.55)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <p className="text-center text-[0.625rem] leading-relaxed text-white/45">
-            By entering your email you consent to your data being collected for
-            research purposes.
-          </p>
-          <button
-            type="submit"
-            disabled={!canStart}
-            className="font-display cursor-pointer rounded-full px-12 py-3 text-[0.95rem] font-black tracking-[0.22em] text-white uppercase transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            style={{
-              background: "var(--gradient-btn-gold)",
-              boxShadow:
-                "0 0 24px rgba(245,200,66,0.5), 0 4px 12px rgba(0,0,0,0.4)",
-            }}
-          >
-            Start
-          </button>
-        </form>
-      </div>
+      <EntryPanel onStart={handleStart} />
     </div>
   );
 }

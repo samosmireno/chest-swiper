@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { STREAK_MILESTONES } from "../../config";
 
 const MILESTONE_STREAKS = STREAK_MILESTONES.map((m) => m.streak);
@@ -15,8 +15,16 @@ interface StreakBannerProps {
   streak: number;
 }
 
+/* Milestone toast in the brand dress (.streak-banner in index.css): a
+   gold-outlined charcoal pill with the streak count as a gold stat numeral
+   and the milestone label in off-white Barlow. Rendered by GamePanel inside
+   the card wrapper, so it sits astride the card's top edge — centred, half
+   above and half over the card's top padding — clear of the progress dots
+   above and of the rationale title below. Pointer-events off: it's transient
+   and the overlay beneath is the tap target. */
 export function StreakBanner({ streak }: StreakBannerProps) {
   const [visible, setVisible] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!MILESTONE_STREAKS.includes(streak)) return;
@@ -35,61 +43,38 @@ export function StreakBanner({ streak }: StreakBannerProps) {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: -80, opacity: 0, scaleX: 0.85 }}
-          animate={{ y: 0, opacity: 1, scaleX: 1 }}
-          exit={{ y: -80, opacity: 0, scaleX: 0.9 }}
+          initial={{ y: -24, opacity: 0, scale: 0.85 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: -12, opacity: 0, scale: 0.95 }}
           transition={{ type: "spring", stiffness: 500, damping: 28 }}
-          className="absolute left-1/2 top-0 z-20 -translate-x-1/2"
+          className="pointer-events-none absolute top-0 left-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
         >
-          {/* Glow backdrop */}
-          <div
-            className="absolute inset-0 rounded-b-2xl blur-xl opacity-55"
-            style={{
-              background:
-                "linear-gradient(to right, var(--color-magenta-500), var(--color-purple-600))",
-            }}
-          />
+          <div className="streak-banner relative overflow-hidden">
+            {/* One gold-tinted light sweep on entry (the glow ring's #ffe7ad
+                highlight); transform-only so it composites. */}
+            {!reduceMotion && (
+              <motion.div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(105deg, transparent 38%, rgba(255, 231, 173, 0.32) 50%, transparent 62%)",
+                }}
+                initial={{ x: "-100%" }}
+                animate={{ x: "220%" }}
+                transition={{ duration: 0.55, ease: "easeOut", delay: 0.12 }}
+              />
+            )}
 
-          {/* Main banner */}
-          <div
-            className="relative flex items-center gap-3 overflow-hidden rounded-b-2xl px-8 py-3 shadow-2xl"
-            style={{
-              background:
-                "var(--gradient-streak)",
-            }}
-          >
-            {/* Top border highlight */}
-            <div className="absolute top-0 right-0 left-0 h-px bg-white/40" />
-
-            {/* Shimmer sweep on entry */}
-            <motion.div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.28) 50%, transparent 62%)",
-              }}
-              initial={{ x: "-100%" }}
-              animate={{ x: "220%" }}
-              transition={{ duration: 0.55, ease: "easeOut", delay: 0.12 }}
-            />
-
-            {/* Streak number — large Barlow Condensed */}
-            <span
-              className="font-display text-5xl leading-none font-black text-white"
-            >
+            {/* Streak count — the session box's gold stat numeral */}
+            <span className="type-stat-value text-gold-accent max-md:text-[2.5rem]">
               {number}
             </span>
 
-            {/* Label stack */}
-            <div className="flex flex-col items-start">
-              <span
-                className="font-display text-[0.5625rem] font-bold tracking-[0.22em] text-white/65 uppercase"
-              >
-                STREAK
-              </span>
-              <span
-                className="font-display text-sm font-black tracking-widest text-white uppercase leading-tight"
-              >
+            {/* Label stack: light-mint eyebrow over the off-white milestone
+                label (the panel title with its 32px leading closed up) */}
+            <div className="flex flex-col items-start gap-1">
+              <span className="type-streak-eyebrow text-light-mint">Streak</span>
+              <span className="type-panel-title text-off-white leading-none whitespace-nowrap max-md:text-xl">
                 {label}
               </span>
             </div>

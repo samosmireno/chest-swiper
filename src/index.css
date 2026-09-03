@@ -1,106 +1,63 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Roboto:wght@600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans:
     "Avenir Next", "Avenir", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Barlow Condensed", "Impact", sans-serif;
-  --shadow-glass:
-    inset 2px 0 1px -1px rgba(255, 255, 255, 0.5),
-    inset -2px 0 1px -1px rgba(255, 255, 255, 0.5);
+  --font-roboto: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-dm-sans:
+    "DM Sans", "Avenir Next", ui-sans-serif, system-ui, sans-serif;
 
-  /* Gradients */
-  --background-image-metallic-border: linear-gradient(
-    145deg,
-    var(--color-gold-300) 0%,
-    var(--color-gold-700) 20%,
-    var(--color-gold-600) 45%,
-    var(--color-gold-800) 70%,
-    var(--color-gold-400) 100%
+  /* Patient card corner radius — Figma "Card Client" (node 36:802), 32px. */
+  --radius-card: 2rem;
+
+  /* Patient-card avatar frame — Figma stroke style "Avatar Stroke Gradient"
+     (node 36:671). The source is a 4×4 mesh gradient, which CSS can't draw;
+     only its perimeter shows through the 3.4px stroke, so this conic gradient
+     walks that perimeter clockwise from 12 o'clock (angles derived from the
+     mesh's edge control points on the 110×135 frame). */
+  --background-image-avatar-stroke: conic-gradient(
+    from 0deg,
+    #f5c047 0deg,
+    #ffd16b 11deg,
+    #e8a817 39deg,
+    #f5c965 67deg,
+    #f6e2b5 113deg,
+    #efca75 141deg,
+    #c38e15 165deg,
+    #d09817 195deg,
+    #e8a817 219deg,
+    #f7b726 247deg,
+    #ffe4a6 293deg,
+    #efca75 321deg,
+    #e8a817 345deg,
+    #f5c047 360deg
   );
 
-  /* Text shadow tokens */
-  --text-shadow-white-sm: 0 0 10px rgba(255, 255, 255, 0.4);
-  --text-shadow-white: 0 0 20px rgba(255, 255, 255, 0.3);
-
-  /* Gold/Brass */
-  --color-gold-200: #ffe082;
-  --color-gold-300: #f0d060;
-  --color-gold-400: #f5c842;
-  --color-gold-500: #c9921f;
-  --color-gold-600: #d4960a;
-  --color-gold-700: #8b6014;
-  --color-gold-800: #6b4a08;
-
-  /* Purple */
-  --color-purple-300: #c9a6ff;
-  --color-purple-400: #9b72ff;
-  --color-purple-500: #6a4acc;
-  --color-purple-600: #861dbb;
-  --color-purple-800: #3b0764;
-  --color-purple-900: #140a30;
-  --color-purple-accent: #9b30ff;
-  --color-purple-950: #2e1e60;
-
-  /* Magenta */
-  --color-magenta-500: #ff00dd;
-  --color-magenta-600: #c410e0;
-
-  /* Blue */
-  --color-blue-400: #38bdf8;
-  --color-blue-600: #0284c7;
-
-  /* Success green */
-  --color-green-100: #b9f6ca;
-  --color-green-400: #34d399;
-  --color-green-500: #22c55e;
-  --color-green-600: #16a34a;
-
-  /* Error red */
-  --color-red-300: #f87171;
-  --color-red-400: #ef4444;
-  --color-red-700: #b91c1c;
-
-  /* Amber */
-  --color-amber-400: #fbbf24;
-
-  /* Panel backgrounds (blue-black) */
-  --color-panel: #080416;
-
-  /* Dark backgrounds (brown-black, for cards) */
-  --color-dark-700: #18103a;
-  --color-dark-800: #1c1200;
-  --color-dark-900: #0d0900;
-  --color-dark-950: #080600;
+  /* Brand palette — Figma "Color Palette" (node 5:114), 1784 MLG Conquer T2I
+     Swiper. Named after the swatch labels; usable as bg-/text-/border-<name>. */
+  --color-dark-teal: #0c3945;
+  --color-mid-teal: #3596a5;
+  --color-gold-accent: #e8a817;
+  --color-light-mint: #c5e4df;
+  --color-charcoal: #2d3436;
+  --color-teal-accent: #3cb9c4; /* "Buttons/Client Cards" left variant face */
+  --color-off-white: #f0f4f3;
+  --color-info-blue: #2e86c1; /* Figma variable: "Correct Blue" */
+  --color-alert-red: #c0392b; /* Figma variable: "False Red" */
+  --color-correct-blue: #7fbae2; /* Figma variable: "Correct Font Blue" */
+  --color-incorrect-red: #f36b5c; /* Figma variable: "Incorrect Font Red" */
+  --color-success-green: #1abc9c;
+  --color-location-purple: #7d5ba6;
+  --color-muted-gray: #95a5a6;
+  /* Not a palette swatch: the outer stop of the progress row's "Currently On"
+     dot (node 37:1000). The Figma style is still named "Location Purple
+     Radial" but its fill was swapped to this cream. */
+  --color-cream: #fdecc4;
 }
 
 @layer base {
-  :root {
---gradient-glow-bar: linear-gradient(
-      to right,
-      transparent,
-      var(--color-gold-400),
-      transparent
-    );
-    --gradient-streak: linear-gradient(
-      135deg,
-      var(--color-magenta-500) 0%,
-      var(--color-magenta-600) 45%,
-      var(--color-purple-600) 100%
-    );
-    --gradient-btn-gold: linear-gradient(
-      135deg,
-      var(--color-gold-500) 0%,
-      var(--color-gold-400) 55%,
-      var(--color-gold-600) 100%
-    );
-    --gradient-overlay: radial-gradient(
-      ellipse at 50% 30%,
-      rgba(60, 0, 100, 0.35) 0%,
-      rgba(10, 2, 30, 0.6) 70%
-    );
-  }
-
   /* Large-screen scaling: the design targets 1440×810 at a 16px root. On
      bigger viewports the root font-size grows to fill the tighter axis
      (1440/16 = 90, 810/16 = 50.625), so every rem-based Tailwind size scales
@@ -113,7 +70,7 @@
 
   /* Short landscape viewports (sub-810px tall laptops, browser chrome eating
      height): shrink proportionally instead of clamping at 16px, so the
-     rem-sized card stack keeps clear of the progress diamonds. Scoped to sm+
+     rem-sized card stack keeps clear of the progress dots. Scoped to sm+
      so the stacked mobile layout keeps its 16px root. */
   @media (min-width: 640px) and (max-height: 810px) {
     html {
@@ -121,9 +78,11 @@
     }
   }
 
+  /* Scrollbars in the brand palette: mid-teal thumb on a dark-teal track,
+     hover to the same #73c7d1 the outlined buttons use. */
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-gold-500) var(--color-purple-900);
+    scrollbar-color: var(--color-mid-teal) var(--color-dark-teal);
   }
 
   ::-webkit-scrollbar {
@@ -131,14 +90,14 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-purple-900);
+    background: var(--color-dark-teal);
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-gold-500);
+    background: var(--color-mid-teal);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-gold-400);
+    background: #73c7d1;
   }
 
   .recharts-wrapper,
@@ -153,59 +112,752 @@
 }
 
 @layer components {
-  .btn-monitor {
-    background: linear-gradient(
-      to bottom,
-      #ffe080 0%,
-      #f0a000 30%,
-      #c07800 70%,
-      #9a5e00 100%
-    );
+  /* Gold CTA — Figma "Buttons/Gold" (node 12:767). Design is 64×18px padding,
+     16px radius, Roboto SemiBold 26/22; expressed in rem so it scales with the
+     kiosk root font-size. State overlays are painted with background-image so
+     the gold token stays the base colour; the hover "border" is an inset ring
+     so nothing shifts on hover. */
+  .btn-gold {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.125rem 4rem;
+    border-radius: 1rem;
+    background-color: var(--color-gold-accent);
+    background-image: none;
+    color: #fff;
+    font-family: var(--font-roboto);
+    font-size: 1.625rem;
+    line-height: 1.375rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
     box-shadow:
-      0 5px 0 #5a3000,
-      0 8px 25px rgba(200, 130, 0, 0.5),
-      inset 0 1px 0 rgba(255, 240, 150, 0.7),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-    border: 2px solid #d4860c;
-    border-radius: 8px;
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(255, 255, 255, 0.25);
     transition:
-      transform 0.08s ease,
-      box-shadow 0.08s ease;
+      background-color 0.12s ease,
+      box-shadow 0.12s ease,
+      color 0.12s ease;
   }
-  .btn-monitor:active {
-    transform: translateY(4px);
+  @media (hover: hover) {
+    .btn-gold:hover:not(:disabled) {
+      background-image: linear-gradient(
+        rgba(59, 44, 10, 0.31),
+        rgba(59, 44, 10, 0.31)
+      );
+      color: #e9fdff;
+      box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.25),
+        inset 0 2px 4px 2px rgba(255, 255, 255, 0.25),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+  }
+  .btn-gold:focus-visible {
+    outline: none;
+    background-color: #f6c965;
+    background-image: none;
+    color: #fff;
+    box-shadow: inset 0 2px 5px 3px rgba(255, 255, 255, 0.12);
+  }
+  .btn-gold:active:not(:disabled) {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15));
+    color: #d9d9d9;
     box-shadow:
-      0 1px 0 #5a3000,
-      0 4px 12px rgba(200, 130, 0, 0.3),
-      inset 0 1px 0 rgba(255, 240, 150, 0.7),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+      0 1px 2px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(0, 0, 0, 0.36);
+  }
+  .btn-gold:disabled {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
+    color: #a68f8f;
+    cursor: not-allowed;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(0, 0, 0, 0.25);
   }
 
-  .btn-screen {
-    background: linear-gradient(
-      to bottom,
-      #60c8f0 0%,
-      #0284c7 30%,
-      #0157a0 70%,
-      #013570 100%
-    );
+  /* Teal sibling of .btn-gold — Figma "Buttons/Client Cards" left variant
+     (node 36:838). Same geometry and state model; hover/disabled sit on a
+     dark-teal base rather than an overlay of the default fill. */
+  .btn-teal {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.125rem 4rem;
+    border-radius: 1rem;
+    background-color: var(--color-teal-accent);
+    background-image: none;
+    color: #fff;
+    font-family: var(--font-roboto);
+    font-size: 1.625rem;
+    line-height: 1.375rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
     box-shadow:
-      0 5px 0 #012050,
-      0 8px 25px rgba(2, 132, 199, 0.5),
-      inset 0 1px 0 rgba(140, 210, 255, 0.7),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
-    border: 2px solid var(--color-blue-600);
-    border-radius: 8px;
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(255, 255, 255, 0.25);
     transition:
-      transform 0.08s ease,
-      box-shadow 0.08s ease;
+      background-color 0.12s ease,
+      box-shadow 0.12s ease,
+      color 0.12s ease;
   }
-  .btn-screen:active {
-    transform: translateY(4px);
+  @media (hover: hover) {
+    .btn-teal:hover:not(:disabled) {
+      background-color: #0d4a56;
+      background-image: linear-gradient(
+        rgba(0, 213, 255, 0.2),
+        rgba(0, 213, 255, 0.2)
+      );
+      color: #e9fdff;
+      box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.25),
+        inset 0 2px 4px 2px rgba(255, 255, 255, 0.25),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+  }
+  .btn-teal:focus-visible {
+    outline: none;
+    background-color: #84eaf3;
+    background-image: none;
+    color: #fff;
+    box-shadow: inset 0 2px 5px 3px rgba(255, 255, 255, 0.12);
+  }
+  .btn-teal:active:not(:disabled) {
+    background-color: var(--color-teal-accent);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15));
+    color: #d9d9d9;
     box-shadow:
-      0 1px 0 #012050,
-      0 4px 12px rgba(2, 132, 199, 0.3),
-      inset 0 1px 0 rgba(140, 210, 255, 0.7),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+      0 1px 2px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(0, 0, 0, 0.36);
+  }
+  .btn-teal:disabled {
+    background-color: #0d4a56;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
+    color: #a68f8f;
+    cursor: not-allowed;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Size modifier for the game-screen choice buttons ("Buttons/Client Cards",
+     nodes 36:838 / 36:854): 64px tall, Roboto SemiBold 20/22, sentence-case
+     labels. The design frame is 282px wide with nowrap text, but real option
+     copy runs to ~33 chars, so wrapping is allowed and the min-height holds
+     two lines. Widths/breakpoints are applied at the call site. */
+  .btn-card {
+    min-height: 4rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 1.25rem;
+    line-height: 1.375rem;
+    text-transform: none;
+    white-space: normal;
+  }
+  /* Client-card gold presses one step darker than the CTA gold. */
+  .btn-card.btn-gold:active:not(:disabled) {
+    background-color: #c58f14;
+  }
+
+  /* Outlined ghost button — Figma "Buttons/Next Case" (node 52:1634).
+     160×56 frame, 2px mid-teal stroke, light-mint label. The "selected"
+     state's 3px stroke is faked with a 1px inset ring so nothing shifts. */
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 10rem;
+    height: 3.5rem;
+    padding: 0 1.25rem;
+    border: 2px solid var(--color-mid-teal);
+    border-radius: 1rem;
+    background: transparent;
+    color: var(--color-light-mint);
+    font-family: var(--font-roboto);
+    font-size: 1.25rem;
+    line-height: 1.375rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease,
+      color 0.12s ease;
+  }
+  @media (hover: hover) {
+    .btn-outline:hover:not(:disabled) {
+      border-color: #73c7d1;
+      color: #73c7d1;
+    }
+  }
+  .btn-outline:focus-visible {
+    outline: none;
+    border-color: #73c7d1;
+    color: #fff;
+    box-shadow: inset 0 0 0 1px #73c7d1;
+  }
+  .btn-outline:active:not(:disabled) {
+    border-color: #1f5963;
+    color: #1f5963;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+  .btn-outline:disabled {
+    border-color: rgba(53, 150, 165, 0.4);
+    color: rgba(197, 228, 223, 0.4);
+    cursor: not-allowed;
+  }
+  /* Small variant — the leaderboard pager's Prev/Next. Not a Figma node: the
+     Next Case button scaled to a 34px control (10px radius, Roboto SemiBold
+     14/16, 14px side padding), sized to sit level with .case-counter-sm. */
+  .btn-outline-sm {
+    min-width: 4.5rem;
+    height: 2.125rem;
+    padding: 0 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1rem;
+  }
+
+  /* ── Patient card — Figma "Card Client" (node 36:802 / instance 41:1073) ──
+     A frosted charcoal glass slab (charcoal 30% + grey 10% over a heavy
+     backdrop blur, 32px radius) with a blurred gold→white glow ring hugging
+     the inside of the edge. In Figma the ring is three 4.6px strokes (gold
+     gradient + white 20%, both blur 14 / plus-lighter; black gradient blur 37
+     / multiply) clipped by the card frame. Here: one blurred gradient ring
+     (.patient-card-glow, the two additive strokes folded into one gradient)
+     and an inset shadow standing in for the multiply layer. The ring is a
+     static child of the will-change:transform card, so it rasterizes once
+     per card. */
+  .patient-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background-color: rgba(56, 61, 62, 0.37); /* charcoal@30% ⊕ #545454@10% */
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    box-shadow: inset 0 0 1.25rem rgba(0, 0, 0, 0.3);
+  }
+  /* The glow ring is a child element rather than a pseudo of .patient-card:
+     CSS applies filter before mask, so blurring and masking on one box
+     yields a crisp ring. Blur lives on the wrapper, the masked ring on its
+     ::before. Rendered as <div class="patient-card-glow" aria-hidden />. */
+  .patient-card-glow {
+    position: absolute;
+    inset: -0.125rem;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(0.4375rem); /* Figma layer blur 13.9 ≈ CSS blur 7px */
+    mix-blend-mode: plus-lighter;
+  }
+  .patient-card-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: calc(var(--radius-card) + 0.125rem);
+    padding: 0.3125rem; /* 5px stroke, centre-aligned: half sits outside and is clipped */
+    background: linear-gradient(
+      125deg,
+      #ffe7ad 9.6%,
+      #f0b83e 38%,
+      rgba(255, 255, 255, 0.25) 72%,
+      rgba(255, 255, 255, 0.7) 91%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Attract-screen "Card Client 1" (node 32:167) sits on a drop shadow
+     (0 16 20 spread 16 @ 25%) in addition to the surface's inset shadow. */
+  .patient-card-shadow {
+    box-shadow:
+      inset 0 0 1.25rem rgba(0, 0, 0, 0.3),
+      0 1rem 1.25rem 1rem rgba(0, 0, 0, 0.25);
+  }
+
+  /* Patient-card type ramp — Figma text styles, expressed in rem so they
+     scale with the kiosk root font-size (design px @ 16px root). */
+  /* "Card type font Large": DM Sans SemiBold 16/24, +2px tracking */
+  .type-card-label {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.125rem;
+    text-transform: uppercase;
+  }
+  /* "Card client age Large": Roboto Bold 24/24 */
+  .type-card-age {
+    font-family: var(--font-roboto);
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    font-weight: 700;
+  }
+  /* "Body Patent card": DM Sans Regular 14/16 */
+  .type-card-body {
+    font-family: var(--font-dm-sans);
+    font-size: 0.875rem;
+    line-height: 1rem;
+    font-weight: 400;
+  }
+
+  /* ── Rationale overlay type — Figma "Correct Card Answer" (nodes 51:1457 /
+     52:1508). The overlay's shell reuses .patient-card (the design frame is
+     "Card Client" at 1.156×); these are its text styles, converted from the
+     462.5px design frame to the app's 440px md card (×0.951) at a 16px root.
+     Below md they step down one size for the 304px mobile card. */
+  /* Title: Roboto Bold 26.96/26.96 → 26px (rounded to the px grid) */
+  .type-rationale-title {
+    font-family: var(--font-roboto);
+    font-size: 1.375rem;
+    line-height: 1.5rem;
+    font-weight: 700;
+  }
+  /* "Correct answer:" prefix — Roboto Bold 20/24 → 19/22.8px */
+  .type-rationale-prefix {
+    font-family: var(--font-roboto);
+    font-size: 1.0625rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+  }
+  /* Body: DM Sans Regular 15.73/17.98 → 15/18px (14/18 below md), set as
+     one paragraph per sentence with a blank line (one leading) between, as
+     in the design. At this leading the longest case (388 chars, 3 sentences)
+     still clears the verdict badge on the md+ card without scrolling. */
+  .type-rationale-body {
+    font-family: var(--font-dm-sans);
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    font-weight: 400;
+  }
+  @media (min-width: 768px) {
+    .type-rationale-title {
+      font-size: 1.625rem;
+      line-height: 1.625rem;
+    }
+    .type-rationale-prefix {
+      font-size: 1.1875rem;
+      line-height: 1.4375rem;
+    }
+    .type-rationale-body {
+      font-size: 0.9375rem;
+      line-height: 1.125rem;
+    }
+  }
+  /* "NOT QUITE!" — Barlow Condensed Bold 26.6 → 25.3px, +0.53px tracking
+     (1px on the px grid), uppercase, with the design's two-layer teal-tinted
+     drop shadow. */
+  .type-verdict-label {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+    text-transform: uppercase;
+    text-shadow:
+      0 0.1875rem 0.375rem rgba(10, 75, 62, 0.35),
+      0 0.0625rem 0.125rem rgba(26, 188, 156, 0.2);
+  }
+  @media (min-width: 768px) {
+    .type-verdict-label {
+      font-size: 1.5625rem;
+    }
+  }
+
+  /* Incorrect-verdict pulse: the NOT QUITE! + X ring group breathes gently
+     while the rationale is open. Transform-only (no filter/shadow changes)
+     so it runs on the compositor — the ring's SVG shadow filter rasterizes
+     once and is just scaled. Off under reduced-motion. */
+  @keyframes verdict-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.06);
+    }
+  }
+  .verdict-pulse {
+    animation: verdict-pulse 1.3s ease-in-out infinite;
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .verdict-pulse {
+      animation: none;
+    }
+  }
+
+  /* ── Attract-screen entry panel — Figma "Card 2" (node 32:117) ──────────
+     Same glass recipe as .patient-card but on a teal base: dark-teal 25% ⊕
+     #545454 10% over a heavy backdrop blur, 32px radius, and a white (not
+     gold) rim — in Figma two 4.6px white strokes (80% + 20%, blur 7,
+     plus-lighter) plus a black 80% stroke (blur 18.6, multiply), all clipped
+     by the frame so only the inner half shows. Folded here into two inset
+     shadows (a thin white glow and a dark vignette) on top of the shared
+     "Card Drop shadow" (0 16 20 spread 16 @ 25%). */
+  .entry-panel {
+    position: relative;
+    border-radius: var(--radius-card);
+    background-color: rgba(34, 65, 74, 0.325); /* dark-teal@25% ⊕ #545454@10% */
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    box-shadow:
+      inset 0 0 0.375rem 0.0625rem rgba(255, 255, 255, 0.32),
+      inset 0 0 1.5rem rgba(0, 0, 0, 0.35),
+      0 1rem 1.25rem 1rem rgba(0, 0, 0, 0.25);
+  }
+
+  /* "Card title" — Figma text style: Barlow Condensed Bold 32/33.44 → 32/33,
+     +1px tracking. The entry panel's "Swipe or Miss" (node I32:118;12:729)
+     and the attract screen's "Complete All 10 Cases!" (node 148:357). */
+  .type-card-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 2.0625rem;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+  }
+
+  /* Entry-panel text field — Figma "First name" / "Last name" / "Email"
+     (nodes 12:759 / 12:761 / 12:763): 40px tall, 1.5px mid-teal stroke, 8px
+     radius, DM Sans Regular 16/24 in white with 14.5px side padding (15px on
+     the px grid). Figma draws the label in solid white; here that's the
+     placeholder. No focus state is designed, so it borrows the .btn-outline
+     hover teal. */
+  .entry-field {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 2.5rem;
+    padding: 0 0.9375rem;
+    border: 1.5px solid var(--color-mid-teal);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+    outline: none;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .entry-field::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .entry-field:focus-visible {
+    border-color: #73c7d1;
+    box-shadow: 0 0 0 3px rgba(60, 185, 196, 0.2);
+  }
+
+  /* Specialty radio — Figma "Ellipse 8/9" (Card 2, node 32:118 → 16:808–
+     16:811). Unselected: 8px dot, off-white with a 0.5px light-mint ring.
+     Selected: 11px dot, cream→gold radial fill (#FFEFCC at 49.5% → gold at
+     the edge) with a 1px gold ring. Figma grows the selected disc in place —
+     its box sits 2px left / 2px up of the 8px one and the text column doesn't
+     move — so the checked state keeps an 8px-wide layout box via negative
+     inline margins. Vertical offsets: unchecked 4px, checked 2px (Figma
+     31.5px vs the 37.5px text centre). Native input with appearance stripped
+     so the label stays a real radio for a11y/keyboard. */
+  .radio-dot {
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: 0.25rem 0 0;
+    border-radius: 9999px;
+    background: var(--color-off-white);
+    box-shadow: 0 0 0 0.5px var(--color-light-mint);
+    cursor: pointer;
+    transition: box-shadow 0.12s ease;
+  }
+  .radio-dot:checked {
+    width: 0.6875rem;
+    height: 0.6875rem;
+    margin: 0.125rem -0.0625rem 0 -0.125rem;
+    background: radial-gradient(
+      circle closest-side,
+      #ffefcc 49.5%,
+      var(--color-gold-accent) 100%
+    );
+    box-shadow: 0 0 0 1px var(--color-gold-accent);
+  }
+  .radio-dot:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1px var(--color-gold-accent),
+      0 0 0 4px rgba(232, 168, 23, 0.25);
+  }
+
+  /* How-to-play step badge — Figma "Ellipse 9/10/11" (nodes 16:812 / 19:817
+     / 19:820): 16px disc, off-white→light-mint radial fill, 0.5px mid-teal
+     ring, DM Sans Bold 14 charcoal numeral. */
+  .step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at center,
+      var(--color-off-white) 0%,
+      var(--color-light-mint) 35%
+    );
+    box-shadow: 0 0 0 0.5px var(--color-mid-teal);
+    color: var(--color-charcoal);
+    font-family: var(--font-dm-sans);
+    font-size: 0.875rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+  }
+
+  /* ── Progress dots — Figma "Stages of progress:" (node 37:997, row 52:1566) ──
+     Ten 24px discs at a 36px pitch, each a centre-out radial fill (rotate 90,
+     scale 12 in Figma) whose outer stop is a palette token: unreached grey
+     (#95A5A6 28.8% → #6C7777), currently-on cream (Off White 8.2% → Cream,
+     node 37:1000), correct blue (#B2CCDD → Correct Blue), false red (#EB867C
+     → False Red). Plain gradients — no filters — so the row stays cheap to
+     repaint mid-swipe. */
+  .progress-dot {
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle closest-side at center,
+      var(--color-muted-gray) 28.8%,
+      #6c7777 100%
+    );
+  }
+  .progress-dot[data-state="current"] {
+    background: radial-gradient(
+      circle closest-side at center,
+      var(--color-off-white) 8.2%,
+      var(--color-cream) 100%
+    );
+  }
+  .progress-dot[data-state="correct"] {
+    background: radial-gradient(
+      circle closest-side at center,
+      #b2ccdd 0%,
+      var(--color-info-blue) 100%
+    );
+  }
+  .progress-dot[data-state="false"] {
+    background: radial-gradient(
+      circle closest-side at center,
+      #eb867c 0%,
+      var(--color-alert-red) 100%
+    );
+  }
+
+  /* ── Case counter — Figma "Frame 4" (node 42:1162) ────────────────────────
+     69×34.5 outline pill: 2.4px off-white stroke, 9.5px radius, no fill;
+     "1/10" in Barlow Condensed Bold 23.8/19 with 2.4px tracking — stroke,
+     radius and tracking rounded to the px grid at 2/10/2px. The text sits
+     13px in from the side and 7px from the top, measured from the outer edge
+     (the stroke is inside), so padding is that minus the border. All in rem
+     so it scales with the kiosk root. */
+  .case-counter {
+    display: inline-block;
+    box-sizing: border-box;
+    min-width: 4.3125rem;
+    padding: 0.3125rem 0.6875rem;
+    border: 0.125rem solid var(--color-off-white);
+    border-radius: 0.625rem;
+    color: var(--color-off-white);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.1875rem;
+    font-weight: 700;
+    letter-spacing: 0.125rem;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Dashboard box type — Figma "Frame 3" (node 47:1384), the game-screen
+     "This session" stats box. The box itself is plain utilities (2px mid-teal
+     stroke, 16px left-only radius, light-mint @ 20% fill); these are its two
+     text styles, in rem so they scale with the kiosk root. */
+  /* Box title — Figma text style "Leaderbord Title" (sic): Barlow Condensed
+     Bold 24/32, +2px tracking, uppercase. The leaderboard box's header is the
+     same style one step down ("Leaderboard title 2", 20/32) — text-xl/8. */
+  .type-panel-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.125rem;
+    text-transform: uppercase;
+  }
+  /* Stat value (nodes 47:1387–47:1389): Barlow Condensed Bold 48/32, +2px
+     tracking. The 48px numerals deliberately overrun the 32px line box; the
+     gaps around them in SessionStats are measured against the line box. */
+  .type-stat-value {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    line-height: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.125rem;
+    white-space: nowrap;
+  }
+  /* Stat label (nodes 166:436–442): DM Sans SemiBold 16, +2.57px tracking
+     (3px on the px grid), uppercase, light-mint — the summary label's
+     tracking on the card-label size. The design's 33.4px line box is closed
+     up to 24px so the box keeps its 250px height; the glyphs land within 3px
+     of the design. */
+  .type-stat-label {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1875rem;
+    text-transform: uppercase;
+  }
+  /* Small variant — the leaderboard pager's page counter. Not a Figma node:
+     the case counter scaled to 34px tall (level with .btn-outline-sm): 2px
+     stroke, 8px radius, Barlow Condensed Bold 16/16 with 2px tracking; the
+     7px block padding is what keeps the total at 34px. */
+  .case-counter-sm {
+    min-width: 3rem;
+    padding: 0.4375rem 0.5rem;
+    border-width: 0.125rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    line-height: 1rem;
+    letter-spacing: 0.125rem;
+  }
+
+  /* ── Streak banner — not a Figma node. Composed from the design's parts:
+     the case counter's outline pill redrawn in gold-accent (2px stroke, the
+     buttons' 16px corner) on a near-solid charcoal fill, carrying the session
+     box's gold stat numeral (.type-stat-value) beside an off-white panel
+     title (.type-panel-title) with a light-mint DM Sans eyebrow. Sits
+     astride the top edge of the card (see GamePanel). Deliberately no
+     backdrop-filter: it lands mid-swipe, in the same frames as the fly-off
+     and the overlay fade, so the fill is opaque enough to read on its own
+     and the whole thing is one cheap composited layer. Shadows: the card
+     drop shadow's tone under a gold halo, plus the buttons' white top light. */
+  .streak-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.5rem 1.5rem 0.5rem 1.25rem;
+    border: 2px solid var(--color-gold-accent);
+    border-radius: 1rem;
+    background-color: rgba(45, 52, 54, 0.92); /* charcoal @ 92% */
+    box-shadow:
+      0 0.5rem 1.25rem rgba(0, 0, 0, 0.35),
+      0 0 1.5rem rgba(232, 168, 23, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  /* Below md the card is 304px wide and its title sits 40px (not 60px) from
+     the top, so the pill tightens up; the numeral/label step down at the
+     call site (2.5rem / 1.25rem). */
+  @media (max-width: 767px) {
+    .streak-banner {
+      gap: 0.625rem;
+      padding: 0.375rem 1.25rem 0.375rem 1rem;
+    }
+  }
+  /* Eyebrow: "Card type font Large" (.type-card-label) taken down to 12px,
+     keeping its +2px tracking. */
+  .type-streak-eyebrow {
+    font-family: var(--font-dm-sans);
+    font-size: 0.75rem;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.125rem;
+    text-transform: uppercase;
+  }
+
+  /* ── Leaderboard box type — Figma "Frame 6" (node 52:1670), rows are the
+     "Leaderboard Score" component (node 52:1763). The box and rows are plain
+     utilities (2px mid-teal stroke + charcoal @ 40% fill, 16px top-left
+     radius; 40px rows with a 2px light-mint @ 60% stroke and 8px radius). */
+  /* "Leaderboard Username Score": DM Sans SemiBold 16/24, +0.6px tracking
+     (1px on the px grid). */
+  .type-lb-name {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.0625rem;
+  }
+  /* "Leaderboard Points Number 1": Barlow Condensed Bold 24/16, +0.6px
+     tracking (1px on the px grid), uppercase — the rank (gold) and the
+     score (off-white). */
+  .type-lb-points {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Summary card type — Figma "New card" (node 52:1951), the results
+     screen's per-case card. The shell reuses .entry-panel (the design's glass
+     container is the same recipe as "Card 2": dark-teal 25% ⊕ grey 10% over
+     the blur, white rim, black multiply, card drop shadow, 32px radius). The
+     760px design frame sets its type at the patient-card ramp × 1.284
+     (20.5px), rounded to 20px here; below md the card is ~300px wide, so each
+     style steps down to the 16px patient-card size. */
+  /* "SUMMARY" / "INCORRECT" — DM Sans SemiBold 20.5/33.4, +2.6px tracking,
+     uppercase (.type-card-label × 1.284) */
+  .type-summary-label {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.125rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* Case bullets — DM Sans Regular 20.5 on auto leading (≈27px); the
+     rationale body is the same face at 30.8px leading (overridden at the
+     call site). */
+  .type-summary-body {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+  }
+  /* "You:" / "Correct:" / "Incorrect:" answer pills — the design's DM Sans
+     SemiBold 20/30 taken down to 16/24 (no md step-up) so the deck's longest
+     option pair fits side by side in the card; see AnswerPill in
+     SummaryPanel.tsx. */
+  .type-summary-pill {
+    font-family: var(--font-dm-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .type-summary-label {
+      font-size: 1.25rem;
+      line-height: 2rem;
+      letter-spacing: 0.1875rem;
+    }
+    .type-summary-body {
+      font-size: 1.25rem;
+      line-height: 1.6875rem;
+    }
   }
 }

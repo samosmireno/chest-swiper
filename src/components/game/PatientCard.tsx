@@ -1,107 +1,69 @@
 import { memo } from "react";
-import type { PatientProfile } from "../../types";
+import type { PatientProfile, ProfileField } from "../../types";
 
 interface PatientCardProps {
   profile: PatientProfile;
 }
 
-/* Memoized: profiles are static module data, so stack cards skip the
+/* Figma "Card Client" (node 36:802, instance 41:1073) — 400×433 frosted
+   charcoal glass with a gold glow ring (see .patient-card in index.css).
+   Geometry below is the design's px at a 16px root, expressed in rem so it
+   tracks the kiosk root scaling: avatar 110×135 at (31,26), text column at
+   x=153, bullets from y=178 with 8px gold dots at x=25.
+
+   The design's body is a list of verbatim bullets; this deck's cases are
+   label/value fields (History, Treatment, Labs…), so each field takes one
+   bullet row with its label set as a gold semibold run of the body face
+   ahead of the value.
+
+   Memoized: profiles are static module data, so stack cards skip the
    re-render every SWIPE/ADVANCE dispatch triggers app-wide. */
 export const PatientCard = memo(function PatientCard({
   profile,
 }: PatientCardProps) {
   return (
-    /* Metallic bronze/gold frame — gradient background with padding acts as the border */
-    <div
-      className="bg-metallic-border relative h-full w-full rounded-xl p-1"
-      style={{
-        /* Single outer glow: a second 60px blur layer here cost more GPU
-           raster time than everything else on mobile combined. */
-        boxShadow:
-          "0 0 32px rgba(170,115,0,0.42), inset 0 0 8px rgba(255,200,50,0.1)",
-      }}
-    >
-      {/* Dark interior with subtle grid texture */}
-      <div
-        className="relative flex h-full w-full flex-col overflow-hidden rounded-[10px]"
-        style={{
-          background:
-            "linear-gradient(160deg, var(--color-dark-800) 0%, var(--color-dark-900) 60%, var(--color-dark-950) 100%)",
-          backgroundImage:
-            "linear-gradient(160deg, var(--color-dark-800) 0%, var(--color-dark-900) 100%), linear-gradient(rgba(255,190,40,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,190,40,0.04) 1px, transparent 1px)",
-          backgroundSize: "100% 100%, 1.5rem 1.5rem, 1.5rem 1.5rem",
-        }}
-      >
-        {/* Cinematic hero — photo and its darkening layer are continuous
-            absolute layers (no clipped sub-box), so no half-lit photo row can
-            show at the seam. The overlay goes opaque across the image's bottom
-            edge, then fades back to transparent so the body keeps its grid. */}
-        <img
-          src={profile.image}
-          alt={profile.ageSex}
-          className="pointer-events-none absolute inset-x-0 top-0 h-40 w-full object-cover object-top sm:h-48 md:h-64"
-          draggable={false}
-        />
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, transparent 28%, rgba(13,9,0,0.8) 44%, var(--color-dark-900) 52%)",
-          }}
-        />
-
-        {/* Age/sex overlaid on the photo */}
-        <div className="relative flex h-40 shrink-0 flex-col justify-end p-4 text-center sm:h-48 md:h-64">
-          <p
-            className="font-display text-gold-500 text-sm font-bold tracking-[0.2em] uppercase md:text-base"
-            style={{ textShadow: "0 0 8px rgba(0,0,0,0.9)" }}
-          >
+    <div className="patient-card flex h-full w-full flex-col">
+      <div className="patient-card-glow" aria-hidden />
+      {/* Header — gradient-framed 4:5 portrait, label + age beside it. The
+          text column top-aligns 24px below the avatar top (design), not
+          centred. Below md the portrait and age step down a size so the age line
+          still fits beside it on the 304px mobile card. */}
+      <div className="relative z-10 flex shrink-0 items-start gap-3 pt-[1.625rem] pr-6 pl-[1.9375rem] max-md:pr-5">
+        <div className="bg-avatar-stroke h-[6.75rem] w-22 shrink-0 rounded-[0.875rem] p-[0.1875rem] md:h-[8.4375rem] md:w-[6.875rem]">
+          <img
+            src={profile.image}
+            alt={profile.ageSex}
+            className="pointer-events-none h-full w-full rounded-[0.6875rem] object-cover"
+            draggable={false}
+          />
+        </div>
+        <div className="min-w-0 flex-1 pt-4 md:pt-6">
+          <p className="type-card-label text-gold-accent max-md:text-[0.8125rem]/5 max-md:tracking-[0.1em]">
             Patient Profile
           </p>
-          <p
-            className="mt-0.5 text-lg font-black text-white md:text-2xl"
-            style={{ textShadow: "0 2px 6px rgba(0,0,0,0.95)" }}
-          >
+          <p className="type-card-age text-off-white mt-2 max-md:text-lg/6">
             {profile.ageSex}
           </p>
         </div>
+      </div>
 
-        {/* Body */}
-        <div className="relative flex min-h-0 flex-1 flex-col p-4 pt-3">
-          {/* Fields */}
-          <div className="flex flex-col gap-2.5 md:gap-3">
-            {profile.fields.map((field) => (
-              <FieldRow
-                key={field.label}
-                label={field.label}
-                value={field.value}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Glowing bottom bar */}
-        <div
-          className="absolute right-[15%] bottom-0 left-[15%] h-0.5"
-          style={{
-            background: "var(--gradient-glow-bar)",
-            boxShadow:
-              "0 0 8px var(--color-gold-400), 0 0 18px rgba(240,192,64,0.5)",
-          }}
-        />
+      {/* Body — one bullet row per field, one size for every card */}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 pt-4 pr-10 pb-6 pl-[1.5625rem]">
+        {profile.fields.map((field) => (
+          <FieldRow key={field.label} field={field} />
+        ))}
       </div>
     </div>
   );
 });
 
-function FieldRow({ label, value }: { label: string; value: string }) {
+function FieldRow({ field }: { field: ProfileField }) {
   return (
-    <div className="flex gap-3 md:gap-4">
-      <span className="font-display text-gold-500 w-28 shrink-0 pr-1 text-xs font-bold tracking-[0.12em] uppercase sm:w-24 md:w-28 md:text-sm">
-        {label}
-      </span>
-      <span className="text-xs leading-snug text-gray-100 md:text-sm">
-        {value}
+    <div className="flex items-start gap-[0.4375rem]">
+      <span className="bg-gold-accent mt-1 h-2 w-2 shrink-0 rounded-full" />
+      <span className="type-card-body text-off-white">
+        <span className="text-gold-accent font-semibold">{field.label}: </span>
+        {field.value}
       </span>
     </div>
   );

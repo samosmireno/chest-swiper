@@ -27,9 +27,10 @@ export function DashboardPanel({
   const { correct, missed, accuracy } = computeSessionStats(sessionResults);
 
   return (
-    <div
-      className="flex min-h-dvh w-full flex-col sm:min-h-0 sm:overflow-hidden sm:w-auto sm:flex-2 lg:flex-1 bg-panel/80 border-l border-purple-accent/25"
-    >
+    // No column-level chrome: each dashboard box carries its own border and
+    // fill (Figma "Frame 4", node 47:1383 — the stats box and the leaderboard
+    // box sit directly on the scene).
+    <div className="flex min-h-dvh w-full flex-col sm:min-h-0 sm:overflow-hidden sm:w-auto sm:flex-2 lg:flex-1">
       <SessionStats correct={correct} missed={missed} accuracy={accuracy} />
       {GAME_SCREEN_PANEL === "leaderboard" ? (
         // min-h-0 so the panel's internal overflow-y-auto can actually scroll
@@ -37,9 +38,14 @@ export function DashboardPanel({
           <LeaderboardPanel />
         </div>
       ) : (
-        <Suspense fallback={<div className="min-h-64 flex-1" />}>
-          <CommunityInsights stats={cumulativeStats} profiles={profiles} />
-        </Suspense>
+        // Insights variant (off by default): dressed like the leaderboard box —
+        // 2px mid-teal stroke, charcoal @ 40% fill — so it sits with the
+        // session box above it.
+        <div className="border-mid-teal bg-charcoal/40 flex min-h-0 flex-1 flex-col rounded-tl-2xl border-2">
+          <Suspense fallback={<div className="min-h-64 flex-1" />}>
+            <CommunityInsights stats={cumulativeStats} profiles={profiles} />
+          </Suspense>
+        </div>
       )}
     </div>
   );

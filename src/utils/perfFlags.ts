@@ -3,7 +3,7 @@
 // compositor-side suspects directly:
 //   ?novideo=1  static poster instead of the looping background video
 //   ?noblur=1   disable all backdrop-filter blurs
-//   ?nofx=1     disable SVG filters and metallic glow shadows
+//   ?nofx=1     disable SVG filters and the card glow rings
 //   ?fps=1      tiny live frame meter (fps + long-frame count)
 // No params → zero effect in normal use.
 
@@ -24,7 +24,7 @@ if (perfFlags.noblur)
 if (perfFlags.nofx)
   css.push(
     "svg{filter:none!important}",
-    ".bg-metallic-border{box-shadow:none!important}",
+    ".patient-card-glow{filter:none!important}",
   );
 if (css.length > 0) {
   const style = document.createElement("style");

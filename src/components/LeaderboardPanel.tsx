@@ -33,93 +33,97 @@ export function LeaderboardPanel() {
   );
 
   return (
-    <div
-      className="flex h-full flex-col bg-panel/85 border-l border-t border-purple-accent/25"
+    /* Figma "Frame 6" (node 52:1670): a full-height box on the scene — 2px
+       mid-teal stroke, charcoal @ 40% fill, 16px radius on the top-left
+       corner only (it runs off the bottom of the screen and its right edge
+       is the screen edge). Header row 72px (title + 2px rule), rows inset
+       23px from the box, 40px tall at a 64px pitch. Paddings are the design's
+       outer-edge offsets minus the 2px border, in rem. */
+    <section
+      aria-label="Leaderboard"
+      className="border-mid-teal bg-charcoal/40 flex h-full flex-col rounded-tl-2xl border-2"
     >
-      {/* Header */}
-      <div
-        className="flex h-14 shrink-0 items-center px-6 bg-panel/95 border-b border-purple-accent/30"
-      >
-        <p className="font-display font-extrabold tracking-[0.18em] text-white text-xl uppercase">
-          Leaderboard
-        </p>
-      </div>
+      {/* Header — "Leaderboard title 2" (20/32) over the Line 2 rule */}
+      <h2 className="type-panel-title text-off-white border-mid-teal shrink-0 border-b-2 px-[1.375rem] pt-[1.375rem] pb-[0.9375rem] text-xl/8">
+        Leaderboard
+      </h2>
 
       {/* Rows */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-[1.4375rem] pt-8 pb-6">
         {loading ? (
-          <p className="py-8 text-center text-sm text-white/30">
+          <p className="font-dm-sans text-off-white pt-1.5 text-center text-base/6">
             Loading scores…
           </p>
         ) : entries.length === 0 ? (
-          <p className="py-8 text-center text-sm text-white/30">
+          <p className="font-dm-sans text-off-white pt-1.5 text-center text-base/6">
             No scores yet.
           </p>
         ) : (
-          <div className="flex flex-col gap-2">
+          <ol className="flex flex-col gap-6">
             {pageEntries.map((entry, i) => {
               const rank = page * LEADERBOARD_PAGE_SIZE + i + 1;
-              const isCurrent =
-                entry.sessionId === state.lastSessionId;
+              const isCurrent = entry.sessionId === state.lastSessionId;
               return (
-                <div
+                /* "Leaderboard Score" (node 52:1763): rank | name [YOU] … score n/10 */
+                <li
                   key={entry.sessionId || `${entry.timestamp}-${i}`}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 ${isCurrent ? "bg-gold-400/10" : "bg-white/5"}`}
-                  style={
-                    isCurrent
-                      ? { boxShadow: "inset 0 0 0 1px rgba(251,191,36,0.35)" }
-                      : undefined
-                  }
+                  className="border-light-mint/60 flex h-10 items-center rounded-lg border-2 pr-[0.6875rem] pl-[0.8125rem]"
                 >
-                  <span className="w-6 shrink-0 text-sm font-black text-white/35">
+                  <span className="type-lb-points text-gold-accent w-[1.375rem] shrink-0">
                     {rank}
                   </span>
-                  <span className="flex-1 truncate text-sm font-semibold text-white">
+                  <span className="type-lb-name text-off-white min-w-0 truncate">
                     {entry.username}
-                    {isCurrent && (
-                      <span className="ml-2 text-xs font-bold text-gold-400">
-                        YOU
-                      </span>
-                    )}
                   </span>
-                  <span className="shrink-0 text-sm font-black text-white">
+                  {isCurrent && (
+                    <span className="font-dm-sans text-gold-accent ml-[1.625rem] shrink-0 text-base/6 font-bold">
+                      YOU
+                    </span>
+                  )}
+                  <span className="type-lb-points text-off-white ml-auto shrink-0 pl-3">
                     {entry.score}
                   </span>
-                  <span className="shrink-0 text-xs text-white/35">
+                  <span className="font-dm-sans text-light-mint ml-2 shrink-0 text-base/6">
                     {entry.correct}/{entry.total}
                   </span>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ol>
         )}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination — not in the Figma frame: small Next Case buttons either
+          side of a small case counter, under a rule mirroring the header's.
+          Same box height as the header (2px rule + 69px, over the box's 2px
+          bottom edge) so its rule meets the summary pane's TRY AGAIN footer
+          rule across the screen at every root — px borders don't scale with
+          the rem paddings, hence the calc. */}
       {totalPages > 1 && (
-        <div
-          className="flex h-14 shrink-0 items-center justify-between px-4 border-t border-purple-accent/20"
-        >
+        <div className="border-mid-teal flex h-[calc(4.3125rem_+_2px)] shrink-0 items-center justify-between border-t-2 px-[1.4375rem]">
           <button
+            type="button"
+            className="btn-outline btn-outline-sm"
             onClick={() => setPageOverride(Math.max(0, page - 1))}
             disabled={page === 0}
-            className="font-display tracking-[0.15em] rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors disabled:opacity-30 text-white/55 bg-white/10"
+            aria-label="Previous page"
           >
-            ← Prev
+            Prev
           </button>
-          <span className="text-xs text-white/30">
-            {page + 1} / {totalPages}
+          <span className="case-counter case-counter-sm" aria-live="polite">
+            {page + 1}/{totalPages}
           </span>
           <button
+            type="button"
+            className="btn-outline btn-outline-sm"
             onClick={() => setPageOverride(Math.min(totalPages - 1, page + 1))}
             disabled={page === totalPages - 1}
-            className="font-display tracking-[0.15em] rounded-full px-4 py-1.5 text-xs font-bold uppercase transition-colors disabled:opacity-30 text-white/55 bg-white/10"
+            aria-label="Next page"
           >
-            Next →
+            Next
           </button>
         </div>
       )}
-
-    </div>
+    </section>
   );
 }

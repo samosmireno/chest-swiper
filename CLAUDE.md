@@ -30,6 +30,20 @@ proven exhaustively in `src/leaderboard.test.ts`). Results POST to a Google
 Apps Script webhook (`sheets/wwys-results.gs`, URL in `src/config.ts`); bump
 `APP_VERSION` there whenever card content or scoring changes.
 
+## Styling
+
+The look is the gold Figma design of the sibling `../t2i-swiper` project
+(its commit `4f04ef8`, before that client moved to violet). `src/index.css`
+carries the palette tokens (`dark-teal`, `mid-teal`, `gold-accent`,
+`light-mint`, `charcoal`, `off-white`, …), the `.btn-gold` / `.btn-teal` /
+`.btn-outline` buttons, the `.patient-card` and `.entry-panel` glass shells
+and the `.type-*` text ramp, each annotated with its Figma node; components
+use those classes plus Tailwind utilities. The scene art
+(`public/bg_video.mp4` + poster) is shared with t2i-swiper. This deck's cases
+are label/value `fields` rather than t2i's verbatim `bullets`; they render as
+the design's bullet rows with the label as a gold run ahead of the value
+(`PatientCard`, `SummaryPanel`, the attract-screen mini card).
+
 ## Agent skills
 
 ### Issue tracker

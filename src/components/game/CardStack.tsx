@@ -84,25 +84,27 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
       >
         <PatientCard profile={profile} />
 
-        {/* Right-swipe stamp. willChange promotes it to its own compositor
+        {/* Right-swipe stamp — tinted to match the right (gold) choice button.
+            willChange promotes it to its own compositor
             layer: its opacity changes every dragged frame, and without the
             layer that repaint re-rasterizes the whole card — glow shadows
             included — which is what dropped mid-range phones to ~35fps. */}
         <motion.div
-          className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-xl bg-sky-500/20 px-6 pb-6"
+          className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-card bg-gold-accent/25 px-6 pb-6"
           style={{ opacity: rightOpacity, willChange: "opacity" }}
         >
-          <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-sky-300 sm:text-lg">
+          <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-gold-accent sm:text-lg">
             {profile.rightOption} →
           </span>
         </motion.div>
 
-        {/* Left-swipe stamp — same layer promotion as the right stamp */}
+        {/* Left-swipe stamp — teal like the left choice button; same layer
+            promotion as the right stamp */}
         <motion.div
-          className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-xl bg-yellow-500/20 px-6 pb-6"
+          className="pointer-events-none absolute inset-0 flex items-end justify-center rounded-card bg-teal-accent/25 px-6 pb-6"
           style={{ opacity: leftOpacity, willChange: "opacity" }}
         >
-          <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-yellow-300 sm:text-lg">
+          <span className="font-display text-center text-base leading-tight font-bold tracking-[0.08em] text-teal-accent sm:text-lg">
             ← {profile.leftOption}
           </span>
         </motion.div>
@@ -137,8 +139,12 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
     // Show up to 3 cards: current + next 2 (rendered back to front)
     const visibleProfiles = deck.slice(currentIndex, currentIndex + 3);
 
+    // Below md the card is content-sized with a 32rem floor — enough for the
+    // rationale overlay (absolute over this box) to show the longest case's
+    // three sentence paragraphs without scrolling on a 390px phone; md+ is
+    // the design's fixed 440×480.
     return (
-      <div className="relative h-100 w-76 sm:w-80 md:h-120 md:w-110">
+      <div className="relative min-h-128 w-76 sm:w-80 md:h-120 md:w-110">
         {[...visibleProfiles].reverse().map((profile, reversedIndex) => {
           const stackPosition = visibleProfiles.length - 1 - reversedIndex;
           const isTop = stackPosition === 0;

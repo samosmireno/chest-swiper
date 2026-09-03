@@ -1,5 +1,4 @@
 import { memo } from "react";
-import type React from "react";
 
 interface ProgressBarProps {
   current: number;
@@ -7,104 +6,61 @@ interface ProgressBarProps {
   results?: boolean[];
 }
 
-/* Memoized: only the 1-2 diamonds whose props change re-render per swipe;
-   the double drop-shadow filters make each one pricier than it looks. */
-const Diamond = memo(function Diamond({
-  filled,
-  isCurrent,
-  result,
-}: {
-  filled: boolean;
-  isCurrent: boolean;
-  result?: boolean;
-}) {
-  const color =
-    result === true
-      ? "var(--color-blue-400)"
-      : result === false
-        ? "var(--color-red-400)"
-        : filled
-          ? isCurrent
-            ? "var(--color-magenta-500)"
-            : "var(--color-purple-400)"
-          : "var(--color-dark-700)";
+type DotState = "unreached" | "current" | "correct" | "false";
 
-  const stroke =
-    result === true
-      ? "var(--color-blue-600)"
-      : result === false
-        ? "var(--color-red-700)"
-        : filled
-          ? isCurrent
-            ? "var(--color-magenta-600)"
-            : "var(--color-purple-500)"
-          : "var(--color-purple-950)";
-
-  /* One drop-shadow per diamond, not two — each shadow is a separate filter
-     pass, and these repaint mid-animation on every swipe. */
-  const glow =
-    result === true
-      ? "drop-shadow(0 0 6px var(--color-blue-400))"
-      : result === false
-        ? "drop-shadow(0 0 6px var(--color-red-400))"
-        : isCurrent
-          ? "drop-shadow(0 0 6px var(--color-magenta-500))"
-          : filled
-            ? "drop-shadow(0 0 5px var(--color-purple-400))"
-            : "none";
-
+/* Figma "Stages of progress:" (node 37:997) — the four component variants.
+   A swiped card carries its verdict; the live card is cream; the rest are
+   grey. Memoized: only the 1-2 dots whose props change re-render per swipe. */
+const Dot = memo(function Dot({ state }: { state: DotState }) {
   return (
-    <svg
-      className="size-5 shrink-0 lg:size-8"
-      viewBox="0 0 20 20"
-      style={{ filter: glow }}
-    >
-      <polygon
-        points="10,1 19,10 10,19 1,10"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="1.5"
-      />
-    </svg>
+    <span
+      className="progress-dot size-5 sm:size-6"
+      data-state={state}
+      aria-hidden
+    />
   );
 });
 
-const counterStyle: React.CSSProperties = {
-  fontFamily: "var(--font-display)",
-  fontSize: "1.35rem",
-  fontWeight: 800,
-  color: "white",
-  letterSpacing: "0.05em",
-  padding: "1px 10px",
-  minWidth: "3.375rem",
-  textAlign: "center",
-  lineHeight: 1.3,
-  textShadow: "var(--text-shadow-white-sm)",
-  borderRadius: "4px",
-};
-
 export function ProgressBar({ current, total, results }: ProgressBarProps) {
   return (
-    /* Mobile: counter on top, gems below. sm+: gems centered, counter absolute right */
-    <div className="relative flex w-full flex-col items-center gap-2">
-      {/* Counter — centred on mobile, absolute right on sm+ */}
-      <div
-        className="border-2 border-white/35 md:absolute md:top-1/2 md:right-0 md:-translate-y-1/2"
-        style={counterStyle}
-      >
-        {current}/{total}
-      </div>
+    /* Mobile: counter on top, dots below. md: dots centred, counter pinned to
+       the column's right edge (the 60% game column is too narrow for the
+       design placement). lg+: Figma Frame 2 — the dot row (37:926) centred on
+       the column with the counter pill (36:924) hanging 24px off its right
+       end, vertically centred on the dots. The root is the md containing
+       block; the group becomes it at lg so left-full measures from the dots. */
+    <div className="relative flex w-full flex-col items-center">
+      <div className="flex flex-col-reverse items-center gap-4 md:block lg:relative">
+        {/* Progress-dot row (Figma row 52:1566: 24px discs, 12px gap) */}
+        <div
+          className="flex items-center gap-1.5 sm:gap-3"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={current}
+          aria-label={`Case ${current + 1} of ${total}`}
+        >
+          {Array.from({ length: total }, (_, i) => {
+            const result = results?.[i];
+            const state: DotState =
+              result === true
+                ? "correct"
+                : result === false
+                  ? "false"
+                  : i === current
+                    ? "current"
+                    : "unreached";
+            return <Dot key={i} state={state} />;
+          })}
+        </div>
 
-      {/* Diamond gem row — always centered */}
-      <div className="flex w-full items-center justify-center gap-1 md:gap-2">
-        {Array.from({ length: total }, (_, i) => (
-          <Diamond
-            key={i}
-            filled={i <= current}
-            isCurrent={i === current}
-            result={results?.[i]}
-          />
-        ))}
+        {/* Case counter (Figma "Frame 4", node 42:1162) — 1-based case number */}
+        <div
+          className="case-counter md:absolute md:top-1/2 md:right-0 md:-translate-y-1/2 lg:right-auto lg:left-full lg:ml-6"
+          aria-hidden
+        >
+          {current + 1}/{total}
+        </div>
       </div>
     </div>
   );

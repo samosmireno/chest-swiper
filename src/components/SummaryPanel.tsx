@@ -1,67 +1,134 @@
 import { useGameDispatch, useGameState } from "../context/useGame";
-import { calculateScore, computeSpeedBonus, scoreBreakdown } from "../leaderboard";
+import {
+  calculateScore,
+  computeSpeedBonus,
+  scoreBreakdown,
+} from "../leaderboard";
 import { computeSessionStats } from "../utils/sessionStats";
+import { VerdictBadge } from "./game/VerdictBadge";
 import type { PatientProfile, SessionResult } from "../types";
-
-function describePatient(p: PatientProfile): string {
-  return p.fields.map((f) => `${f.label}: ${f.value}`).join(". ");
-}
 
 function labelForSide(profile: PatientProfile, side: "left" | "right"): string {
   return side === "left" ? profile.leftOption : profile.rightOption;
 }
 
+function otherSide(side: "left" | "right"): "left" | "right" {
+  return side === "left" ? "right" : "left";
+}
+
+/* Glass shell shared by every card in the list — Figma "New card" (node
+   52:1951): the .entry-panel recipe (see index.css), 760px wide in the frame,
+   content inset 37px from the sides and 40px from the top. Below md the
+   insets tighten for the ~300px mobile card. */
+const CARD_SHELL =
+  "entry-panel px-5 pt-6 pb-6 md:px-[2.3125rem] md:pt-10 md:pb-10";
+
+/* Not in the Figma frame: the accuracy / streak / speed-bonus breakdown keeps
+   its place at the top of the list, on the same glass shell as the case
+   cards. Its header row mirrors theirs (gold label left, gold Barlow total
+   right where the case cards put their verdict) and the three parts are laid
+   out as leaderboard rows ("Leaderboard Score", node 52:1763 — 40px, 2px
+   light-mint @ 60% stroke, 8px radius): .type-card-label part name,
+   light-mint DM Sans detail, Barlow value. Speed stays a bare value — the
+   per-card timer is never disclosed. */
 function ScoreBreakdown({
   correct,
   total,
   maxStreak,
   speedBonus,
+  score,
 }: {
   correct: number;
   total: number;
   maxStreak: number;
   speedBonus: number;
+  score: number;
 }) {
   const parts = scoreBreakdown(correct, maxStreak, speedBonus);
-  // Speed stays a bare value — the per-card timer is never disclosed.
   const rows = [
-    { label: "Accuracy", detail: `${correct}/${total}`, value: `${parts.accuracy}` },
+    {
+      label: "Accuracy",
+      detail: `${correct}/${total}`,
+      value: `${parts.accuracy}`,
+    },
     { label: "Best streak", detail: `${maxStreak}`, value: `+${parts.streak}` },
     { label: "Speed bonus", detail: null, value: `+${parts.speedBonus}` },
   ];
 
   return (
-    <div
-      className="border-purple-accent/45 rounded-2xl border bg-purple-900/90 px-5 py-2"
-      style={{
-        boxShadow:
-          "0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset",
-      }}
-    >
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex items-baseline justify-between border-b border-white/10 py-3 last:border-b-0"
-        >
-          <span className="font-display text-sm font-black tracking-[0.15em] text-white/85 uppercase">
-            {row.label}
-          </span>
-          <span className="flex items-baseline gap-4">
+    <section aria-label="Score breakdown" className={CARD_SHELL}>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="type-summary-label text-gold-accent">Score breakdown</h2>
+        <p className="type-lb-points text-gold-accent">{score}</p>
+      </div>
+      <ul className="mt-5 flex flex-col gap-3 md:mt-6">
+        {rows.map((row) => (
+          <li
+            key={row.label}
+            className="border-light-mint/60 flex h-10 items-center rounded-lg border-2 pr-[0.6875rem] pl-[0.8125rem]"
+          >
+            <span className="type-card-label text-off-white whitespace-nowrap">
+              {row.label}
+            </span>
             {row.detail !== null && (
-              <span className="font-mono text-sm font-semibold text-white/50">
+              <span className="font-dm-sans text-light-mint ml-3 text-base/6">
                 {row.detail}
               </span>
             )}
-            <span className="min-w-18 text-right text-xl font-black text-white tabular-nums">
+            <span className="type-lb-points text-off-white ml-auto pl-3">
               {row.value}
             </span>
-          </span>
-        </div>
-      ))}
-    </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
+/* Answer pills — Figma nodes 52:1978 / 52:2032 (the incorrect card) and
+   115:582 / 115:585 (the correct card): hug-width pills, 1.9px stroke,
+   15.6px apart. Two tones: "wrong" is a salmon fill (255,154,154 @ 29%)
+   with the False Red stroke and "Incorrect Font Red" text; "right" is a
+   white @ 20% fill with the Correct Blue stroke and "Correct Font Blue" text.
+   The player's pick always comes first as "You: …", in the tone of its
+   outcome; the other option follows as "Correct: …" (blue, when the player
+   was wrong) or "Incorrect: …" (red, when the player was right).
+
+   The design sets them at DM Sans SemiBold 20/30 with 24.5px side padding
+   (61.5px tall); they're taken down to 16/24 with 18px side padding (48px
+   tall, 19px radius) so short pairs share the card's content row. Long
+   labels wrap inside the pill and the row wraps when a pair can't share it —
+   this deck's shared-decision-making cases do at every width. */
+function AnswerPill({
+  prefix,
+  label,
+  tone,
+}: {
+  prefix: string;
+  label: string;
+  tone: "wrong" | "right";
+}) {
+  return (
+    <span
+      className={`type-summary-pill inline-flex items-baseline gap-2 rounded-[1.1875rem] border-2 px-[1.125rem] py-2.5 ${
+        tone === "wrong"
+          ? "border-alert-red bg-[rgba(255,154,154,0.29)] text-incorrect-red"
+          : "border-info-blue bg-white/20 text-correct-blue"
+      }`}
+    >
+      <span className="shrink-0">{prefix}</span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
+/* One case — Figma "New card" (node 52:1951). Vertical rhythm from the
+   design (px at a 16px root): "SUMMARY" + verdict row at 40; "Patient N:"
+   (light-mint) + age (off-white, both "Card client age Large") at 94; bullets
+   from 130 with 6px gold dots 20px in and the text 15px after; answer pills
+   at 306; the Rationale box (2px mid-teal stroke, 10px radius, Roboto Bold
+   20/24 title, DM Sans 20.5/30.8 → 31 body) at 397. The bullets are this
+   deck's label/value fields, label as a gold run (see PatientCard). */
 function ResultCard({
   index,
   result,
@@ -71,80 +138,76 @@ function ResultCard({
   result: SessionResult;
   profile: PatientProfile;
 }) {
-  const description = describePatient(profile);
-
   return (
-    <div
-      className="border-purple-accent/45 rounded-2xl border bg-purple-900/90 p-4"
-      style={{
-        boxShadow:
-          "0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset",
-      }}
-    >
-      {/* Header row */}
-      <div className="mb-1 flex items-start justify-between gap-2">
-        <p className="font-bold text-white">
-          <span className="font-black">Patient {index + 1}:</span>{" "}
-          <span className="font-mono text-sm font-semibold text-white/70">
-            {profile.ageSex}
-          </span>
+    <article className={CARD_SHELL}>
+      {/* Header row — "SUMMARY" (gold) … verdict ring + label: 28px ring,
+          4px gap. Node 52:2050: "False Answer" ring and INCORRECT both in
+          "Incorrect Font Red"; node 115:561: "Checkmark" ring and CORRECT in
+          success green. */}
+      <div className="flex items-center justify-between gap-4">
+        <p className="type-summary-label text-gold-accent">Summary</p>
+        <p
+          className={`type-summary-label flex items-center gap-1 ${
+            result.correct ? "text-success-green" : "text-incorrect-red"
+          }`}
+        >
+          <VerdictBadge
+            correct={result.correct}
+            className="size-6 md:size-7"
+            colorClassName="text-current"
+          />
+          {result.correct ? "Correct" : "Incorrect"}
         </p>
-        {result.correct ? (
-          <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-green-400">
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Correct
-          </span>
-        ) : (
-          <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-red-400">
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Incorrect
-          </span>
-        )}
       </div>
 
-      {/* Description */}
-      {description && (
-        <p className="mb-3 text-sm text-white/60">{description}</p>
-      )}
+      {/* Patient N: age */}
+      <p className="type-card-age mt-4 flex flex-wrap items-baseline gap-x-3.5 max-md:text-lg/6 md:mt-[1.3125rem]">
+        <span className="text-light-mint">Patient {index + 1}:</span>
+        <span className="text-off-white">{profile.ageSex}</span>
+      </p>
 
-      {/* Answer badges */}
-      <div className="mb-3 flex flex-wrap gap-2">
-        {result.correct ? (
-          <span className="rounded-full border border-green-400/60 bg-green-400/10 px-3 py-1 text-xs font-bold tracking-widest text-green-400 uppercase">
-            Correct: {labelForSide(profile, profile.correctSide)}
-          </span>
-        ) : (
-          <>
-            <span className="rounded-full border border-red-300/40 px-3 py-1 text-xs font-bold tracking-widest text-red-300/70 uppercase line-through">
-              You: {labelForSide(profile, result.playerSide)}
+      {/* Case fields, one bullet row each */}
+      <ul className="mt-2 pl-4 md:mt-3 md:pl-5">
+        {profile.fields.map((field) => (
+          <li key={field.label} className="flex gap-[0.5625rem]">
+            <span
+              className="bg-gold-accent mt-[0.5625rem] size-1.5 shrink-0 rounded-full md:mt-[0.6875rem]"
+              aria-hidden
+            />
+            <span className="type-summary-body text-off-white">
+              <span className="text-gold-accent font-semibold">
+                {field.label}:{" "}
+              </span>
+              {field.value}
             </span>
-            <span className="rounded-full border border-amber-400/60 px-3 py-1 text-xs font-bold tracking-widest text-amber-400 uppercase">
-              Correct: {labelForSide(profile, profile.correctSide)}
-            </span>
-          </>
-        )}
+          </li>
+        ))}
+      </ul>
+
+      {/* Answer pills — the player's pick first, then the other option */}
+      <div className="mt-6 flex flex-wrap gap-3 md:mt-10">
+        <AnswerPill
+          prefix="You:"
+          label={labelForSide(profile, result.playerSide)}
+          tone={result.correct ? "right" : "wrong"}
+        />
+        <AnswerPill
+          prefix={result.correct ? "Incorrect:" : "Correct:"}
+          label={labelForSide(profile, otherSide(result.playerSide))}
+          tone={result.correct ? "wrong" : "right"}
+        />
       </div>
 
-      {/* Rationale */}
-      <div className="border-purple-accent/20 rounded-xl border bg-black/35 p-3">
-        <p className="mb-1 text-xs font-bold text-white/90">Rationale:</p>
-        <p className="text-xs leading-relaxed text-white/70">
+      {/* Rationale — node 52:2025 */}
+      <div className="border-mid-teal mt-5 rounded-[0.625rem] border-2 px-4 pt-4 pb-4 md:mt-[1.875rem] md:px-[1.1875rem] md:pt-[1.375rem] md:pb-6">
+        <p className="font-roboto text-off-white text-lg/6 font-bold md:text-xl/6">
+          Rationale:
+        </p>
+        <p className="type-summary-body text-off-white mt-2 md:mt-2.5 md:leading-[1.9375rem]">
           {profile.explanation}
         </p>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -163,24 +226,40 @@ export function SummaryPanel() {
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* Sticky header */}
-      <div className="bg-panel/95 border-purple-accent/30 flex h-14 shrink-0 items-center border-b px-6">
-        <p className="font-display text-xl font-extrabold tracking-[0.18em] text-white uppercase">
-          Results: {correct}/{total}
-          <span className="ml-3 text-base font-bold opacity-60">
-            Score: {score}
-          </span>
-        </p>
-      </div>
+      {/* Header — Figma "Frame 6" (node 52:1653) top bar: "RESULTS:"
+          ("Leaderboard title 2", 20/32) beside the case counter in light-mint
+          (node 52:1674) and "SCORE: n" in gold ("Leaderboard Points Number 1",
+          24/16, node 52:2000),
+          over the 2px mid-teal Line 2 rule at y=73 — level with the
+          leaderboard box's header rule, so the two lines meet across the
+          screen. The height is composed the way that header is (2px box
+          edge + 22px + 32px line + 15px + 2px rule) rather than as one rem
+          value: the borders are px and don't scale with the root font-size,
+          so an all-rem 73 only lines up at a 16px root and drifts by a few
+          px as the viewport scales. The design insets the text 80px from the
+          left; the 6px top pad reproduces its slightly-below-centre text
+          placement (matching the leaderboard title's 22px top inset). */}
+      <p className="border-mid-teal flex h-[calc(4.3125rem_+_4px)] shrink-0 items-center gap-3 border-b-2 px-6 pt-1.5 md:pl-20">
+        <span className="type-panel-title text-off-white text-xl/8">
+          Results:
+        </span>
+        <span className="case-counter border-light-mint text-light-mint">
+          {correct}/{total}
+        </span>
+        <span className="type-lb-points text-gold-accent">Score: {score}</span>
+      </p>
 
-      {/* Scrollable card list */}
-      <div className="bg-panel/75 flex-1 overflow-y-auto">
-        <div className="mx-auto flex max-w-lg flex-col gap-4 p-4 pb-8">
+      {/* Scrollable card list — the design's 760px column, 40px under the
+          rule, centred in the pane (the design pins it beside a client logo
+          tile this project doesn't carry). */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-[47.5rem] flex-col gap-6 px-4 pt-6 pb-8 md:gap-8 md:pt-10 md:pb-10">
           <ScoreBreakdown
             correct={correct}
             total={total}
             maxStreak={state.maxStreak}
             speedBonus={speedBonus}
+            score={score}
           />
           {sessionResults.map((result, i) => {
             const profile = profileMap.get(result.profileId);
@@ -197,14 +276,16 @@ export function SummaryPanel() {
         </div>
       </div>
 
-      {/* Sticky TRY AGAIN footer */}
-      <div className="bg-panel/90 border-purple-accent/25 flex h-14 shrink-0 items-center justify-center border-t px-6 backdrop-blur">
+      {/* Sticky TRY AGAIN footer — not in the frame: a bar in the leaderboard
+          box's dress (2px mid-teal rule, charcoal @ 40% fill), header-height,
+          holding the gold CTA. Fixed (not min-) height, composed like the
+          header above, so its rule stays level with the leaderboard pager's
+          (LeaderboardPanel.tsx) at every root: 2px rule + 69px + the box's
+          2px bottom edge, mirroring the top. The 58px button centres in the
+          69. */}
+      <div className="border-mid-teal bg-charcoal/40 flex h-[calc(4.3125rem_+_4px)] shrink-0 items-center justify-center border-t-2 px-6">
         <button
-          className="font-display cursor-pointer rounded-full px-10 py-3 text-[0.85rem] font-black tracking-[0.2em] text-white uppercase transition-transform active:scale-95"
-          style={{
-            background: "var(--gradient-btn-gold)",
-            boxShadow: "0 0 20px rgba(245,200,66,0.35)",
-          }}
+          className="btn-gold"
           onClick={() => dispatch({ type: "RESET" })}
         >
           Try Again
