@@ -1,4 +1,11 @@
-import type { GameState, SessionResult, CumulativeStats, PatientProfile, SwipeSide } from "../types";
+import type {
+  GameState,
+  SessionResult,
+  CumulativeStats,
+  ClockState,
+  PatientProfile,
+  SwipeSide,
+} from "../types";
 
 // ─── Actions ────────────────────────────────────────────────
 export type GameAction =
@@ -6,6 +13,11 @@ export type GameAction =
   | { type: "SET_PLAYER"; firstName: string; lastName: string; email: string; specialty: string }
   | { type: "SWIPE"; profileId: string; side: SwipeSide; elapsedMs: number }
   | { type: "ADVANCE" }
+  // Session-clock edges, stamped with performance.now() by the card itself:
+  // the top card became interactive / the swipe or tap committed (before the
+  // fly-off — ~300ms before the SWIPE that carries the result).
+  | { type: "CARD_SHOWN"; at: number }
+  | { type: "CARD_COMMITTED"; at: number }
   | { type: "RESET" };
 
 // ─── Cumulative stats update ─────────────────────────────────
@@ -28,6 +40,8 @@ function updateCumulativeStats(
 }
 
 // ─── Initial state ────────────────────────────────────────────
+const pausedClock: ClockState = { accumulatedMs: 0, runningSince: null };
+
 export const initialState: GameState = {
   screen: "idle",
   deck: [],
@@ -42,6 +56,7 @@ export const initialState: GameState = {
   specialty: "",
   maxStreak: 0,
   lastSessionId: "",
+  clock: pausedClock,
 };
 
 // ─── Reducer ─────────────────────────────────────────────────
@@ -58,6 +73,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         streak: 0,
         maxStreak: 0,
         lastSessionId: "",
+        clock: pausedClock,
       };
 
     case "SWIPE": {
@@ -73,6 +89,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const newResults = [...state.sessionResults, result];
       const newStreak = correct ? state.streak + 1 : 0;
       const newMaxStreak = Math.max(state.maxStreak, newStreak);
+      // The clock normally pauses at CARD_COMMITTED; a SWIPE that finds it
+      // still running pauses it here with the same elapsed time, so
+      // accumulatedMs always equals the sum of the results' elapsedMs.
+      const clock: ClockState =
+        state.clock.runningSince === null
+          ? state.clock
+          : {
+              accumulatedMs: state.clock.accumulatedMs + action.elapsedMs,
+              runningSince: null,
+            };
 
       return {
         ...state,
@@ -80,6 +106,27 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         lastResult: result,
         streak: newStreak,
         maxStreak: newMaxStreak,
+        clock,
+      };
+    }
+
+    case "CARD_SHOWN":
+      // The top card just became interactive: the clock runs from here.
+      if (state.screen !== "playing") return state;
+      return { ...state, clock: { ...state.clock, runningSince: action.at } };
+
+    case "CARD_COMMITTED": {
+      // The swipe/tap committed: bank this card's interactive time and pause.
+      // Rounded the way CardStack rounds elapsedMs, from the same timestamps,
+      // so the banked total matches the results to the millisecond.
+      const { accumulatedMs, runningSince } = state.clock;
+      if (runningSince === null) return state;
+      return {
+        ...state,
+        clock: {
+          accumulatedMs: accumulatedMs + Math.max(0, Math.round(action.at - runningSince)),
+          runningSince: null,
+        },
       };
     }
 
@@ -129,6 +176,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         specialty: "",
         maxStreak: 0,
         lastSessionId: "",
+        clock: pausedClock,
       };
 
     default:

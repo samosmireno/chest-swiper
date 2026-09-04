@@ -4,10 +4,12 @@
 //   Type: Web app | Execute as: Me | Who has access: Anyone
 // Copy the deployment URL into SHEETS_WEBHOOK_URL in src/config.ts
 //
-// Schema change (asthma/COPD deck, v2.0): 12 cards, so card_p13–p15 columns
-// are gone. The header row only auto-writes into an EMPTY sheet — deploy
+// Schema changes: v2.0 (asthma/COPD deck) has 12 cards, so card_p13–p15
+// are gone; v2.1 adds total_ms (the session clock's total — the sum of the
+// card_p*_ms — which the leaderboard shows as its time column) after
+// speed_bonus. The header row only auto-writes into an EMPTY sheet — deploy
 // against a fresh/cleared sheet, or new rows will misalign against a header
-// that still carries the 15-card columns.
+// that still carries the old columns.
 
 const COLUMNS = [
   "app_version",
@@ -20,6 +22,7 @@ const COLUMNS = [
   "cards_total",
   "max_streak",
   "speed_bonus",
+  "total_ms",
   "card_p1_correct",
   "card_p2_correct",
   "card_p3_correct",

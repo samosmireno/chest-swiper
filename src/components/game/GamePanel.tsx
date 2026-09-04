@@ -5,6 +5,7 @@ import { ProgressBar } from "./ProgressBar";
 import { SwipeGuide } from "./SwipeGuide";
 import { StreakBanner } from "./StreakBanner";
 import { RationaleOverlay } from "./RationaleOverlay";
+import { SessionClock } from "./SessionClock";
 import { useGameState } from "../../context/useGame";
 import type { PatientProfile, SwipeSide } from "../../types";
 
@@ -13,11 +14,21 @@ interface GamePanelProps {
   currentIndex: number;
   onSwipe: (side: SwipeSide, elapsedMs: number) => void;
   onAdvance: () => void;
+  // Session-clock edges (see CardStack)
+  onCardShown: (at: number) => void;
+  onCardCommit: (at: number) => void;
 }
 
 const noop = () => {};
 
-export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelProps) {
+export function GamePanel({
+  deck,
+  currentIndex,
+  onSwipe,
+  onAdvance,
+  onCardShown,
+  onCardCommit,
+}: GamePanelProps) {
   const cardStackRef = useRef<CardStackHandle>(null);
   const state = useGameState();
   const { streak, lastResult, sessionResults } = state;
@@ -33,12 +44,21 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
     <div className="relative flex min-h-dvh w-full flex-col items-center justify-start gap-4 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:px-6 sm:pt-14 sm:pb-6">
       {/* sm:pt-14 = the design's 56px from the frame top to the progress dots
           (Figma Frame 2, row 37:926 at y=54 + 3px inset). */}
-      <div className="w-full">
+      <div className="relative w-full">
         <ProgressBar
           current={currentIndex}
           total={deck.length}
           results={results}
         />
+        {/* Session clock (Figma "digital-timer-value", node 2009:3371):
+            top-left, 72px in from the frame edge (left-12 inside the
+            column's px-6) and centred on the dot row. Narrower columns can't
+            fit the 60px digits beside the 12-dot row, so below xl it drops
+            to the counter's size (see .session-clock) and mirrors the
+            counter's compromise (see ProgressBar): pinned to the column's
+            left edge at md–lg, and in the top-left corner level with the
+            counter on the stacked layout below md. */}
+        <SessionClock className="absolute top-0 left-0 md:top-1/2 md:-translate-y-1/2 xl:left-12" />
       </div>
 
       {/* Label, card and buttons centre in the space left below the progress
@@ -65,6 +85,8 @@ export function GamePanel({ deck, currentIndex, onSwipe, onAdvance }: GamePanelP
             deck={deck}
             currentIndex={currentIndex}
             onSwipe={onSwipe}
+            onShown={onCardShown}
+            onCommit={onCardCommit}
             locked={overlayOpen}
           />
           {/* One-time pre-warm: lay out the overlay's text styles while the

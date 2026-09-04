@@ -15,12 +15,17 @@ export interface LeaderboardEntry {
   correct: number;
   total: number;
   maxStreak: number;
+  // Interactive time across the deck (ms) — the sum of the results'
+  // elapsedMs, i.e. the session clock's final reading; the leaderboard's
+  // time column
+  totalMs: number;
   sessionId: string; // stable identity for the session
   timestamp: number; // Date.now() at session end — for display/sorting
 }
 
-// _v2 suffix: entries scored before the speed bonus existed stay out.
-const LEADERBOARD_KEY = "wwys_leaderboard_v2";
+// _v3 suffix: entries from before the time column carry no totalMs and
+// stay out (_v2 was the speed bonus).
+const LEADERBOARD_KEY = "wwys_leaderboard_v3";
 
 function loadLeaderboard(): LeaderboardEntry[] {
   try {
@@ -77,6 +82,13 @@ export function computeSpeedBonus(results: SessionResult[]): number {
   );
 }
 
+// The session clock's total: every card's interactive time, summed. Same
+// edges as the speed bonus (card shown → swipe/tap commit), so rationale
+// reading never counts.
+export function computeTotalMs(results: SessionResult[]): number {
+  return results.reduce((sum, r) => sum + r.elapsedMs, 0);
+}
+
 export function getLeaderboard(): LeaderboardEntry[] {
   return loadLeaderboard().sort((a, b) => b.score - a.score);
 }
@@ -100,6 +112,7 @@ export function buildLeaderboardEntry(
     correct,
     total,
     maxStreak,
+    totalMs: computeTotalMs(results),
     sessionId,
     timestamp: Date.now(),
   };

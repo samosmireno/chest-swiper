@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useGameState } from "../context/useGame";
 import { useLeaderboard } from "../hooks/useLeaderboard";
 import { LEADERBOARD_PAGE_SIZE } from "../config";
+import { formatClock } from "../utils/formatClock";
 
 export function LeaderboardPanel() {
   const state = useGameState();
@@ -64,23 +65,30 @@ export function LeaderboardPanel() {
               const rank = page * LEADERBOARD_PAGE_SIZE + i + 1;
               const isCurrent = entry.sessionId === state.lastSessionId;
               return (
-                /* "Leaderboard Score" (node 52:1763): rank | name [YOU] … score n/10 */
+                /* "Leaderboard Score" (node 52:1763): rank | name [YOU] … mm:ss score n/12 */
                 <li
                   key={entry.sessionId || `${entry.timestamp}-${i}`}
                   className="border-light-mint/60 flex h-10 items-center rounded-lg border-2 pr-[0.6875rem] pl-[0.8125rem]"
                 >
-                  <span className="type-lb-points text-gold-accent w-[1.375rem] shrink-0">
+                  {/* Rank column is 22px in the design; a two-digit rank keeps
+                      its natural width plus a 4px gap instead of touching the name */}
+                  <span className="type-lb-points text-gold-accent min-w-[1.375rem] shrink-0 pr-1">
                     {rank}
                   </span>
                   <span className="type-lb-name text-off-white min-w-0 truncate">
                     {entry.username}
                   </span>
                   {isCurrent && (
-                    <span className="font-dm-sans text-gold-accent ml-[1.625rem] shrink-0 text-base/6 font-bold">
+                    <span className="font-dm-sans text-gold-accent ml-2 shrink-0 text-base/6 font-bold">
                       YOU
                     </span>
                   )}
-                  <span className="type-lb-points text-off-white ml-auto shrink-0 pl-3">
+                  {/* Time column (node 2024:2732): the session clock's
+                      total, light-mint DM Sans between the name and the score */}
+                  <span className="font-dm-sans text-light-mint ml-auto shrink-0 pl-2 text-base/6 tabular-nums">
+                    {formatClock(entry.totalMs)}
+                  </span>
+                  <span className="type-lb-points text-off-white ml-2 shrink-0">
                     {entry.score}
                   </span>
                   <span className="font-dm-sans text-light-mint ml-2 shrink-0 text-base/6">

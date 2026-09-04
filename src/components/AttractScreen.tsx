@@ -13,13 +13,14 @@ const STACK_STYLES = [
   { rotate: -18, x: -30, opacity: 0 },
 ];
 
-/* Attract-screen card — Figma "Card Client 1" (node 32:167), 238×363. The
-   game card's glass surface / glow ring / avatar frame at mini scale: avatar
-   65×80 (2px gradient stroke, r8) at (20,36), label DM Sans SemiBold 10/26
-   +2px, age Roboto Bold 12/24, bullets DM Sans 12/16 white with 4px gold
-   dots at x=14. Each of this deck's label/value fields takes one bullet row,
-   the label as a gold run ahead of the value (see PatientCard). Rendered
-   inside the .patient-card wrapper in the fan below. */
+/* Attract-screen card — Figma "Card Client 1" (node 32:167) as placed on
+   Frame 1 (2005:813), 238×363. The game card's glass surface / glow ring /
+   avatar frame at mini scale: avatar 65×80 (2px gradient stroke, r8) at
+   (20,36), label DM Sans SemiBold 10/26 +2px, the first name in gold over
+   the age line (Roboto Bold 12/16), bullets DM Sans 12/16 white with 4px
+   gold dots at x=14 — the case's verbatim bullets, no footnote. Rendered
+   inside the .patient-card wrapper in the fan below; the fan sizes itself to
+   the tallest case so every card keeps this one type size. */
 function MiniCard({ profile }: { profile: PatientProfile }) {
   return (
     <div className="relative z-10 flex h-full w-full flex-col">
@@ -27,7 +28,7 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
         <div className="bg-avatar-stroke h-20 w-[4.0625rem] shrink-0 rounded-lg p-0.5">
           <img
             src={profile.image}
-            alt={profile.ageSex}
+            alt={`${profile.name}, ${profile.ageSex}`}
             className="pointer-events-none h-full w-full rounded-md object-cover"
             draggable={false}
           />
@@ -36,22 +37,20 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
           <p className="type-card-label text-gold-accent text-[0.625rem]/[1.625rem]">
             Patient Profile
           </p>
-          <p className="type-card-age text-off-white text-xs/6">
+          <p className="type-card-age text-gold-accent text-xs/4">
+            {profile.name}
+          </p>
+          <p className="type-card-age text-off-white text-xs/4">
             {profile.ageSex}
           </p>
         </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2 pt-4 pr-3 pb-4 pl-3.5">
-        {profile.fields.map((field) => (
-          <div key={field.label} className="flex items-start gap-1.5">
+        {profile.bullets.map((bullet) => (
+          <div key={bullet} className="flex items-start gap-1.5">
             <span className="bg-gold-accent mt-1.5 h-1 w-1 shrink-0 rounded-full" />
-            <p className="type-card-body text-xs/4 text-white">
-              <span className="text-gold-accent font-semibold">
-                {field.label}:{" "}
-              </span>
-              {field.value}
-            </p>
+            <p className="type-card-body text-xs/4 text-white">{bullet}</p>
           </div>
         ))}
       </div>
@@ -111,10 +110,24 @@ export function AttractScreen() {
           Figma "Frame 1"; the heading (node 148:357, "Card title" style)
           hangs above it out of flow — its bottom 3rem (design: 47px) over the
           card's top — so it doesn't push the fan down. */}
-      <div className="relative hidden h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
+      <div className="relative hidden min-h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
         <p className="type-card-title text-off-white absolute bottom-full left-1/2 mb-12 -translate-x-1/2 whitespace-nowrap">
           Complete All {profiles.length} Cases!
         </p>
+        {/* Sizer: every case's mini card laid out invisibly in one grid cell,
+            so the fan is as tall as the deck's tallest card and every card
+            keeps the one type size (the same trick as CardStack's
+            StackSizer); the design's 363px stays as the floor. */}
+        <div className="pointer-events-none invisible grid" aria-hidden>
+          {profiles.map((profile) => (
+            <div
+              key={profile.id}
+              className="col-start-1 row-start-1 flex flex-col"
+            >
+              <MiniCard profile={profile} />
+            </div>
+          ))}
+        </div>
         <AnimatePresence>
           {[...stack].reverse().map(({ id, profileIdx }, reversedIdx) => {
             const stackPos = stack.length - 1 - reversedIdx;
@@ -170,7 +183,10 @@ export function AttractScreen() {
                       <p className="type-card-label text-gold-accent text-[0.625rem]/[1.625rem]">
                         Patient Profile
                       </p>
-                      <p className="type-card-age text-off-white/60 text-xs/6">
+                      <p className="type-card-age text-gold-accent/60 text-xs/4">
+                        {profile.name}
+                      </p>
+                      <p className="type-card-age text-off-white/60 text-xs/4">
                         {profile.ageSex}
                       </p>
                     </div>

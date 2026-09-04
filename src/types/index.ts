@@ -2,17 +2,18 @@ export type SwipeSide = 'left' | 'right'
 
 export type CardTopic = 'asthma' | 'copd'
 
-export interface ProfileField {
-  label: string
-  value: string
-}
-
 export interface PatientProfile {
   id: string
 
+  // First name — its own gold line above the age line on every card (Figma
+  // "Card Client 2", node 2004:557)
+  name: string
   ageSex: string
   image: string
-  fields: ProfileField[]
+  // Clinical profile bullets, shipped verbatim from the source deck
+  bullets: string[]
+  // Abbreviation key printed at the foot of the card, verbatim from the slide
+  footnote: string
 
   // The two clinical choices — labels are case-specific
   leftOption: string
@@ -32,6 +33,18 @@ export interface SessionResult {
   correct: boolean
   // Time from the card becoming interactive to the swipe/tap commit
   elapsedMs: number
+}
+
+// The visible session clock. Same edges as SessionResult.elapsedMs, summed:
+// it runs while a card is interactive and pauses at the swipe/tap commit, so
+// rationale-reading never counts.
+export interface ClockState {
+  // Interactive time of the cards swiped so far (ms) — equals the sum of the
+  // session results' elapsedMs
+  accumulatedMs: number
+  // performance.now() when the current card became interactive; null while
+  // the clock is paused
+  runningSince: number | null
 }
 
 export interface CumulativeStats {
@@ -56,4 +69,5 @@ export interface GameState {
   specialty: string
   maxStreak: number
   lastSessionId: string
+  clock: ClockState
 }

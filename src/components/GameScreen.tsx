@@ -25,6 +25,10 @@ export function GameScreen() {
 
   const handleAdvance = () => dispatch({ type: "ADVANCE" });
 
+  // Session-clock edges, timestamped by the card (see CardStack).
+  const handleCardShown = (at: number) => dispatch({ type: "CARD_SHOWN", at });
+  const handleCardCommit = (at: number) => dispatch({ type: "CARD_COMMITTED", at });
+
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto sm:flex-row sm:overflow-hidden">
       <GamePanel
@@ -32,6 +36,8 @@ export function GameScreen() {
         currentIndex={currentIndex}
         onSwipe={handleSwipe}
         onAdvance={handleAdvance}
+        onCardShown={handleCardShown}
+        onCardCommit={handleCardCommit}
       />
       <DashboardPanel
         sessionResults={sessionResults}

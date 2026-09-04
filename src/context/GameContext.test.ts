@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { gameReducer, initialState } from './gameReducer'
-import { buildLeaderboardEntry, calculateScore, computeSpeedBonus, scoreBreakdown } from '../leaderboard'
+import { buildLeaderboardEntry, calculateScore, computeSpeedBonus, computeTotalMs, scoreBreakdown } from '../leaderboard'
 import { profiles } from '../data/profiles'
 
 describe('gameReducer', () => {
@@ -265,5 +265,108 @@ describe('computeSpeedBonus', () => {
   it('caps the full-deck total at 8 — below the 10-pt streak step', () => {
     const instantDeck = Array.from({ length: 15 }, () => result(true, 0))
     expect(computeSpeedBonus(instantDeck)).toBe(8) // 15 × 0.5, rounded
+  })
+})
+
+describe('session clock', () => {
+  const start = () => gameReducer(initialState, { type: 'START_GAME', deck: profiles })
+
+  it('START_GAME resets the clock, paused at zero', () => {
+    const dirty = { ...initialState, clock: { accumulatedMs: 4200, runningSince: 99 } }
+    const state = gameReducer(dirty, { type: 'START_GAME', deck: profiles })
+    expect(state.clock).toEqual({ accumulatedMs: 0, runningSince: null })
+  })
+
+  it('CARD_SHOWN starts the clock running from the given timestamp', () => {
+    const state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    expect(state.clock).toEqual({ accumulatedMs: 0, runningSince: 1000 })
+  })
+
+  it('CARD_SHOWN is ignored outside play', () => {
+    const state = gameReducer(initialState, { type: 'CARD_SHOWN', at: 1000 })
+    expect(state).toBe(initialState)
+  })
+
+  it('CARD_COMMITTED banks the interactive time, rounded, and pauses', () => {
+    let state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    state = gameReducer(state, { type: 'CARD_COMMITTED', at: 5400.4 })
+    expect(state.clock).toEqual({ accumulatedMs: 4400, runningSince: null })
+  })
+
+  it('CARD_COMMITTED while paused is a no-op', () => {
+    const state = start()
+    expect(gameReducer(state, { type: 'CARD_COMMITTED', at: 5000 })).toBe(state)
+  })
+
+  it('SWIPE after CARD_COMMITTED does not count the card twice', () => {
+    let state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    state = gameReducer(state, { type: 'CARD_COMMITTED', at: 5000 })
+    const card = state.deck[0]
+    state = gameReducer(state, { type: 'SWIPE', profileId: card.id, side: card.correctSide, elapsedMs: 4000 })
+    expect(state.clock).toEqual({ accumulatedMs: 4000, runningSince: null })
+  })
+
+  it('SWIPE pauses a clock nobody committed, with the same elapsed time', () => {
+    let state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    const card = state.deck[0]
+    state = gameReducer(state, { type: 'SWIPE', profileId: card.id, side: card.correctSide, elapsedMs: 4000 })
+    expect(state.clock).toEqual({ accumulatedMs: 4000, runningSince: null })
+  })
+
+  it('ADVANCE leaves the clock paused until the next card is shown', () => {
+    let state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    state = gameReducer(state, { type: 'CARD_COMMITTED', at: 5000 })
+    const card = state.deck[0]
+    state = gameReducer(state, { type: 'SWIPE', profileId: card.id, side: card.correctSide, elapsedMs: 4000 })
+    state = gameReducer(state, { type: 'ADVANCE' })
+    expect(state.clock).toEqual({ accumulatedMs: 4000, runningSince: null })
+    state = gameReducer(state, { type: 'CARD_SHOWN', at: 12_000 })
+    expect(state.clock).toEqual({ accumulatedMs: 4000, runningSince: 12_000 })
+  })
+
+  it('over a full deck the banked time equals the sum of the per-card times, and ends paused', () => {
+    let state = start()
+    let now = 10_000
+    for (let i = 0; i < state.deck.length; i++) {
+      const card = state.deck[i]
+      state = gameReducer(state, { type: 'CARD_SHOWN', at: now })
+      const committedAt = now + 3000 + i * 250.5 // varied, fractional
+      state = gameReducer(state, { type: 'CARD_COMMITTED', at: committedAt })
+      state = gameReducer(state, {
+        type: 'SWIPE',
+        profileId: card.id,
+        side: card.correctSide,
+        elapsedMs: Math.round(committedAt - now),
+      })
+      state = gameReducer(state, { type: 'ADVANCE' })
+      now = committedAt + 8000 // rationale time never counts
+    }
+    expect(state.screen).toBe('summary')
+    const total = computeTotalMs(state.sessionResults)
+    expect(state.clock).toEqual({ accumulatedMs: total, runningSince: null })
+  })
+
+  it('RESET clears the clock', () => {
+    let state = gameReducer(start(), { type: 'CARD_SHOWN', at: 1000 })
+    state = gameReducer(state, { type: 'RESET' })
+    expect(state.clock).toEqual({ accumulatedMs: 0, runningSince: null })
+  })
+})
+
+describe('total time', () => {
+  const results = [
+    { profileId: 'c1', playerSide: 'left' as const, correct: true, elapsedMs: 4000 },
+    { profileId: 'c2', playerSide: 'right' as const, correct: false, elapsedMs: 12_500 },
+    { profileId: 'c3', playerSide: 'left' as const, correct: true, elapsedMs: 700 },
+  ]
+
+  it('computeTotalMs sums every card, right or wrong', () => {
+    expect(computeTotalMs(results)).toBe(17_200)
+    expect(computeTotalMs([])).toBe(0)
+  })
+
+  it('buildLeaderboardEntry carries the total for the time column', () => {
+    const entry = buildLeaderboardEntry('Jane Doe', '', results, 2, 'sid-1')
+    expect(entry.totalMs).toBe(17_200)
   })
 })

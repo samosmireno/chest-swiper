@@ -411,6 +411,15 @@
     line-height: 1rem;
     font-weight: 400;
   }
+  /* "footnote case card text": DM Sans Regular 8 on normal leading — the
+     abbreviation key at the foot of the card (node I2009:3373;2009:2281).
+     10px leading (1.25 × 8) on the px grid. */
+  .type-card-footnote {
+    font-family: var(--font-dm-sans);
+    font-size: 0.5rem;
+    line-height: 0.625rem;
+    font-weight: 400;
+  }
 
   /* ── Rationale overlay type — Figma "Correct Card Answer" (nodes 51:1457 /
      52:1508). The overlay's shell reuses .patient-card (the design frame is
@@ -743,6 +752,56 @@
     letter-spacing: 0.125rem;
   }
 
+  /* ── Session clock — Figma "digital-timer-value" (component 52:2012) ───
+     Barlow Condensed Bold 60.5/73 with 1.12px tracking, drawn as a dim LED:
+     a translucent fill inside a hairline outline, under soft halos. Running
+     (variant "Default", node 52:2011): teal-accent at 15% under two teal
+     halos (20% @ 20px, 10% @ 45px). Paused (node 52:2013 — every "Case N
+     Answer" frame): gold-accent at 30% under a gold halo (18% @ 20px), the
+     whole mark at 79%. The outline is the Figma text stroke the MCP export
+     drops (as t2i-swiper found via the plugin API), in each state's colour.
+     Sizes on the 1/8 rem grid — 3.75rem/4.5rem, 1px tracking and stroke —
+     with the halos in em so the step-down below only changes the size. The
+     150ms crossfade between states matches the label/button fades in
+     GamePanel (Figma has no transition). Tabular figures stop the digits
+     shuffling as they tick. */
+  .session-clock {
+    font-family: var(--font-display);
+    font-size: 3.75rem;
+    line-height: 4.5rem;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--color-teal-accent) 15%, transparent);
+    -webkit-text-stroke: 0.0625rem var(--color-teal-accent);
+    text-shadow:
+      0 0 0.3125em color-mix(in srgb, var(--color-teal-accent) 20%, transparent),
+      0 0 0.75em color-mix(in srgb, var(--color-teal-accent) 10%, transparent);
+    transition:
+      color 150ms ease-out,
+      opacity 150ms ease-out,
+      -webkit-text-stroke-color 150ms ease-out,
+      text-shadow 150ms ease-out;
+  }
+  .session-clock[data-state="paused"] {
+    color: color-mix(in srgb, var(--color-gold-accent) 30%, transparent);
+    -webkit-text-stroke-color: var(--color-gold-accent);
+    text-shadow: 0 0 0.3125em
+      color-mix(in srgb, var(--color-gold-accent) 18%, transparent);
+    opacity: 0.79;
+  }
+  /* Below xl the game column can't fit the 131px digits beside the 12-dot
+     row (the counter makes the same compromise, see ProgressBar), so the
+     clock drops to a 32px counter-sized reading whose line box is the
+     counter's outer height, level with it. */
+  @media (max-width: 1279px) {
+    .session-clock {
+      font-size: 2rem;
+      line-height: 2.0625rem;
+    }
+  }
+
   /* ── Streak banner — not a Figma node. Composed from the design's parts:
      the case counter's outline pill redrawn in gold-accent (2px stroke, the
      buttons' 16px corner) on a near-solid charcoal fill, carrying the session
@@ -858,6 +917,41 @@
     .type-summary-body {
       font-size: 1.25rem;
       line-height: 1.6875rem;
+    }
+  }
+
+  /* ── Score breakdown — Figma "New card" (node 52:1951) rows (52:2025,
+     2014:8013/15/21): 72px tall, 1.9px mid-teal stroke, 10.3px radius, the
+     label 17px in and the value ending 26px from the right. On the 1/8 rem
+     grid: 4.5rem tall, 0.125rem stroke, 0.625rem radius, 1rem / 1.5rem side
+     padding; 3.5rem tall below md, where the type steps down. The stroke is
+     rem, not px, so the row scales with the kiosk root like its type. */
+  .score-row {
+    display: flex;
+    align-items: center;
+    height: 3.5rem;
+    padding: 0 1.5rem 0 1rem;
+    border: 0.125rem solid var(--color-mid-teal);
+    border-radius: 0.625rem;
+  }
+  /* Row value — "Leaderboard Points Number 1" at 32px (nodes 2014:8017–23):
+     Barlow Condensed Bold 32/16, +0.6px tracking (1px on the grid). 24px
+     below md, level with the leaderboard's own points size. */
+  .type-score-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.0625rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  @media (min-width: 768px) {
+    .score-row {
+      height: 4.5rem;
+    }
+    .type-score-value {
+      font-size: 2rem;
     }
   }
 }

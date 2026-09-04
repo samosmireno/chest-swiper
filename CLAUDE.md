@@ -26,9 +26,12 @@ attract screen with player form
 overlay → summary with score + leaderboard. Case content lives in
 `src/data/profiles.ts`. Scoring is correct×100 + maxStreak×10 plus a hidden
 speed bonus, weighted so accuracy can never be outranked (see `src/config.ts`;
-proven exhaustively in `src/leaderboard.test.ts`). Results POST to a Google
-Apps Script webhook (`sheets/wwys-results.gs`, URL in `src/config.ts`); bump
-`APP_VERSION` there whenever card content or scoring changes.
+proven exhaustively in `src/leaderboard.test.ts`). A session clock
+(`SessionClock`, teal while a card is live, gold while its rationale is open)
+runs on the speed bonus's edges; its total is the summary's TOTAL TIME row and
+the leaderboard's time column (`total_ms` in the payload). Results POST to a
+Google Apps Script webhook (`sheets/wwys-results.gs`, URL in `src/config.ts`);
+bump `APP_VERSION` there whenever card content or scoring changes.
 
 ## Styling
 
@@ -39,10 +42,12 @@ carries the palette tokens (`dark-teal`, `mid-teal`, `gold-accent`,
 `.btn-outline` buttons, the `.patient-card` and `.entry-panel` glass shells
 and the `.type-*` text ramp, each annotated with its Figma node; components
 use those classes plus Tailwind utilities. The scene art
-(`public/bg_video.mp4` + poster) is shared with t2i-swiper. This deck's cases
-are label/value `fields` rather than t2i's verbatim `bullets`; they render as
-the design's bullet rows with the label as a gold run ahead of the value
-(`PatientCard`, `SummaryPanel`, the attract-screen mini card).
+(`public/bg_video.mp4` + poster) is shared with t2i-swiper. Cards carry the
+slides' verbatim `bullets` under a gold `name` line and the age line, with the
+slide's abbreviation `footnote` at the foot (`PatientCard`, `SummaryPanel`, the
+attract-screen mini card). Every card shares one type size: `CardStack` and
+the attract fan size themselves to the deck's tallest card with an invisible
+sizer rather than shrinking the copy.
 
 ## Agent skills
 

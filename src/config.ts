@@ -58,7 +58,9 @@ export const SPEED_BONUS_ZERO_MS = 30_000;
 // APP_VERSION — bump this when card content or scoring changes to filter old
 // submissions. 1.2/1.3 = the 15-card T1D deck; 2.0 = the 12-card severe
 // asthma & COPD deck (cases from documents/cases.pptx), same scoring formula
-// as 1.3.
-export const APP_VERSION = "2.0";
+// as 1.3; 2.1 = the same deck with the slides' verbatim bullets, name line
+// and abbreviation footnote, a visible session clock, and total_ms in the
+// payload (the leaderboard's time column) — scoring unchanged.
+export const APP_VERSION = "2.1";
 export const SHEETS_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbw0fWOEBUx0LUO8x4WMVulsSGc4HWA3tdkbD4Ju9sRhW_068xQkefhPWoaN_jjAzihy6g/exec";
+  "https://script.google.com/macros/s/AKfycbyYnb0ZFJ5n9jpKr2CziX-LEzB3kxl80HY0erLQvn9jaeh_ndptCkVCRYnDUBeBO_54cQ/exec";

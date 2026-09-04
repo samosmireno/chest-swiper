@@ -1,29 +1,28 @@
 import type { PatientProfile } from "../types";
 
-// 12 cases from documents/cases.pptx: 6 severe asthma (biologic selection)
-// followed by 6 COPD (GOLD 2026 escalation). Field values keep the slides'
-// abbreviations (FeNO, EOS, IgE, FEV1, CAAT) as printed on the cards.
+// 12 cases transcribed from documents/cases.pptx (slides 2–13): 6 severe
+// asthma (biologic selection) followed by 6 COPD (GOLD 2026 escalation).
+// Name, age line, bullets and the abbreviation footnote are the slide's
+// verbatim, in the slide's order, keeping its abbreviations (FeNO, EOS, IgE,
+// FEV1, CAAT) as printed. Three typographic slips on the slides are
+// normalised: "7-year-old-male" (c2), "LABA + LAMA+ ICS" (c10) and the
+// "4-6 times/day" hyphen range (c6, set as an en dash like c5's). The option
+// labels and rationales are unchanged from v2.0.
 export const profiles: PatientProfile[] = [
   {
     id: "c1",
-    ageSex: "Khloe, 24-year-old female",
+    name: "Khloe",
+    ageSex: "24-year-old female",
     image: "./patients/khloe.webp",
-    fields: [
-      {
-        label: "History",
-        value: "Diagnosed with asthma at age 20; eczema in childhood",
-      },
-      {
-        label: "Treatment",
-        value:
-          "Budesonide/formoterol (160 mcg/4.5 mcg), tiotropium, and a rescue inhaler",
-      },
-      {
-        label: "Recent",
-        value: "ED visit 2 months ago due to shortness of breath",
-      },
-      { label: "Labs", value: "FeNO = 50 ppb, EOS = 389 cells/μL" },
+    bullets: [
+      "Diagnosed with asthma at age 20",
+      "History of eczema in childhood",
+      "Currently on the budesonide/formoterol (160 mcg/4.5 mcg), tiotropium, and a rescue inhaler",
+      "ED visit 2 months ago due to shortness of breath",
+      "FeNO: 50 ppb; EOS: 389 cells/μL",
     ],
+    footnote:
+      "ED = emergency department; EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid.",
     leftOption: "Add a biologic",
     rightOption: "Optimize current management",
     correctSide: "left",
@@ -33,24 +32,17 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c2",
-    ageSex: "Kevin, 7-year-old male",
+    name: "Kevin",
+    ageSex: "7-year-old male",
     image: "./patients/kevin.webp",
-    fields: [
-      {
-        label: "History",
-        value: "Dog and peanut allergies; uses avoidance strategies",
-      },
-      { label: "Symptoms", value: "Frequently wakes at night coughing" },
-      {
-        label: "Treatment",
-        value:
-          "Budesonide/formoterol (80 mcg/4.5 mcg); albuterol 3–4 times/week; correct inhaler technique",
-      },
-      {
-        label: "Labs",
-        value: "FeNO = 35 ppb, EOS = 150 cells/μL, IgE = 300 IU/mL",
-      },
+    bullets: [
+      "History of dog and peanut allergies; practices avoidance strategies",
+      "Frequently wakes at night coughing",
+      "Currently on budesonide/formoterol (80 mcg/4.5 mcg) and needs albuterol 3–4 times/week as a rescue inhaler; demonstrates correct inhaler technique",
+      "FeNO: 35 ppb; EOS: 150 cells/μL; IgE: 300 IU/mL",
     ],
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid; IgE = immunoglobulin E; IL = interleukin.",
     leftOption: "Omalizumab",
     rightOption: "Mepolizumab",
     correctSide: "left",
@@ -60,27 +52,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c3",
-    ageSex: "Miles, 13-year-old male",
+    name: "Miles",
+    ageSex: "13-year-old male",
     image: "./patients/miles.webp",
-    fields: [
-      {
-        label: "History",
-        value: "Asthma since age 8; atopic dermatitis with frequent flares",
-      },
-      {
-        label: "Symptoms",
-        value:
-          "Breathless during soccer practice; rescue inhaler 4–5 days/week",
-      },
-      {
-        label: "Treatment",
-        value: "Fluticasone/vilanterol (200 mcg/25 mcg) and albuterol rescue",
-      },
-      {
-        label: "Labs",
-        value: "FeNO = 38 ppb, EOS = 168 cells/μL, IgE = 5 IU/mL",
-      },
+    bullets: [
+      "Diagnosed with asthma at age 8",
+      "History of atopic dermatitis (somewhat controlled with steroid cream; frequent flares)",
+      "Reports increased shortness of breath and chest tightness, especially during soccer team practice, requiring rescue inhaler 4–5 days/week",
+      "Currently on fluticasone/vilanterol (200 mcg/25 mcg) and rescue inhaler (albuterol)",
+      "FeNO: 38 ppb; EOS: 168 cells/μL; IgE: 5 IU/mL",
     ],
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; LABA = long-acting β2-agonist; ICS = inhaled corticosteroid.",
     leftOption: "Omalizumab",
     rightOption: "Dupilumab",
     correctSide: "right",
@@ -90,27 +73,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c4",
-    ageSex: "Claire, 47-year-old female",
+    name: "Claire",
+    ageSex: "47-year-old female",
     image: "./patients/claire.webp",
-    fields: [
-      {
-        label: "History",
-        value: "Asthma since age 32; former smoker, tobacco-free for 10 years",
-      },
-      {
-        label: "Comorbidities",
-        value: "Insulin-dependent diabetes, nasal polyps, seasonal allergies",
-      },
-      {
-        label: "Treatment",
-        value:
-          "High-dose fluticasone/salmeterol; 1 exacerbation 8 months ago",
-      },
-      {
-        label: "Labs",
-        value: "FeNO = 45 ppb, EOS = 550 cells/μL, IgE = 22 IU/mL",
-      },
+    bullets: [
+      "Diagnosed with asthma at age 32, former smoker (5 pack-years); tobacco-free for 10 years",
+      "Comorbidities: insulin-dependent diabetes, nasal polyps, seasonal allergies",
+      "1 exacerbation 8 months ago",
+      "Currently on high-dose fluticasone/salmeterol (500 mcg/50 mcg)",
+      "FeNO: 45 ppb; EOS: 550 cells/μL; IgE: 22 IU/mL",
     ],
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; IgE = immunoglobulin E; IL = interleukin; LABA = long-acting β2-agonist.",
     leftOption: "Anti-IgE",
     rightOption: "Anti–IL-5/IL-5R",
     correctSide: "right",
@@ -120,25 +94,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c5",
-    ageSex: "Luis, 19-year-old male",
+    name: "Luis",
+    ageSex: "19-year-old male",
     image: "./patients/luis.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "Asthma since age 8; new college student; missed his last follow-up",
-      },
-      {
-        label: "Symptoms",
-        value: "Increased cough, chest tightness, and rescue inhaler use",
-      },
-      {
-        label: "Treatment",
-        value:
-          "Budesonide/formoterol (160 mcg/4.5 mcg) 1 puff/day; albuterol as needed",
-      },
-      { label: "Labs", value: "FeNO = 18 ppb, EOS = 148 cells/μL" },
+    bullets: [
+      "Diagnosed with asthma at age 8",
+      "Reports increased cough, chest tightness, and use of rescue inhaler",
+      "Currently on budesonide/formoterol (160 mcg/4.5 mcg, 1 puff/day) and as-needed albuterol (90 mcg, 2 puffs up to 4–6 times/day)",
+      "FeNO: 18 ppb; EOS: 148 cells/μL",
+      "Started college this semester; missed previous follow-up appointment",
     ],
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; SABA = short-acting β2-agonist.",
     leftOption: "Add a biologic",
     rightOption: "Optimize current management",
     correctSide: "right",
@@ -148,25 +115,19 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c6",
-    ageSex: "Owen, 8-year-old male",
+    name: "Owen",
+    ageSex: "8-year-old male",
     image: "./patients/owen.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "Asthma diagnosed after a hospital stay; underweight (BMI 13.5)",
-      },
-      {
-        label: "Symptoms",
-        value:
-          "Wheezing and increased rescue-inhaler use; eating less due to reflux and food feeling stuck",
-      },
-      {
-        label: "Treatment",
-        value: "Budesonide/formoterol, albuterol as needed, omeprazole",
-      },
-      { label: "Labs", value: "FeNO = 23 ppb, EOS = 342 cells/μL" },
+    bullets: [
+      "Diagnosed with asthma after hospital stay 3 months ago",
+      "Underweight (20 kg; BMI: 13.5); mother reports he’s eating less due to frequent acid reflux, difficulty swallowing, and food feeling stuck in his chest; GI appointment is imminent",
+      "Medications at discharge: budesonide/formoterol, prednisolone (3-day course)",
+      "Current medication: budesonide/formoterol (80 mcg/4.5 mcg, 1 puff/day) and as-needed albuterol (90 mcg, 2 puffs up to 4–6 times/day), omeprazole",
+      "Reports wheezing and increased use of rescue inhaler at 3-month follow-up",
+      "FeNO: 23 ppb; EOS: 342 cells/μL; NKA",
     ],
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; NKA = no known allergies.",
     leftOption: "Depemokimab",
     rightOption: "Dupilumab",
     correctSide: "right",
@@ -176,23 +137,17 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c7",
-    ageSex: "Douglas, 68-year-old male",
+    name: "Douglas",
+    ageSex: "68-year-old male",
     image: "./patients/douglas.webp",
-    fields: [
-      {
-        label: "History",
-        value: "40-year former smoker; tobacco-free for 8 years",
-      },
-      {
-        label: "Exacerbations",
-        value: "3 moderate exacerbations in previous years, no hospitalizations",
-      },
-      {
-        label: "Treatment",
-        value: "Triple inhaled therapy (LABA + LAMA + ICS)",
-      },
-      { label: "Labs", value: "FEV1 = 52% predicted, EOS = 348 cells/μL" },
+    bullets: [
+      "40-year former smoker; tobacco-free for 8 years",
+      "Currently on triple inhaled therapy (LABA + LAMA + ICS)",
+      "3 moderate exacerbations in previous years, no hospitalizations",
+      "FEV1: 52% predicted; EOS: 348 cells/μL",
     ],
+    footnote:
+      "EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; GOLD = Global Initiative for Chronic Obstructive Lung Disease; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist; ICS = inhaled corticosteroid.",
     leftOption: "Add a biologic",
     rightOption: "Add roflumilast",
     correctSide: "left",
@@ -202,24 +157,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c8",
-    ageSex: "Mia, 63-year-old female",
+    name: "Mia",
+    ageSex: "63-year-old female",
     image: "./patients/mia.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "COPD diagnosed 1 year ago; 46-year smoker — resumed smoking to cope with caregiving stress",
-      },
-      {
-        label: "Symptoms",
-        value: "No exacerbations since diagnosis and no bothersome symptoms",
-      },
-      { label: "Treatment", value: "Long-acting bronchodilator" },
-      {
-        label: "Labs",
-        value: "FEV1 = 83% predicted, EOS = 120 cells/μL, CAAT score = 8",
-      },
+    bullets: [
+      "Diagnosed with COPD 1 year ago; 46-year smoker",
+      "Has tried several smoking cessation plans but reports resuming smoking to cope with stress due to caring for her husband with dementia",
+      "No exacerbations since diagnosis; reports no increase in bothersome symptoms",
+      "Currently on a long-acting bronchodilator",
+      "FEV1: 83% predicted; EOS: 120 cells/μL; CAAT score: 8",
     ],
+    footnote:
+      "CAAT = chronic airways assessment test; COPD = chronic obstructive pulmonary disease; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid.",
     leftOption: "Shared decision-making about adding an ICS",
     rightOption: "Shared decision-making about smoking cessation support",
     longOptions: true,
@@ -230,21 +179,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c9",
-    ageSex: "Ethel, 75-year-old female",
+    name: "Ethel",
+    ageSex: "75-year-old female",
     image: "./patients/ethel.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "COPD diagnosed 3 years ago; former smoker, tobacco-free for 15 years",
-      },
-      { label: "Comorbidities", value: "Asthma" },
-      {
-        label: "Treatment",
-        value: "LABA + LAMA; 2 moderate exacerbations in the past year",
-      },
-      { label: "Labs", value: "FEV1 = 58% predicted, EOS = 300 cells/μL" },
+    bullets: [
+      "Diagnosed with COPD 3 years ago, former smoker; tobacco-free for 15 years",
+      "Comorbidities: asthma",
+      "2 moderate exacerbations in the past year",
+      "Currently on LABA + LAMA",
+      "FEV1: 58% predicted; EOS: 300 cells/μL",
     ],
+    footnote:
+      "COPD = chronic obstructive pulmonary disease; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Add a biologic",
     rightOption: "Add ICS",
     correctSide: "right",
@@ -254,24 +200,19 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c10",
-    ageSex: "Olivia, 82-year-old female",
+    name: "Olivia",
+    ageSex: "82-year-old female",
     image: "./patients/olivia.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "COPD diagnosed 4 years ago; 1 severe exacerbation 5 months ago",
-      },
-      {
-        label: "Comorbidities",
-        value: "Hay fever, joint pain, sinusitis requiring oral corticosteroids",
-      },
-      {
-        label: "Treatment",
-        value: "Triple inhaled therapy (LABA + LAMA + ICS)",
-      },
-      { label: "Labs", value: "FEV1 = 62% predicted, EOS = 989 cells/μL" },
+    bullets: [
+      "Diagnosed with COPD 4 years ago; tobacco-free for 10 years",
+      "Currently presenting with shortness of breath, chest tightness, and sinus pressure",
+      "Currently on triple inhaled therapy (LABA + LAMA + ICS)",
+      "History of hay fever, joint pain, and sinusitis treated with short courses of oral corticosteroids",
+      "1 severe exacerbation 5 months ago",
+      "FEV1: 62% predicted; EOS: 989 cells/μL",
     ],
+    footnote:
+      "COPD = chronic obstructive pulmonary disease; EGPA = eosinophilic granulomatosis with polyangiitis; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Mepolizumab",
     rightOption: "Benralizumab",
     correctSide: "left",
@@ -281,24 +222,18 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c11",
-    ageSex: "Rohit, 72-year-old male",
+    name: "Rohit",
+    ageSex: "72-year-old male",
     image: "./patients/rohit.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "Nonsmoker, former welder; COPD diagnosed 9 months ago; interstitial lung disease for 2 years",
-      },
-      {
-        label: "Recent",
-        value: "ER visit due to dyspnea 2 months ago",
-      },
-      {
-        label: "Treatment",
-        value: "Triple inhaled therapy and pirfenidone (antifibrotic)",
-      },
-      { label: "Labs", value: "FEV1 = 42% predicted, EOS = 89 cells/μL" },
+    bullets: [
+      "Nonsmoker; former industrial welder",
+      "Diagnosed with COPD after hospital stay 9 months ago; previously diagnosed with interstitial lung disease 2 years ago",
+      "Visited ER due to dyspnea 2 months ago (no hospitalization)",
+      "On triple inhaled therapy (LABA + LAMA + ICS) and antifibrotic (pirfenidone)",
+      "FEV1: 42% predicted; EOS: 89 cells/μL",
     ],
+    footnote:
+      "COPD = chronic obstructive pulmonary disease; EOS = eosinophil; ER = emergency room; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; ILD = interstitial lung disease; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Shared decision-making about pulmonary rehabilitation",
     rightOption: "Shared decision-making about adding a biologic",
     longOptions: true,
@@ -309,22 +244,19 @@ export const profiles: PatientProfile[] = [
   },
   {
     id: "c12",
-    ageSex: "Lorenzo, 77-year-old male",
+    name: "Lorenzo",
+    ageSex: "77-year-old male",
     image: "./patients/lorenzo.webp",
-    fields: [
-      {
-        label: "History",
-        value:
-          "Vietnam veteran, former smoker; allergic fungal rhinosinusitis (AFRS) and COPD since age 68",
-      },
-      {
-        label: "Symptoms",
-        value:
-          "Increased wheezing and bronchitis despite treatment adherence",
-      },
-      { label: "Treatment", value: "Triple inhaled therapy" },
-      { label: "Labs", value: "FEV1 = 62% predicted, EOS = 489 cells/μL" },
+    bullets: [
+      "Vietnam veteran, former smoker",
+      "Diagnosed with allergic fungal rhinosinusitis (AFRS) and COPD at age 68 after treatment at a VA center",
+      "Functional endoscopic sinus surgery performed 3 years ago",
+      "Currently on triple inhaled therapy",
+      "Reports to VA center due to increased wheezing and bronchitis despite treatment adherence",
+      "FEV1: 62% predicted; EOS: 489 cells/μL",
     ],
+    footnote:
+      "AFRS = allergic fungal rhinosinusitis; COPD = chronic obstructive pulmonary disease; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; VA = Veterans Affairs.",
     leftOption: "Dupilumab",
     rightOption: "Mepolizumab",
     correctSide: "left",

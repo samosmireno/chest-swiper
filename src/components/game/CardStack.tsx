@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  memo,
+  useEffect,
+  useEffectEvent,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import {
   motion,
   useMotionValue,
@@ -6,7 +13,7 @@ import {
   useAnimation,
   type PanInfo,
 } from "framer-motion";
-import { PatientCard } from "./PatientCard";
+import { PatientCard, PatientCardContent } from "./PatientCard";
 import type { PatientProfile, SwipeSide } from "../../types";
 import { uiScale } from "../../utils/uiScale";
 
@@ -19,10 +26,14 @@ export interface DraggableCardHandle {
 interface DraggableCardProps {
   profile: PatientProfile;
   onSwipe: (side: SwipeSide, elapsedMs: number) => void;
+  // Clock edges, with the performance.now() timestamps the card measures
+  // elapsedMs from — so the session clock and the speed bonus agree exactly.
+  onShown?: (at: number) => void;
+  onCommit?: (at: number) => void;
 }
 
 const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
-  ({ profile, onSwipe }, ref) => {
+  ({ profile, onSwipe, onShown, onCommit }, ref) => {
     const x = useMotionValue(0);
     const s = uiScale();
     const rotate = useTransform(x, [-300 * s, 0, 300 * s], [-12, 0, 12]);
@@ -33,14 +44,21 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
     // overlay is open and mounts (keyed by profile) the moment it becomes
     // interactive, so mount time IS the "card shown" edge.
     const shownAtRef = useRef(0);
+    // An effect event, so the mount effect below stays mount-only: a parent
+    // re-render handing down a new callback must not re-stamp the edge.
+    const reportShown = useEffectEvent((at: number) => onShown?.(at));
     useEffect(() => {
-      shownAtRef.current = performance.now();
+      const at = performance.now();
+      shownAtRef.current = at;
+      reportShown(at);
     }, []);
 
     const commitSwipe = async (side: SwipeSide) => {
       // Clock stops at the commit, before the fly-off animation, so the
       // 300ms animation isn't charged to the player.
-      const elapsedMs = Math.round(performance.now() - shownAtRef.current);
+      const committedAt = performance.now();
+      const elapsedMs = Math.round(committedAt - shownAtRef.current);
+      onCommit?.(committedAt);
       const targetX = (side === "right" ? 600 : -600) * uiScale();
       await controls.start({
         x: targetX,
@@ -114,6 +132,33 @@ const DraggableCard = forwardRef<DraggableCardHandle, DraggableCardProps>(
 );
 DraggableCard.displayName = "DraggableCard";
 
+// ─── StackSizer ──────────────────────────────────────────────
+
+/* Sizes the stack: every profile's card content laid out invisibly in one
+   grid cell, so the box is exactly as tall as the deck's tallest card. The
+   cards themselves are absolute (they drag, fly off and fan out), so nothing
+   else would give the box a content height, and a fixed height would either
+   clip the six-bullet cases or force their type smaller. Laid out once per
+   game: memoized on the deck, which is one array per START_GAME. */
+const StackSizer = memo(function StackSizer({
+  deck,
+}: {
+  deck: PatientProfile[];
+}) {
+  return (
+    <div className="pointer-events-none invisible grid" aria-hidden>
+      {deck.map((profile) => (
+        <div
+          key={profile.id}
+          className="col-start-1 row-start-1 flex flex-col"
+        >
+          <PatientCardContent profile={profile} />
+        </div>
+      ))}
+    </div>
+  );
+});
+
 // ─── CardStack ───────────────────────────────────────────────
 
 export interface CardStackHandle {
@@ -124,11 +169,13 @@ interface CardStackProps {
   deck: PatientProfile[];
   currentIndex: number;
   onSwipe: (side: SwipeSide, elapsedMs: number) => void;
+  onShown?: (at: number) => void;
+  onCommit?: (at: number) => void;
   locked?: boolean;
 }
 
 export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
-  ({ deck, currentIndex, onSwipe, locked = false }, ref) => {
+  ({ deck, currentIndex, onSwipe, onShown, onCommit, locked = false }, ref) => {
     const draggableCardRef = useRef<DraggableCardHandle>(null);
     const s = uiScale();
 
@@ -139,12 +186,13 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
     // Show up to 3 cards: current + next 2 (rendered back to front)
     const visibleProfiles = deck.slice(currentIndex, currentIndex + 3);
 
-    // Below md the card is content-sized with a 32rem floor — enough for the
-    // rationale overlay (absolute over this box) to show the longest case's
-    // three sentence paragraphs without scrolling on a 390px phone; md+ is
-    // the design's fixed 440×480.
+    // The box is the tallest card's height (StackSizer) over a floor: the
+    // design's 440×480 on md+, and 32rem below md — enough for the rationale
+    // overlay (absolute over this box) to show the longest case's three
+    // sentence paragraphs without scrolling on a 390px phone.
     return (
-      <div className="relative min-h-128 w-76 sm:w-80 md:h-120 md:w-110">
+      <div className="relative min-h-128 w-76 sm:w-80 md:min-h-120 md:w-110">
+        <StackSizer deck={deck} />
         {[...visibleProfiles].reverse().map((profile, reversedIndex) => {
           const stackPosition = visibleProfiles.length - 1 - reversedIndex;
           const isTop = stackPosition === 0;
@@ -161,6 +209,8 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
                 ref={draggableCardRef}
                 profile={profile}
                 onSwipe={onSwipe}
+                onShown={onShown}
+                onCommit={onCommit}
               />
             );
           }

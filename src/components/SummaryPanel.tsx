@@ -2,9 +2,11 @@ import { useGameDispatch, useGameState } from "../context/useGame";
 import {
   calculateScore,
   computeSpeedBonus,
+  computeTotalMs,
   scoreBreakdown,
 } from "../leaderboard";
 import { computeSessionStats } from "../utils/sessionStats";
+import { formatClock } from "../utils/formatClock";
 import { VerdictBadge } from "./game/VerdictBadge";
 import type { PatientProfile, SessionResult } from "../types";
 
@@ -23,25 +25,30 @@ function otherSide(side: "left" | "right"): "left" | "right" {
 const CARD_SHELL =
   "entry-panel px-5 pt-6 pb-6 md:px-[2.3125rem] md:pt-10 md:pb-10";
 
-/* Not in the Figma frame: the accuracy / streak / speed-bonus breakdown keeps
-   its place at the top of the list, on the same glass shell as the case
-   cards. Its header row mirrors theirs (gold label left, gold Barlow total
-   right where the case cards put their verdict) and the three parts are laid
-   out as leaderboard rows ("Leaderboard Score", node 52:1763 — 40px, 2px
-   light-mint @ 60% stroke, 8px radius): .type-card-label part name,
-   light-mint DM Sans detail, Barlow value. Speed stays a bare value — the
-   per-card timer is never disclosed. */
+/* Score breakdown — Figma "New card" (node 52:1951) on Frame 7 (52:1653):
+   the same glass shell as the case cards, "SCORE BREAKDOWN" in gold with
+   the total beside it ("Leaderboard Points Number 1" at 32px, node
+   2014:8012), then four 72px rows at a 96px pitch (nodes 52:2025, 2014:8013,
+   2014:8015, 2014:8021): 1.9px mid-teal stroke, 10.3px radius, the label
+   (the "SUMMARY" style, off-white) 17px in with its detail (8/12, 3) set
+   Regular after it, and the value in light-mint Barlow 32/16 at the right.
+   The TOTAL TIME row is the odd one out: gold text on a light-mint @ 21%
+   fill. Row, type and stroke sizes are the design's px in rem on the 1/8
+   rem grid (.score-row / .type-score-value in index.css). Speed stays a
+   bare value — the per-card timer is never disclosed. */
 function ScoreBreakdown({
   correct,
   total,
   maxStreak,
   speedBonus,
+  totalMs,
   score,
 }: {
   correct: number;
   total: number;
   maxStreak: number;
   speedBonus: number;
+  totalMs: number;
   score: number;
 }) {
   const parts = scoreBreakdown(correct, maxStreak, speedBonus);
@@ -59,27 +66,32 @@ function ScoreBreakdown({
     <section aria-label="Score breakdown" className={CARD_SHELL}>
       <div className="flex items-center justify-between gap-4">
         <h2 className="type-summary-label text-gold-accent">Score breakdown</h2>
-        <p className="type-lb-points text-gold-accent">{score}</p>
+        <p className="type-score-value text-gold-accent">{score}</p>
       </div>
-      <ul className="mt-5 flex flex-col gap-3 md:mt-6">
+      {/* Rows at the design's 96px pitch: 72px tall + 24px gap on md+ */}
+      <ul className="mt-5 flex flex-col gap-4 md:mt-7 md:gap-6">
         {rows.map((row) => (
-          <li
-            key={row.label}
-            className="border-light-mint/60 flex h-10 items-center rounded-lg border-2 pr-[0.6875rem] pl-[0.8125rem]"
-          >
-            <span className="type-card-label text-off-white whitespace-nowrap">
+          <li key={row.label} className="score-row">
+            <span className="type-summary-label text-off-white">
               {row.label}
             </span>
             {row.detail !== null && (
-              <span className="font-dm-sans text-light-mint ml-3 text-base/6">
+              <span className="type-summary-body text-off-white ml-4">
                 {row.detail}
               </span>
             )}
-            <span className="type-lb-points text-off-white ml-auto pl-3">
+            <span className="type-score-value text-light-mint ml-auto pl-3">
               {row.value}
             </span>
           </li>
         ))}
+        {/* Total time — the session clock's final reading (node 2014:8021) */}
+        <li className="score-row bg-light-mint/20 text-gold-accent">
+          <span className="type-summary-label">Total time</span>
+          <span className="type-score-value ml-auto pl-3">
+            {formatClock(totalMs)}
+          </span>
+        </li>
       </ul>
     </section>
   );
@@ -127,8 +139,8 @@ function AnswerPill({
    (light-mint) + age (off-white, both "Card client age Large") at 94; bullets
    from 130 with 6px gold dots 20px in and the text 15px after; answer pills
    at 306; the Rationale box (2px mid-teal stroke, 10px radius, Roboto Bold
-   20/24 title, DM Sans 20.5/30.8 → 31 body) at 397. The bullets are this
-   deck's label/value fields, label as a gold run (see PatientCard). */
+   20/24 title, DM Sans 20.5/30.8 → 31 body) at 397. The bullets are the
+   case's verbatim slide bullets, as on the game card. */
 function ResultCard({
   index,
   result,
@@ -160,26 +172,24 @@ function ResultCard({
         </p>
       </div>
 
-      {/* Patient N: age */}
+      {/* "Patient N: Name" in light-mint, the age line in off-white — both
+          "Card client age Large" (Results Case 2, nodes 115:552 / 115:553) */}
       <p className="type-card-age mt-4 flex flex-wrap items-baseline gap-x-3.5 max-md:text-lg/6 md:mt-[1.3125rem]">
-        <span className="text-light-mint">Patient {index + 1}:</span>
+        <span className="text-light-mint">
+          Patient {index + 1}: {profile.name}
+        </span>
         <span className="text-off-white">{profile.ageSex}</span>
       </p>
 
-      {/* Case fields, one bullet row each */}
+      {/* Verbatim case bullets, one row each */}
       <ul className="mt-2 pl-4 md:mt-3 md:pl-5">
-        {profile.fields.map((field) => (
-          <li key={field.label} className="flex gap-[0.5625rem]">
+        {profile.bullets.map((bullet) => (
+          <li key={bullet} className="flex gap-[0.5625rem]">
             <span
               className="bg-gold-accent mt-[0.5625rem] size-1.5 shrink-0 rounded-full md:mt-[0.6875rem]"
               aria-hidden
             />
-            <span className="type-summary-body text-off-white">
-              <span className="text-gold-accent font-semibold">
-                {field.label}:{" "}
-              </span>
-              {field.value}
-            </span>
+            <span className="type-summary-body text-off-white">{bullet}</span>
           </li>
         ))}
       </ul>
@@ -218,6 +228,7 @@ export function SummaryPanel() {
 
   const { correct, total } = computeSessionStats(sessionResults);
   const speedBonus = computeSpeedBonus(sessionResults);
+  const totalMs = computeTotalMs(sessionResults);
   const score = calculateScore(correct, state.maxStreak, speedBonus);
 
   const profileMap = new Map<string, PatientProfile>(
@@ -259,6 +270,7 @@ export function SummaryPanel() {
             total={total}
             maxStreak={state.maxStreak}
             speedBonus={speedBonus}
+            totalMs={totalMs}
             score={score}
           />
           {sessionResults.map((result, i) => {

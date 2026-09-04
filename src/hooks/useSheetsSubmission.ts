@@ -1,6 +1,6 @@
 import type { PatientProfile, SessionResult } from "../types";
 import { APP_VERSION, SHEETS_WEBHOOK_URL } from "../config";
-import { calculateScore, computeSpeedBonus } from "../leaderboard";
+import { calculateScore, computeSpeedBonus, computeTotalMs } from "../leaderboard";
 
 interface SubmitSessionParams {
   firstName: string;
@@ -39,6 +39,7 @@ function buildPayload({
     cards_total: deck.length,
     max_streak: maxStreak,
     speed_bonus: speedBonus,
+    total_ms: computeTotalMs(sessionResults),
   };
 
   // Sheet columns are card_p{n}_*; profile IDs are c{n} — strip prefix and rekey

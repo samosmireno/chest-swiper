@@ -14,6 +14,7 @@ function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
       correct: Number(sub.cards_correct),
       total: Number(sub.cards_total),
       maxStreak: Number(sub.max_streak),
+      totalMs: Number(sub.total_ms),
       // Prefer the round-tripped session_id (stable, exact); fall back to
       // submitted_at for rows written before the session_id column existed.
       sessionId: sub.session_id ? String(sub.session_id) : String(sub.submitted_at),
