@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import type { LeaderboardEntry } from "../leaderboard";
 import { getLeaderboard } from "../leaderboard";
-import { SHEETS_WEBHOOK_URL, APP_VERSION, LEADERBOARD_WINDOW_MS } from "../config";
+import { SHEETS_WEBHOOK_URL, LEADERBOARD_MIN_VERSION } from "../config";
 import { getRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
+import { getLeaderboardWindowMs } from "../utils/boardWindow";
 
 function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
   return subs
@@ -24,20 +25,22 @@ function transformSubmissions(subs: RawSubmission[]): LeaderboardEntry[] {
 }
 
 /**
- * Scopes entries to the current summit by dropping anything older than
- * LEADERBOARD_WINDOW_MS before the newest entry. Anchoring on the newest
- * entry (rather than the device clock) keeps the board correct even if the
- * kiosk clock is wrong. `anchorFloor` lets the just-finished player's local
+ * Scopes entries to the current summit by dropping anything older than the
+ * leaderboard window before the newest entry. Anchoring on the newest entry
+ * (rather than the device clock) keeps the board correct even if the kiosk
+ * clock is wrong. `anchorFloor` lets the just-finished player's local
  * timestamp define the anchor before their row round-trips from the sheet,
  * so the first player of a new summit doesn't see the previous summit's board.
+ * An enduring board (window null — config or `?board=all`) keeps everything.
  */
 function withinWindow(
   entries: LeaderboardEntry[],
   anchorFloor?: number
 ): LeaderboardEntry[] {
-  if (entries.length === 0) return entries;
+  const windowMs = getLeaderboardWindowMs();
+  if (windowMs === null || entries.length === 0) return entries;
   const anchor = Math.max(...entries.map((e) => e.timestamp), anchorFloor ?? 0);
-  const cutoff = anchor - LEADERBOARD_WINDOW_MS;
+  const cutoff = anchor - windowMs;
   return entries.filter((e) => e.timestamp >= cutoff);
 }
 
@@ -92,7 +95,9 @@ export function useLeaderboard(lastSessionId: string): {
         const subs = await getRemoteSubmissions();
 
         if (subs.length === 0) {
-          console.info(`[wwys] No remote data for v${APP_VERSION} — using local`);
+          console.info(
+            `[wwys] No remote data for v${LEADERBOARD_MIN_VERSION}+ — using local`
+          );
           return;
         }
 

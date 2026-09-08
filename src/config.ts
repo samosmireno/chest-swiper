@@ -17,7 +17,20 @@ export const LEADERBOARD_PAGE_SIZE = 10;
 // Scopes the board to the current summit without per-event manual edits.
 // Anchored to the newest entry (not the device clock) so a wrong kiosk clock
 // can't silently empty the board mid-summit.
-export const LEADERBOARD_WINDOW_MS = 12 * 60 * 60 * 1000; // 12h
+// null = enduring board: every score-compatible entry ever submitted.
+// The kiosk URL overrides this per deployment without a rebuild —
+// `?board=all` for enduring, `?board=12h` / `?board=3d` / `?board=90m` for a
+// window. See src/utils/boardWindow.ts.
+export const LEADERBOARD_WINDOW_MS: number | null = 12 * 60 * 60 * 1000; // 12h
+
+// Oldest APP_VERSION whose scores compare with today's: same deck size and
+// same formula. 2.0 introduced the 12-card asthma & COPD deck (1.x was the
+// 15-card T1D deck, so its scores sit on a different scale); 2.1 was copy
+// and payload only. The leaderboard admits everything from here up, so a
+// copy-edit bump never wipes an enduring board. The community miss-rate
+// chart stays on the exact APP_VERSION, since card wording did change
+// between bumps. Raise this whenever the deck or the scoring formula changes.
+export const LEADERBOARD_MIN_VERSION = "2.0";
 
 // ─── Game screen ─────────────────────────────────────────────
 // Which panel fills the dashboard below the session stats during play:

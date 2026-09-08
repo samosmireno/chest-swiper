@@ -71,3 +71,23 @@ export default defineConfig([
   },
 ])
 ```
+
+## Leaderboard window (kiosk URL flag)
+
+By default the leaderboard shows only entries from the last 12 hours,
+anchored to the newest entry (`LEADERBOARD_WINDOW_MS` in `src/config.ts`), so
+each event gets its own board. The kiosk URL overrides that per deployment
+without a rebuild:
+
+```
+?board=all    enduring board — every score-compatible entry ever submitted
+?board=12h    rolling window: m = minutes, h = hours, d = days (a bare
+?board=3d     number means hours)
+```
+
+Anything unparseable falls back to the config default. The sheet always keeps
+every row either way; the window is only a display filter. "Score-compatible"
+means `APP_VERSION` ≥ `LEADERBOARD_MIN_VERSION` (2.0, the current 12-card
+deck), so a copy-edit version bump never empties an enduring board. The
+community miss-rate chart still uses the exact `APP_VERSION`. Combine with the
+perf flags as usual, e.g. `?novideo=1&board=all`.

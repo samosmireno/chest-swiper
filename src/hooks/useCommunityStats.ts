@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import type { CumulativeStats } from "../types";
 import { SHEETS_WEBHOOK_URL } from "../config";
-import { getRemoteSubmissions } from "../utils/remoteSubmissions";
+import {
+  getRemoteSubmissions,
+  matchesCurrentVersion,
+} from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
 
 function transformSubmissions(submissions: RawSubmission[]): CumulativeStats {
@@ -40,8 +43,11 @@ export function useCommunityStats(fallback: CumulativeStats): {
     // getRemoteSubmissions self-starts to cover demo mode, which skips
     // straight to the game.
     let cancelled = false;
-    getRemoteSubmissions().then((subs) => {
+    getRemoteSubmissions().then((all) => {
       if (cancelled) return;
+      // Exact build only: miss rates are per card, and card wording changed
+      // between copy-edit bumps. (The leaderboard takes the wider set.)
+      const subs = all.filter(matchesCurrentVersion);
       if (subs.length > 0) setData(transformSubmissions(subs));
       setLoading(false);
     });
