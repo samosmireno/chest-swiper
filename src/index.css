@@ -354,13 +354,22 @@
   /* The glow ring is a child element rather than a pseudo of .patient-card:
      CSS applies filter before mask, so blurring and masking on one box
      yields a crisp ring. Blur lives on the wrapper, the masked ring on its
-     ::before. Rendered as <div class="patient-card-glow" aria-hidden />. */
+     ::before. Rendered as <div class="patient-card-glow" aria-hidden />.
+
+     clip-path, not the card's overflow:hidden, is what keeps the ring's
+     blurred outer half off the background: Chromium composites a
+     mix-blend-mode child on its own render surface and applies only the
+     ancestor's *rectangular* clip to it, so the 7px blur escaped the 32px
+     corners — the halo squaring off outside the rounded edge. clip-path runs
+     after filter on the same element, so clipping here is exact. inset is the
+     wrapper's own -2px overhang, i.e. the card's border box. */
   .patient-card-glow {
     position: absolute;
     inset: -0.125rem;
     z-index: 0;
     pointer-events: none;
     filter: blur(0.4375rem); /* Figma layer blur 13.9 ≈ CSS blur 7px */
+    clip-path: inset(0.125rem round var(--radius-card));
     mix-blend-mode: plus-lighter;
   }
   .patient-card-glow::before {
