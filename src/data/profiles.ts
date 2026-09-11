@@ -8,6 +8,19 @@ import type { PatientProfile } from "../types";
 // normalised: "7-year-old-male" (c2), "LABA + LAMA+ ICS" (c10) and the
 // "4-6 times/day" hyphen range (c6, set as an en dash like c5's). The option
 // labels and rationales are unchanged from v2.0.
+//
+// v2.2 layers the client's copy review of the Figma export (September 2026)
+// over the slides, so where the two differ below, the review wins:
+// - Footnotes key only abbreviations printed on the card (bullets and
+//   options), in alphabetical order. Abbreviations that appear only in a
+//   rationale are keyed by explanationFootnote (TSLP c5, GOLD c7) or spelled
+//   out inline (interleukin (IL)-5, c2).
+// - Bullets: "Currently on budesonide/…" (c1, no "the"), "Comorbidity:
+//   asthma" (c9), "ILD" and "ED" for the slide's "interstitial lung disease"
+//   and "ER" (c11), "AFRS" alone (c12, still keyed in the footnote).
+// - Rationales: c5's "his missed follow-up appointment and recent lifestyle
+//   change" and em-dash aside; a space after ≥ and < (c6, c7), no-break so
+//   the sign never ends a line on its own.
 export const profiles: PatientProfile[] = [
   {
     id: "c1",
@@ -17,12 +30,12 @@ export const profiles: PatientProfile[] = [
     bullets: [
       "Diagnosed with asthma at age 20",
       "History of eczema in childhood",
-      "Currently on the budesonide/formoterol (160 mcg/4.5 mcg), tiotropium, and a rescue inhaler",
+      "Currently on budesonide/formoterol (160 mcg/4.5 mcg), tiotropium, and a rescue inhaler",
       "ED visit 2 months ago due to shortness of breath",
       "FeNO: 50 ppb; EOS: 389 cells/μL",
     ],
     footnote:
-      "ED = emergency department; EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid.",
+      "ED = emergency department; EOS = eosinophil; FeNO = fractional exhaled nitric oxide.",
     leftOption: "Add a biologic",
     rightOption: "Optimize current management",
     correctSide: "left",
@@ -42,13 +55,13 @@ export const profiles: PatientProfile[] = [
       "FeNO: 35 ppb; EOS: 150 cells/μL; IgE: 300 IU/mL",
     ],
     footnote:
-      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid; IgE = immunoglobulin E; IL = interleukin.",
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; IgE = immunoglobulin E.",
     leftOption: "Omalizumab",
     rightOption: "Mepolizumab",
     correctSide: "left",
     topic: "asthma",
     explanation:
-      "Given his atopic tendencies, food allergies, and under-controlled asthma despite adequate inhaler technique, omalizumab, which targets IgE, is the better choice over mepolizumab, which targets IL-5, as an add-on biologic.",
+      "Given his atopic tendencies, food allergies, and under-controlled asthma despite adequate inhaler technique, omalizumab, which targets IgE, is the better choice over mepolizumab, which targets interleukin (IL)-5, as an add-on biologic.",
   },
   {
     id: "c3",
@@ -62,8 +75,7 @@ export const profiles: PatientProfile[] = [
       "Currently on fluticasone/vilanterol (200 mcg/25 mcg) and rescue inhaler (albuterol)",
       "FeNO: 38 ppb; EOS: 168 cells/μL; IgE: 5 IU/mL",
     ],
-    footnote:
-      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; LABA = long-acting β2-agonist; ICS = inhaled corticosteroid.",
+    footnote: "EOS = eosinophil; FeNO = fractional exhaled nitric oxide.",
     leftOption: "Omalizumab",
     rightOption: "Dupilumab",
     correctSide: "right",
@@ -84,7 +96,7 @@ export const profiles: PatientProfile[] = [
       "FeNO: 45 ppb; EOS: 550 cells/μL; IgE: 22 IU/mL",
     ],
     footnote:
-      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; IgE = immunoglobulin E; IL = interleukin; LABA = long-acting β2-agonist.",
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; IgE = immunoglobulin E; IL = interleukin.",
     leftOption: "Anti-IgE",
     rightOption: "Anti–IL-5/IL-5R",
     correctSide: "right",
@@ -104,14 +116,14 @@ export const profiles: PatientProfile[] = [
       "FeNO: 18 ppb; EOS: 148 cells/μL",
       "Started college this semester; missed previous follow-up appointment",
     ],
-    footnote:
-      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; SABA = short-acting β2-agonist.",
+    footnote: "EOS = eosinophil; FeNO = fractional exhaled nitric oxide.",
     leftOption: "Add a biologic",
     rightOption: "Optimize current management",
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Considering missed follow-up appointments and recent lifestyle changes, treatment optimization (eg, checking inhaler technique and adherence, considering a switch to maintenance and reliever therapy [MART]) is the recommended first course of action. While Luis could qualify for an anti-TSLP agent in the future, it might be too early to add on a biologic.",
+      "Considering his missed follow-up appointment and recent lifestyle change, treatment optimization—eg, checking correct inhaler technique, adherence, considering switch to maintenance and reliever therapy (MART)—is the recommended first course of action. While Luis could qualify for an anti-TSLP agent in the future, it might be too early to add on a biologic.",
+    explanationFootnote: "TSLP = thymic stromal lymphopoietin.",
   },
   {
     id: "c6",
@@ -133,7 +145,7 @@ export const profiles: PatientProfile[] = [
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Elevated FeNO and EOS levels despite current treatment suggest severe eosinophilic asthma that could be treated with an add-on biologic. His high eosinophil level and eating difficulties raise concern for eosinophilic esophagitis (EoE). Dupilumab is approved to treat severe asthma in patients age ≥6 years and EoE in patients ≥1 year, whereas depemokimab is approved to treat asthma in patients age ≥12 years.",
+      "Elevated FeNO and EOS levels despite current treatment suggest severe eosinophilic asthma that could be treated with an add-on biologic. His high eosinophil level and eating difficulties raise concern for eosinophilic esophagitis (EoE). Dupilumab is approved to treat severe asthma in patients age ≥\u00A06 years and EoE in patients ≥\u00A01 year, whereas depemokimab is approved to treat asthma in patients age ≥\u00A012 years.",
   },
   {
     id: "c7",
@@ -147,13 +159,15 @@ export const profiles: PatientProfile[] = [
       "FEV1: 52% predicted; EOS: 348 cells/μL",
     ],
     footnote:
-      "EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; GOLD = Global Initiative for Chronic Obstructive Lung Disease; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist; ICS = inhaled corticosteroid.",
+      "EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Add a biologic",
     rightOption: "Add roflumilast",
     correctSide: "left",
     topic: "copd",
     explanation:
-      "According to GOLD 2026 recommendations, a patient on triple inhaled therapy experiencing ≥2 moderate (or 1 severe) exacerbations with a blood EOS ≥300 cells/μL should start biologic therapy with either dupilumab or mepolizumab. Roflumilast is recommended if the blood EOS is <100 cells/μL, FEV1 is <50%, and chronic bronchitis is present.",
+      "According to GOLD 2026 recommendations, a patient on triple inhaled therapy experiencing ≥\u00A02 moderate (or 1 severe) exacerbations with a blood EOS ≥\u00A0300 cells/μL should start biologic therapy with either dupilumab or mepolizumab. Roflumilast is recommended if the blood EOS is <\u00A0100 cells/μL, FEV1 is <\u00A050%, and chronic bronchitis is present.",
+    explanationFootnote:
+      "GOLD = Global Initiative for Chronic Obstructive Lung Disease.",
   },
   {
     id: "c8",
@@ -184,7 +198,7 @@ export const profiles: PatientProfile[] = [
     image: "./patients/ethel.webp",
     bullets: [
       "Diagnosed with COPD 3 years ago, former smoker; tobacco-free for 15 years",
-      "Comorbidities: asthma",
+      "Comorbidity: asthma",
       "2 moderate exacerbations in the past year",
       "Currently on LABA + LAMA",
       "FEV1: 58% predicted; EOS: 300 cells/μL",
@@ -212,7 +226,7 @@ export const profiles: PatientProfile[] = [
       "FEV1: 62% predicted; EOS: 989 cells/μL",
     ],
     footnote:
-      "COPD = chronic obstructive pulmonary disease; EGPA = eosinophilic granulomatosis with polyangiitis; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
+      "COPD = chronic obstructive pulmonary disease; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Mepolizumab",
     rightOption: "Benralizumab",
     correctSide: "left",
@@ -227,13 +241,13 @@ export const profiles: PatientProfile[] = [
     image: "./patients/rohit.webp",
     bullets: [
       "Nonsmoker; former industrial welder",
-      "Diagnosed with COPD after hospital stay 9 months ago; previously diagnosed with interstitial lung disease 2 years ago",
-      "Visited ER due to dyspnea 2 months ago (no hospitalization)",
+      "Diagnosed with COPD after hospital stay 9 months ago; previously diagnosed with ILD 2 years ago",
+      "Visited ED due to dyspnea 2 months ago (no hospitalization)",
       "On triple inhaled therapy (LABA + LAMA + ICS) and antifibrotic (pirfenidone)",
       "FEV1: 42% predicted; EOS: 89 cells/μL",
     ],
     footnote:
-      "COPD = chronic obstructive pulmonary disease; EOS = eosinophil; ER = emergency room; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; ILD = interstitial lung disease; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
+      "COPD = chronic obstructive pulmonary disease; ED = emergency department; EOS = eosinophil; FEV1 = forced expiratory volume in 1 second; ICS = inhaled corticosteroid; ILD = interstitial lung disease; LABA = long-acting β2-agonist; LAMA = long-acting muscarinic antagonist.",
     leftOption: "Shared decision-making about pulmonary rehabilitation",
     rightOption: "Shared decision-making about adding a biologic",
     longOptions: true,
@@ -249,7 +263,7 @@ export const profiles: PatientProfile[] = [
     image: "./patients/lorenzo.webp",
     bullets: [
       "Vietnam veteran, former smoker",
-      "Diagnosed with allergic fungal rhinosinusitis (AFRS) and COPD at age 68 after treatment at a VA center",
+      "Diagnosed with AFRS and COPD at age 68 after treatment at a VA center",
       "Functional endoscopic sinus surgery performed 3 years ago",
       "Currently on triple inhaled therapy",
       "Reports to VA center due to increased wheezing and bronchitis despite treatment adherence",

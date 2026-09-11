@@ -75,6 +75,14 @@ export function RationaleOverlay({
             <p key={i}>{sentence}</p>
           ))}
         </div>
+        {/* Abbreviations used only in the rationale, keyed at the foot of the
+            text column in the card's footnote style — the verdict ring
+            stays where it is on every case. */}
+        {profile.explanationFootnote && (
+          <p className="type-card-footnote text-off-white mt-auto pt-4">
+            {profile.explanationFootnote}
+          </p>
+        )}
       </div>
 
       {/* Verdict — ring bottom-centred (design: 101.75px ring, 51px above the

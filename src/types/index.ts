@@ -25,6 +25,9 @@ export interface PatientProfile {
 
   topic: CardTopic
   explanation: string
+  // Abbreviation key for abbreviations that appear only in the rationale
+  // (the card's footnote covers the card), printed under it
+  explanationFootnote?: string
 }
 
 export interface SessionResult {

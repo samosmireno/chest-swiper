@@ -36,7 +36,8 @@ describe("splitSentences", () => {
     for (const profile of profiles) {
       const parts = splitSentences(profile.explanation);
       expect(parts.length).toBeGreaterThanOrEqual(1);
-      expect(parts.join(" ")).toBe(
+      // Both sides normalised: \s also matches the copy's no-break spaces
+      expect(parts.join(" ").replace(/\s+/g, " ")).toBe(
         profile.explanation.replace(/\s+/g, " ").trim(),
       );
       for (const sentence of parts) expect(sentence).toMatch(/[.!?]$/);

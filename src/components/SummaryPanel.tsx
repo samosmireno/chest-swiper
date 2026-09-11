@@ -108,7 +108,9 @@ function ScoreBreakdown({
 
    The design sets them at DM Sans SemiBold 20/30 with 24.5px side padding
    (61.5px tall); they're taken down to 16/24 with 18px side padding (48px
-   tall, 19px radius) so short pairs share the card's content row. Long
+   tall, 19px radius) so short pairs share the card's content row. Prefix
+   and label sit one word space (4px) apart — any wider reads as a double
+   space ("You:  Add a biologic", flagged in the client's copy review). Long
    labels wrap inside the pill and the row wraps when a pair can't share it —
    this deck's shared-decision-making cases do at every width. */
 function AnswerPill({
@@ -122,7 +124,7 @@ function AnswerPill({
 }) {
   return (
     <span
-      className={`type-summary-pill inline-flex items-baseline gap-2 rounded-[1.1875rem] border-2 px-[1.125rem] py-2.5 ${
+      className={`type-summary-pill inline-flex items-baseline gap-1 rounded-[1.1875rem] border-2 px-[1.125rem] py-2.5 ${
         tone === "wrong"
           ? "border-alert-red bg-[rgba(255,154,154,0.29)] text-incorrect-red"
           : "border-info-blue bg-white/20 text-correct-blue"
@@ -216,6 +218,13 @@ function ResultCard({
         <p className="type-summary-body text-off-white mt-2 md:mt-2.5 md:leading-[1.9375rem]">
           {profile.explanation}
         </p>
+        {/* Rationale-only abbreviations — the card footnote's 8:14 ratio to
+            the body, rounded to the grid */}
+        {profile.explanationFootnote && (
+          <p className="type-card-footnote text-off-white mt-3 text-[0.625rem]/[0.8125rem] md:text-xs/[0.9375rem]">
+            {profile.explanationFootnote}
+          </p>
+        )}
       </div>
     </article>
   );

@@ -18,9 +18,11 @@ const STACK_STYLES = [
    avatar frame at mini scale: avatar 65×80 (2px gradient stroke, r8) at
    (20,36), label DM Sans SemiBold 10/26 +2px, the first name in gold over
    the age line (Roboto Bold 12/16), bullets DM Sans 12/16 white with 4px
-   gold dots at x=14 — the case's verbatim bullets, no footnote. Rendered
-   inside the .patient-card wrapper in the fan below; the fan sizes itself to
-   the tallest case so every card keeps this one type size. */
+   gold dots at x=14 — the case's verbatim bullets — and the abbreviation key
+   at the foot in the game card's 8px footnote style (the client review asked
+   for it here too). Rendered inside the .patient-card wrapper in the fan
+   below; the fan sizes itself to the tallest case so every card keeps this
+   one type size. */
 function MiniCard({ profile }: { profile: PatientProfile }) {
   return (
     <div className="relative z-10 flex h-full w-full flex-col">
@@ -53,6 +55,9 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
             <p className="type-card-body text-xs/4 text-white">{bullet}</p>
           </div>
         ))}
+        <p className="type-card-footnote mt-auto text-white">
+          {profile.footnote}
+        </p>
       </div>
     </div>
   );

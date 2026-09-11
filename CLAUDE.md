@@ -43,11 +43,15 @@ carries the palette tokens (`dark-teal`, `mid-teal`, `gold-accent`,
 and the `.type-*` text ramp, each annotated with its Figma node; components
 use those classes plus Tailwind utilities. The scene art
 (`public/bg_video.mp4` + poster) is shared with t2i-swiper. Cards carry the
-slides' verbatim `bullets` under a gold `name` line and the age line, with the
-slide's abbreviation `footnote` at the foot (`PatientCard`, `SummaryPanel`, the
-attract-screen mini card). Every card shares one type size: `CardStack` and
-the attract fan size themselves to the deck's tallest card with an invisible
-sizer rather than shrinking the copy.
+slides' `bullets` under a gold `name` line and the age line (`PatientCard`,
+`SummaryPanel`, the attract-screen mini card), with the abbreviation
+`footnote` at the foot of the game and attract cards; abbreviations used only
+in a rationale go in `explanationFootnote`, under the rationale (overlay and
+summary). Copy is the slides' verbatim text plus the client's copy-review
+edits, which win where they differ (listed at the top of `profiles.ts`;
+footnote rules enforced by `profiles.test.ts`). Every card shares one type
+size: `CardStack` and the attract fan size themselves to the deck's tallest
+card with an invisible sizer rather than shrinking the copy.
 
 ## Agent skills
 
