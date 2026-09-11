@@ -29,3 +29,4 @@ dist-ssr
 .superpowers/
 *.7z
 *.pptx
+*.pdf
