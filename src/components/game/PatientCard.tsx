@@ -42,7 +42,7 @@ export function PatientCardContent({ profile }: PatientCardProps) {
           not centred. Below md the portrait and the two Roboto lines step
           down a size so they still fit beside it on the 304px mobile card. */}
       <div className="relative z-10 flex shrink-0 items-start gap-3 pt-[1.625rem] pr-6 pl-[1.9375rem] max-md:pr-5">
-        <div className="bg-avatar-stroke h-[6.75rem] w-22 shrink-0 rounded-[0.875rem] p-[0.1875rem] md:h-[8.4375rem] md:w-[6.875rem]">
+        <div className="bg-avatar-stroke touch-callout-none h-[6.75rem] w-22 shrink-0 rounded-[0.875rem] p-[0.1875rem] select-none md:h-[8.4375rem] md:w-[6.875rem]">
           <img
             src={profile.image}
             alt={`${profile.name}, ${profile.ageSex}`}

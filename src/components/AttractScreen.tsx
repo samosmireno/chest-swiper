@@ -27,7 +27,7 @@ function MiniCard({ profile }: { profile: PatientProfile }) {
   return (
     <div className="relative z-10 flex h-full w-full flex-col">
       <div className="flex shrink-0 items-start gap-2 pt-9 pr-3 pl-5">
-        <div className="bg-avatar-stroke h-20 w-[4.0625rem] shrink-0 rounded-lg p-0.5">
+        <div className="bg-avatar-stroke touch-callout-none h-20 w-[4.0625rem] shrink-0 rounded-lg p-0.5 select-none">
           <img
             src={profile.image}
             alt={`${profile.name}, ${profile.ageSex}`}

@@ -163,6 +163,18 @@
   }
 }
 
+/* Long-press callout suppression, for the kiosk portraits. `draggable={false}`
+   on an <img> only stops the HTML5 drag; iOS answers a press-and-hold over an
+   image with its own "Save Image / Copy" sheet, which a slow swipe off the
+   portrait reads as — the sheet opens and the gesture is lost mid-card. No
+   Tailwind core utility covers this property. Set it on the avatar frame so
+   it applies whichever element the OS hit-tests (the image itself is
+   pointer-events-none); it inherits to the <img>. Pair with `select-none`,
+   which handles the selection sweep. */
+@utility touch-callout-none {
+  -webkit-touch-callout: none;
+}
+
 @layer components {
   /* Gold CTA — Figma "Buttons/Gold" (node 12:767). Design is 64×18px padding,
      16px radius, Roboto SemiBold 26/22; expressed in rem so it scales with the
