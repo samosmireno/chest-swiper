@@ -124,9 +124,12 @@ const GameContent = () => (
 function App() {
   return (
     <ErrorBoundary>
-      {/* dvh: tracks the visual viewport on mobile so the collapsing URL bar
-          doesn't clip the layout or cause jumps */}
-      <div className="relative h-dvh w-screen overflow-hidden">
+      {/* h-viewport, not h-dvh: dvh tracks the visual viewport on mobile so
+          the collapsing URL bar doesn't clip the layout or cause jumps, but
+          engines that don't know the unit drop it and leave this box — and so
+          every h-full under it — at content height. The utility pairs it with
+          a 100% fallback off the html/body/#root chain (see index.css). */}
+      <div className="h-viewport relative w-screen overflow-hidden">
         <GameContent />
       </div>
     </ErrorBoundary>

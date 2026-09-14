@@ -66,6 +66,28 @@
 }
 
 @layer base {
+  /* Viewport-height chain. Every screen sizes itself off the App root, and
+     that root's only height is a dvh unit (see the h-viewport utility below).
+     `dvh` is dropped wholesale by pre-2022 engines — iOS < 15.4, Chromium
+     < 108, and the in-app WebViews still pinned to them — and with nothing
+     else in the chain the root fell back to `auto`, collapsing every `h-full`
+     beneath it to content height: the panel stopped short of the fold and the
+     scene stopped with it. Giving html/body/#root a real height means the
+     `100%` fallback in those utilities resolves against the layout viewport
+     instead of against nothing. */
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  /* The canvas behind the app. Any shortfall between the root box and the
+     browser's visible area — a collapsed toolbar, a stale dvh — then reads as
+     the dark end of the scene instead of a white band. */
+  html {
+    background-color: var(--color-dark-teal);
+  }
+
   /* Large-screen scaling: the design targets 1440×810 at a 16px root. On
      bigger viewports the root font-size grows to fill the tighter axis
      (1440/16 = 90, 810/16 = 50.625), so every rem-based Tailwind size scales
@@ -116,6 +138,28 @@
 
   body {
     font-family: var(--font-sans);
+  }
+}
+
+/* Full-viewport sizing, with a fallback for engines that don't know `dvh`.
+   The `100%` line resolves against the html/body/#root chain above; on iOS
+   that is the toolbars-showing height, so it is never taller than the visible
+   area and never clips. Engines that do understand `dvh` take the second line
+   and keep tracking the collapsing URL bar, which is what the layout was
+   designed against. The upgrade has to be an @supports block rather than a
+   second declaration on the same rule: the CSS minifier drops a plain
+   overridden duplicate, which silently deletes the fallback. */
+@utility h-viewport {
+  height: 100%;
+  @supports (height: 100dvh) {
+    height: 100dvh;
+  }
+}
+
+@utility min-h-viewport {
+  min-height: 100%;
+  @supports (height: 100dvh) {
+    min-height: 100dvh;
   }
 }
 

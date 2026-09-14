@@ -43,7 +43,7 @@ export function GamePanel({
   const isLastCard = currentIndex === deck.length - 1;
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-start gap-4 px-4 pt-3 pb-4 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:px-6 sm:pt-14 sm:pb-6">
+    <div className="relative flex min-h-viewport w-full flex-col items-center justify-start gap-4 px-4 pt-3 pb-4 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:px-6 sm:pt-14 sm:pb-6">
       {/* sm:pt-14 = the design's 56px from the frame top to the progress dots
           (Figma Frame 2, row 37:926 at y=54 + 3px inset). */}
       <div className="relative w-full">
@@ -68,7 +68,7 @@ export function GamePanel({
           card's top and from the card's bottom to the button row (Figma
           Frame 2). min-h-0 only from sm, where the panel is a fixed-height
           column of the kiosk row: on the stacked phone layout the panel is
-          min-h-dvh and grows with the column, so a card taller than the
+          min-h-viewport and grows with the column, so a card taller than the
           screen pushes the buttons (and the panel below) down rather than
           centring over the progress dots and under the fold. */}
       <div className="flex w-full flex-1 flex-col items-center justify-center gap-4 sm:min-h-0 sm:gap-6">

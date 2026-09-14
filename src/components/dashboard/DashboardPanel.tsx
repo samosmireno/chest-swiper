@@ -30,7 +30,7 @@ export function DashboardPanel({
     // No column-level chrome: each dashboard box carries its own border and
     // fill (Figma "Frame 4", node 47:1383 — the stats box and the leaderboard
     // box sit directly on the scene).
-    <div className="flex min-h-dvh w-full flex-col sm:min-h-0 sm:overflow-hidden sm:w-auto sm:flex-2 lg:flex-1">
+    <div className="min-h-viewport flex w-full flex-col sm:min-h-0 sm:w-auto sm:flex-2 sm:overflow-hidden lg:flex-1">
       <SessionStats correct={correct} missed={missed} accuracy={accuracy} />
       {GAME_SCREEN_PANEL === "leaderboard" ? (
         // min-h-0 so the panel's internal overflow-y-auto can actually
