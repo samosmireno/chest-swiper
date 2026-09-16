@@ -38,7 +38,27 @@ function targetSheet() {
   const ss = SHEET_ID
     ? SpreadsheetApp.openById(SHEET_ID)
     : SpreadsheetApp.getActiveSpreadsheet();
-  return SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0];
+  if (!ss) {
+    throw new Error(
+      'No spreadsheet: SHEET_ID is "" and this is not a bound script. ' +
+        "Set SHEET_ID to the sheet's file ID for a standalone deployment.",
+    );
+  }
+  const sheet = SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0];
+  // getSheetByName returns null for a name that doesn't exist — without this
+  // the miss surfaces as a null-pointer on the next call, several frames from
+  // the actual cause, and the kiosk POST swallows it whole (no-cors).
+  if (!sheet) {
+    const names = ss
+      .getSheets()
+      .map((s) => '"' + s.getName() + '"')
+      .join(", ");
+    throw new Error(
+      'No tab named "' + SHEET_NAME + '" in "' + ss.getName() + '". ' +
+        "Tabs are: " + names + ". Fix SHEET_NAME, or set it to \"\" for the first tab.",
+    );
+  }
+  return sheet;
 }
 
 const COLUMNS = [
