@@ -1,8 +1,24 @@
 // Who Would You Screen? — Google Sheets results store (primary storage)
 // POST appends a submission row; GET returns all rows as JSON.
-// Deploy as: Extensions → Apps Script → Deploy → New deployment
+// Two deployment modes. Both end with the /exec URL going into
+// SHEETS_WEBHOOK_URL in src/config.ts.
+//
+// BOUND (SHEET_ID = ""): Extensions → Apps Script inside the spreadsheet.
+// Only works if you can deploy in the spreadsheet owner's Workspace —
+// an editor on someone else's sheet usually cannot.
+//
+// STANDALONE (SHEET_ID set): script.google.com → New project, in YOUR OWN
+// Drive, writing to the client's sheet by ID. Use this when the sheet is
+// shared with you and Deploy is blocked. You need editor access on the
+// sheet; the web app runs as you, so your access is what authorizes the
+// write. First deploy prompts an OAuth consent screen for the Sheets scope
+// (it is an unverified app — Advanced → Go to <project>).
+//
+// Deploy → New deployment
 //   Type: Web app | Execute as: Me | Who has access: Anyone
-// Copy the deployment URL into SHEETS_WEBHOOK_URL in src/config.ts
+// "Anyone" is required: the kiosk POSTs without signing in. If that option
+// is missing, the account you are deploying from is in a Workspace whose
+// admin has disabled it — deploy from a personal account instead.
 //
 // Schema changes: v2.0 (asthma/COPD deck) has 12 cards, so card_p13–p15
 // are gone; v2.1 adds total_ms (the session clock's total — the sum of the
@@ -10,6 +26,20 @@
 // speed_bonus. The header row only auto-writes into an EMPTY sheet — deploy
 // against a fresh/cleared sheet, or new rows will misalign against a header
 // that still carries the old columns.
+
+// Spreadsheet to append to. Leave "" for a bound script (uses the container);
+// set to the sheet's file ID for a standalone deployment — the middle chunk
+// of the sheet URL: docs.google.com/spreadsheets/d/<SHEET_ID>/edit
+const SHEET_ID = "";
+// Tab to write to when standalone. "" = the spreadsheet's first sheet.
+const SHEET_NAME = "";
+
+function targetSheet() {
+  const ss = SHEET_ID
+    ? SpreadsheetApp.openById(SHEET_ID)
+    : SpreadsheetApp.getActiveSpreadsheet();
+  return SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0];
+}
 
 const COLUMNS = [
   "app_version",
@@ -52,7 +82,7 @@ const COLUMNS = [
 
 function doGet() {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const sheet = targetSheet();
     const rows = sheet.getDataRange().getValues();
     if (rows.length < 2) {
       return ContentService.createTextOutput(JSON.stringify([])).setMimeType(
@@ -79,7 +109,7 @@ function doGet() {
 
 function doPost(e) {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const sheet = targetSheet();
     const data = JSON.parse(e.postData.contents);
 
     if (sheet.getLastRow() === 0) {
