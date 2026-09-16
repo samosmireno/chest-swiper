@@ -81,7 +81,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
   }
 
   return (
-    <div className="entry-panel short-phone:px-5 short-phone:pt-4 short-phone:pb-4 w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:pt-9 sm:pb-9">
+    <div className="entry-panel short-phone:px-5 short-phone:pt-4 short-phone:pb-4 my-auto w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:my-0 sm:pt-9 sm:pb-9">
       {/* "Card title" (.type-card-title), off-white. The design's second
           line, "Asthma & COPD Decisions", was dropped at the client's request. */}
       <h1 className="type-card-title text-off-white text-center">
