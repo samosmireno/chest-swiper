@@ -626,8 +626,7 @@
   }
 
   /* "Card title" — Figma text style: Barlow Condensed Bold 32/33.44 → 32/33,
-     +1px tracking. The entry panel's "Swipe or Miss" (node I32:118;12:729)
-     and the attract screen's "Complete All 10 Cases!" (node 148:357). */
+     +1px tracking. The entry panel's "Swipe or Miss" (node I32:118;12:729). */
   .type-card-title {
     font-family: var(--font-display);
     font-size: 2rem;

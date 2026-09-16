@@ -81,11 +81,10 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
 
   return (
     <div className="entry-panel w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:pt-9 sm:pb-9">
-      {/* "Card title" (.type-card-title), off-white */}
+      {/* "Card title" (.type-card-title), off-white. The design's second
+          line, "Asthma & COPD Decisions", was dropped at the client's request. */}
       <h1 className="type-card-title text-off-white text-center">
-        Swipe or Miss:
-        <br />
-        Asthma &amp; COPD Decisions
+        Swipe or Miss
       </h1>
 
       {/* How-to-play — heading inset 9px, steps inset 13px from the field edge */}

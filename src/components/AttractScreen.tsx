@@ -148,13 +148,9 @@ export function AttractScreen() {
   return (
     <div className="short-phone:py-4 flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto px-6 py-6 sm:flex-row sm:justify-center sm:gap-16 sm:px-16 sm:py-0">
       {/* Animated card fan. The front card stays centred on the screen as in
-          Figma "Frame 1"; the heading (node 148:357, "Card title" style)
-          hangs above it out of flow — its bottom 3rem (design: 47px) over the
-          card's top — so it doesn't push the fan down. */}
+          Figma "Frame 1". The design's "Complete All … Cases!" heading above
+          it (node 148:357) was dropped at the client's request. */}
       <div className="relative hidden min-h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
-        <p className="type-card-title text-off-white absolute bottom-full left-1/2 mb-12 -translate-x-1/2 whitespace-nowrap">
-          Complete All {profiles.length} Cases!
-        </p>
         {/* Sizer: every fanned case's mini card laid out invisibly in one
             grid cell, so the fan is as tall as its tallest card and every
             card keeps the one type size (the same trick as CardStack's
