@@ -41,7 +41,16 @@ const SPECIALTIES = [
 
    This project's title runs to two lines and its specialty list to six
    rows, so the panel stands ~80px taller than the frame; the attract
-   screen scrolls if a viewport is ever too short for it. */
+   screen scrolls if a viewport is ever too short for it.
+
+   Below sm the three biggest of those (36 top, 36 bottom, 30 under the
+   title) and the form's 24 come down to 16, and `short-phone:` (index.css)
+   trims another ~36 on a viewport under 740px tall — 16 off the screen's
+   own padding, 12 off the specialty box and 8 off the two margins over the
+   CTA. Nothing there is design geometry; the type, the field sizes and the
+   panel's own 24px inset are untouched. With this project's taller panel a
+   385×700 phone still scrolls a little, but the CTA no longer sits a full
+   button under the fold. */
 export function EntryPanel({ onStart }: EntryPanelProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -57,9 +66,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
       : specialty;
 
   const canStart =
-    firstName.trim() !== "" &&
-    lastName.trim() !== "" &&
-    specialtyValue !== "";
+    firstName.trim() !== "" && lastName.trim() !== "" && specialtyValue !== "";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,7 +80,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
   }
 
   return (
-    <div className="entry-panel w-full max-w-[25.125rem] px-6 pt-9 pb-9">
+    <div className="entry-panel w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:pt-9 sm:pb-9">
       {/* "Card title" (.type-card-title), off-white */}
       <h1 className="type-card-title text-off-white text-center">
         Swipe or Miss:
@@ -82,7 +89,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
       </h1>
 
       {/* How-to-play — heading inset 9px, steps inset 13px from the field edge */}
-      <div className="mt-[1.875rem]">
+      <div className="mt-4 sm:mt-[1.875rem]">
         <p className="type-card-label text-gold-accent pl-[0.5625rem] leading-[1.625rem]">
           How to Play
         </p>
@@ -92,7 +99,9 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
               <span className="step-badge mt-1" aria-hidden>
                 {i + 1}
               </span>
-              <span className="font-dm-sans text-base/6 text-white">{text}</span>
+              <span className="font-dm-sans text-base/6 text-white">
+                {text}
+              </span>
             </li>
           ))}
         </ol>
@@ -101,7 +110,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
       {/* Player entry form */}
       <form
         onSubmit={handleSubmit}
-        className="mt-6 flex flex-col"
+        className="mt-4 flex flex-col sm:mt-6"
         noValidate
       >
         {/* Names: 160 + 16 + 178 in the design; stacked below sm */}
@@ -138,7 +147,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
         />
 
         {/* Specialty — Figma "What is your specialty" (node 16:806), 354×127 */}
-        <fieldset className="border-mid-teal mt-4 rounded-lg border-[1.5px] px-[0.9375rem] pt-[0.6875rem] pb-[1.0625rem]">
+        <fieldset className="border-mid-teal short-phone:pt-2 short-phone:pb-2 mt-4 rounded-lg border-[1.5px] px-[0.9375rem] pt-[0.6875rem] pb-[1.0625rem]">
           <legend className="sr-only">What is your specialty?</legend>
           <p
             className="font-dm-sans text-gold-accent text-xs/4 font-semibold tracking-[0.125rem] uppercase"
@@ -160,7 +169,9 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
                   onChange={() => setSpecialty(value)}
                   className="radio-dot"
                 />
-                <span className="font-dm-sans text-xs/4 text-white">{label}</span>
+                <span className="font-dm-sans text-xs/4 text-white">
+                  {label}
+                </span>
               </label>
             ))}
           </div>
@@ -188,7 +199,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
         </fieldset>
 
         {/* Consent — DM Sans 8/24, white, centred */}
-        <p className="font-dm-sans mt-2 text-center text-[0.5rem]/4 text-white sm:leading-6">
+        <p className="font-dm-sans short-phone:mt-1 mt-2 text-center text-[0.5rem]/4 text-white sm:leading-6">
           By entering your email you consent to your data being collected for
           research purposes.
         </p>
@@ -197,7 +208,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
         <button
           type="submit"
           disabled={!canStart}
-          className="btn-gold mt-2 max-w-full self-center px-6 py-[0.9375rem] text-[1.375rem]/[1.1875rem] sm:px-[3.375rem]"
+          className="btn-gold short-phone:mt-1 mt-2 max-w-full self-center px-6 py-[0.9375rem] text-[1.375rem]/[1.1875rem] sm:px-[3.375rem]"
         >
           Let’s get started
         </button>

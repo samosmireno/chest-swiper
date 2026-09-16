@@ -86,18 +86,29 @@ export function RationaleOverlay({
       </div>
 
       {/* Verdict — ring bottom-centred (design: 101.75px ring, 51px above the
-          card's bottom edge). On md+ "NOT QUITE!" hangs off the ring's left
-          edge as designed, 10px away and its centre ~7px above the ring's;
-          the wrapper is sized to the ring (the label is absolute), so the
-          pulse (both verdicts) breathes about the ring's centre and, when
-          incorrect, carries the label with it. Below md the 304px card has no room to the left
-          of the ring (the label would sit almost on the card's edge), so the
-          label stacks centred above the ring instead; the ring stays
-          bottom-anchored and the body scroller absorbs the extra height. */}
-      <div className="relative z-10 flex shrink-0 justify-center pt-2 pb-9 md:pt-4 md:pb-12">
-        <div className="verdict-pulse relative flex flex-col items-center gap-1.5 md:block">
+          card's bottom edge). "NOT QUITE!" hangs off the ring's left edge as
+          designed, 10px away and its centre ~7px above the ring's; the
+          wrapper is sized to the ring (the label is absolute), so the pulse
+          (both verdicts) breathes about the ring's centre and, when
+          incorrect, carries the label with it.
+
+          That placement holds at every width. It used to stack centred
+          above the ring below md, on the reading that a 304px card had no
+          room beside it — but the card leaves 112px to the left of its
+          centred 80px ring, and the 22px label needs 109 of it. Stepping the
+          label down to 20px below md buys that back with room to spare, and
+          hanging it beside the ring instead of above returns 28px to the body
+          scroller; the phone bottom padding drops to 20px (36 in the design's
+          proportion) for another 16. Both go to the longest rationales, which
+          were losing the end of their last paragraph on a 385×700 phone.
+
+          From xl the bottom padding drops 48 → 32px: that 16px is what lets
+          the one-step-larger xl type (index.css) fit the longest rationale
+          without scrolling. */}
+      <div className="relative z-10 flex shrink-0 justify-center pt-2 pb-5 md:pt-4 md:pb-12 xl:pb-8">
+        <div className="verdict-pulse relative">
           {!result.correct && (
-            <span className="type-verdict-label text-alert-red whitespace-nowrap md:absolute md:top-[calc(50%-0.4375rem)] md:right-full md:mr-2.5 md:-translate-y-1/2">
+            <span className="type-verdict-label text-alert-red absolute top-[calc(50%-0.4375rem)] right-full mr-2.5 -translate-y-1/2 whitespace-nowrap max-md:text-[1.25rem]">
               Not quite!
             </span>
           )}

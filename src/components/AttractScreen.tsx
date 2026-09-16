@@ -110,7 +110,7 @@ export function AttractScreen() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto px-6 py-10 sm:justify-center sm:flex-row sm:gap-16 sm:px-16 sm:py-0">
+    <div className="short-phone:py-4 flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto px-6 py-6 sm:flex-row sm:justify-center sm:gap-16 sm:px-16 sm:py-0">
       {/* Animated card fan. The front card stays centred on the screen as in
           Figma "Frame 1"; the heading (node 148:357, "Card title" style)
           hangs above it out of flow — its bottom 3rem (design: 47px) over the

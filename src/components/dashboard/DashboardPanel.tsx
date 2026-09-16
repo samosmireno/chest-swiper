@@ -33,8 +33,11 @@ export function DashboardPanel({
     <div className="flex min-h-dvh w-full flex-col sm:min-h-0 sm:overflow-hidden sm:w-auto sm:flex-2 lg:flex-1">
       <SessionStats correct={correct} missed={missed} accuracy={accuracy} />
       {GAME_SCREEN_PANEL === "leaderboard" ? (
-        // min-h-0 so the panel's internal overflow-y-auto can actually scroll
-        <div className="min-h-0 flex-1">
+        // min-h-0 so the panel's internal overflow-y-auto can actually
+        // scroll; below sm the box grows to its rows instead (see
+        // LeaderboardPanel), so a phone has one page scroll rather than a
+        // 368px scroller nested inside one
+        <div className="min-h-0 flex-1 max-sm:flex-none">
           <LeaderboardPanel />
         </div>
       ) : (

@@ -39,10 +39,16 @@ export function LeaderboardPanel() {
        corner only (it runs off the bottom of the screen and its right edge
        is the screen edge). Header row 72px (title + 2px rule), rows inset
        23px from the box, 40px tall at a 64px pitch. Paddings are the design's
-       outer-edge offsets minus the 2px border, in rem. */
+       outer-edge offsets minus the 2px border, in rem.
+
+       Below sm the box grows to its rows instead of scrolling them inside a
+       fixed height (h-auto + overflow-visible), so a phone has one page
+       scroll rather than a 368px scroller nested inside one; min-h-full
+       keeps it filling the screen when a short page of rows would otherwise
+       leave the panel half empty. */
     <section
       aria-label="Leaderboard"
-      className="border-mid-teal bg-charcoal/40 flex h-full flex-col rounded-tl-2xl border-2"
+      className="border-mid-teal bg-charcoal/40 flex h-full flex-col rounded-tl-2xl border-2 max-sm:h-auto max-sm:min-h-full"
     >
       {/* Header — "Leaderboard title 2" (20/32) over the Line 2 rule */}
       <h2 className="type-panel-title text-off-white border-mid-teal shrink-0 border-b-2 px-[1.375rem] pt-[1.375rem] pb-[0.9375rem] text-xl/8">
@@ -50,7 +56,7 @@ export function LeaderboardPanel() {
       </h2>
 
       {/* Rows */}
-      <div className="flex-1 overflow-y-auto px-[1.4375rem] pt-8 pb-6">
+      <div className="flex-1 overflow-y-auto px-[1.4375rem] pt-8 pb-6 max-sm:overflow-visible">
         {loading ? (
           <p className="font-dm-sans text-off-white pt-1.5 text-center text-base/6">
             Loading scores…
@@ -60,7 +66,7 @@ export function LeaderboardPanel() {
             No scores yet.
           </p>
         ) : (
-          <ol className="flex flex-col gap-6">
+          <ol className="flex flex-col gap-6 max-sm:gap-3">
             {pageEntries.map((entry, i) => {
               const rank = page * LEADERBOARD_PAGE_SIZE + i + 1;
               const isCurrent = entry.sessionId === state.lastSessionId;

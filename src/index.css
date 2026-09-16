@@ -1,6 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Roboto:wght@600;700&display=swap");
 @import "tailwindcss";
 
+/* Short phone — a stacked-layout viewport with less height than the attract
+   panel wants. The panel is a fixed stack (title, how-to, four fields,
+   consent, CTA) and needs 683px as designed, 723 once "Other" opens its
+   input, so at 385×700 the CTA fell 25px under the fold. `short-phone:`
+   carries the ~36px of padding it gives back there; keyed on height, not
+   width, so 390×844 and every taller phone keep the design's spacing. */
+@custom-variant short-phone (@media (max-width: 639px) and (max-height: 740px));
+
 @theme {
   --font-sans:
     "Avenir Next", "Avenir", ui-sans-serif, system-ui, -apple-system, sans-serif;

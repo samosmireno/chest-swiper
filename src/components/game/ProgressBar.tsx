@@ -30,7 +30,7 @@ export function ProgressBar({ current, total, results }: ProgressBarProps) {
        end, vertically centred on the dots. The root is the md containing
        block; the group becomes it at lg so left-full measures from the dots. */
     <div className="relative flex w-full flex-col items-center">
-      <div className="flex flex-col-reverse items-center gap-4 md:block lg:relative">
+      <div className="flex flex-col-reverse items-center gap-2 md:block lg:relative">
         {/* Progress-dot row (Figma row 52:1566: 24px discs, 12px gap) */}
         <div
           className="flex items-center gap-1.5 sm:gap-3"

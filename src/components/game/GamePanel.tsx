@@ -37,11 +37,13 @@ export function GamePanel({
 
   // Overlay is open iff the latest swipe corresponds to the currently-displayed card.
   const overlayOpen =
-    !!lastResult && !!currentProfile && lastResult.profileId === currentProfile.id;
+    !!lastResult &&
+    !!currentProfile &&
+    lastResult.profileId === currentProfile.id;
   const isLastCard = currentIndex === deck.length - 1;
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col items-center justify-start gap-4 px-4 pt-4 pb-6 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:px-6 sm:pt-14 sm:pb-6">
+    <div className="relative flex min-h-dvh w-full flex-col items-center justify-start gap-4 px-4 pt-3 pb-4 sm:min-h-0 sm:w-auto sm:flex-3 sm:gap-6 sm:px-6 sm:pt-14 sm:pb-6">
       {/* sm:pt-14 = the design's 56px from the frame top to the progress dots
           (Figma Frame 2, row 37:926 at y=54 + 3px inset). */}
       <div className="relative w-full">
@@ -64,21 +66,35 @@ export function GamePanel({
       {/* Label, card and buttons centre in the space left below the progress
           row. gap-6 = the design's 24px from the label's line box to the
           card's top and from the card's bottom to the button row (Figma
-          Frame 2). */}
-      <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-6">
+          Frame 2). min-h-0 only from sm, where the panel is a fixed-height
+          column of the kiosk row: on the stacked phone layout the panel is
+          min-h-dvh and grows with the column, so a card taller than the
+          screen pushes the buttons (and the panel below) down rather than
+          centring over the progress dots and under the fold. */}
+      <div className="flex w-full flex-1 flex-col items-center justify-center gap-4 sm:min-h-0 sm:gap-6">
         {/* Figma "SWIPE A CARD" (node 36:867), above the card: DM Sans Bold
             30.4/33.44 with 0.608px tracking in off-white, no shadow — 30/33
             with 1px tracking on the px grid; 24/32 below md for the phone
             layout. Faded (not removed) while the rationale is open — Frames
-            3/4 drop it — so the column doesn't reflow mid-animation. */}
+            3/4 drop it — so the column doesn't reflow mid-animation.
+            Dropped below sm: at 385×700 the column needs 781px for its 512px
+            card, and the label plus its gap is the 56px that buys the choice
+            buttons their place on the screen (the buttons themselves say what
+            to do, and the card is swipeable either way). */}
         <span
           aria-hidden={overlayOpen}
-          className={`font-dm-sans text-off-white text-center text-2xl/8 font-bold tracking-[0.0625rem] transition-opacity duration-150 md:text-[1.875rem]/[2.0625rem] ${
+          className={`font-dm-sans text-off-white text-center text-2xl/8 font-bold tracking-[0.0625rem] transition-opacity duration-150 max-sm:hidden md:text-[1.875rem]/[2.0625rem] ${
             overlayOpen ? "opacity-0" : "opacity-100"
           }`}
         >
           SWIPE A CARD
         </span>
+        {/* Card box — sized by CardStack to the deck's tallest card, never
+            shrunk to the viewport: this deck's tallest case runs to ~626px at
+            phone width, so a box that gave height back on a short phone (as
+            t2i-swiper's does, down to 20rem) would clip its bullets. On a
+            385×700 phone the choice buttons therefore still sit under the
+            fold and the column scrolls; the card is swipeable either way. */}
         <div className="relative">
           <CardStack
             ref={cardStackRef}
@@ -161,7 +177,6 @@ export function GamePanel({
           </div>
         </div>
       </div>
-
     </div>
   );
 }
