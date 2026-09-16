@@ -1,10 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameDispatch } from "../context/useGame";
 import { prefetchRemoteSubmissions } from "../utils/remoteSubmissions";
 import { shuffle } from "../utils/shuffle";
 import type { PatientProfile } from "../types";
 import { EntryPanel, type PlayerEntry } from "./EntryPanel";
+
+/* The fan is as tall as its tallest card (see the sizer below), and the
+   deck's two tallest cases run well past the design's 363px. The attract
+   screen only needs a taste of the deck, so those two sit out of the fan and
+   the rest circle at a height closer to the design. The game still deals all
+   of them. */
+const OMIT_TALLEST = 2;
 
 const STACK_STYLES = [
   { rotate: 0, x: 0, opacity: 1 },
@@ -71,6 +78,35 @@ interface StackCard {
 export function AttractScreen() {
   const { dispatch, profiles } = useGameDispatch();
 
+  // Which cases sit out of the fan: measured from the sizer on the first
+  // layout, when it still holds every case. Keyed on the profiles array so a
+  // new deck re-measures.
+  const sizerRef = useRef<HTMLDivElement>(null);
+  const [omitted, setOmitted] = useState<{
+    of: PatientProfile[];
+    ids: Set<string>;
+  } | null>(null);
+  const fanProfiles =
+    omitted?.of === profiles
+      ? profiles.filter((profile) => !omitted.ids.has(profile.id))
+      : profiles;
+
+  useLayoutEffect(() => {
+    const sizer = sizerRef.current;
+    if (!sizer || profiles.length <= OMIT_TALLEST) return;
+    const heights = Array.from(sizer.children, (cell, i) => ({
+      id: profiles[i].id,
+      height: (cell as HTMLElement).offsetHeight,
+    }));
+    // No layout (e.g. jsdom): nothing to rank, keep every card.
+    if (heights.every(({ height }) => height === 0)) return;
+    heights.sort((a, b) => b.height - a.height);
+    setOmitted({
+      of: profiles,
+      ids: new Set(heights.slice(0, OMIT_TALLEST).map(({ id }) => id)),
+    });
+  }, [profiles]);
+
   // Warm the shared submissions fetch during form entry so the game-screen
   // panel (chart or leaderboard) mounts with data instead of updating mid-play.
   useEffect(() => {
@@ -79,14 +115,14 @@ export function AttractScreen() {
 
   const [stack, setStack] = useState<StackCard[]>([
     { id: 0, profileIdx: 0 },
-    { id: 1, profileIdx: 1 % profiles.length },
-    { id: 2, profileIdx: 2 % profiles.length },
+    { id: 1, profileIdx: 1 % fanProfiles.length },
+    { id: 2, profileIdx: 2 % fanProfiles.length },
   ]);
   const nextId = useRef(3);
   const [newestId, setNewestId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (profiles.length === 0) return;
+    if (fanProfiles.length === 0) return;
     const interval = setInterval(() => {
       const newId = nextId.current;
       nextId.current += 1;
@@ -94,13 +130,13 @@ export function AttractScreen() {
       setStack(([, mid, back]) => {
         const newCard: StackCard = {
           id: newId,
-          profileIdx: (back.profileIdx + 1) % profiles.length,
+          profileIdx: (back.profileIdx + 1) % fanProfiles.length,
         };
         return [mid, back, newCard];
       });
     }, 4000);
     return () => clearInterval(interval);
-  }, [profiles.length]);
+  }, [fanProfiles.length]);
 
   if (profiles.length === 0) return null;
 
@@ -119,15 +155,21 @@ export function AttractScreen() {
         <p className="type-card-title text-off-white absolute bottom-full left-1/2 mb-12 -translate-x-1/2 whitespace-nowrap">
           Complete All {profiles.length} Cases!
         </p>
-        {/* Sizer: every case's mini card laid out invisibly in one grid cell,
-            so the fan is as tall as the deck's tallest card and every card
-            keeps the one type size (the same trick as CardStack's
-            StackSizer); the design's 363px stays as the floor. */}
-        <div className="pointer-events-none invisible grid" aria-hidden>
-          {profiles.map((profile) => (
+        {/* Sizer: every fanned case's mini card laid out invisibly in one
+            grid cell, so the fan is as tall as its tallest card and every
+            card keeps the one type size (the same trick as CardStack's
+            StackSizer); the design's 363px stays as the floor. Cells sit at
+            the row's start so each measures at its own height, not the
+            row's, for the OMIT_TALLEST ranking above. */}
+        <div
+          ref={sizerRef}
+          className="pointer-events-none invisible grid"
+          aria-hidden
+        >
+          {fanProfiles.map((profile) => (
             <div
               key={profile.id}
-              className="col-start-1 row-start-1 flex flex-col"
+              className="col-start-1 row-start-1 flex flex-col self-start"
             >
               <MiniCard profile={profile} />
             </div>
@@ -137,7 +179,7 @@ export function AttractScreen() {
           {[...stack].reverse().map(({ id, profileIdx }, reversedIdx) => {
             const stackPos = stack.length - 1 - reversedIdx;
             const isFront = stackPos === 0;
-            const profile = profiles[profileIdx];
+            const profile = fanProfiles[profileIdx];
 
             return (
               <motion.div
