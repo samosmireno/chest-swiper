@@ -42,7 +42,9 @@ carries the palette tokens (`dark-teal`, `mid-teal`, `gold-accent`,
 `.btn-outline` buttons, the `.patient-card` and `.entry-panel` glass shells
 and the `.type-*` text ramp, each annotated with its Figma node; components
 use those classes plus Tailwind utilities. The scene art
-(`public/bg_video.mp4` + poster) is shared with t2i-swiper. Cards carry the
+(`public/bg_video.mp4` + poster) is the client's lungs-and-crowd clip, transcoded
+to 720p H.264 from the ignored master `documents/bg_video_source.mp4`;
+the poster is its first frame. Cards carry the
 slides' `bullets` under a gold `name` line and the age line (`PatientCard`,
 `SummaryPanel`, the attract-screen mini card), with the abbreviation
 `footnote` at the foot of the game and attract cards; abbreviations used only
