@@ -40,9 +40,13 @@ export function PatientCardContent({ profile }: PatientCardProps) {
       {/* Header — gradient-framed 4:5 portrait, label + name + age beside
           it. The text column top-aligns 24px below the avatar top (design),
           not centred. Below md the portrait and the two Roboto lines step
-          down a size so they still fit beside it on the 304px mobile card. */}
-      <div className="relative z-10 flex shrink-0 items-start gap-3 pt-[1.625rem] pr-6 pl-[1.9375rem] max-md:pr-5">
-        <div className="bg-avatar-stroke touch-callout-none h-[6.75rem] w-22 shrink-0 rounded-[0.875rem] p-[0.1875rem] select-none md:h-[8.4375rem] md:w-[6.875rem]">
+          down a size so they still fit beside it on the 320px sm card; below
+          sm (the phone card) everything steps down once more — 72×90
+          portrait, 16px top padding, 11px label, 16px name/age — so the
+          six-bullet case fits a 350×700 phone with the choice buttons on
+          screen (see GamePanel). */}
+      <div className="relative z-10 flex shrink-0 items-start gap-3 pt-[1.625rem] pr-6 pl-[1.9375rem] max-md:pr-5 max-sm:pt-4 max-sm:pl-6">
+        <div className="bg-avatar-stroke touch-callout-none h-[6.75rem] w-22 shrink-0 rounded-[0.875rem] p-[0.1875rem] select-none max-sm:h-[5.625rem] max-sm:w-18 md:h-[8.4375rem] md:w-[6.875rem]">
           <img
             src={profile.image}
             alt={`${profile.name}, ${profile.ageSex}`}
@@ -50,24 +54,27 @@ export function PatientCardContent({ profile }: PatientCardProps) {
             draggable={false}
           />
         </div>
-        <div className="min-w-0 flex-1 pt-4 md:pt-6">
-          <p className="type-card-label text-gold-accent max-md:text-[0.8125rem]/5 max-md:tracking-[0.1em]">
+        <div className="min-w-0 flex-1 pt-4 max-sm:pt-2 md:pt-6">
+          <p className="type-card-label text-gold-accent max-md:text-[0.8125rem]/5 max-md:tracking-[0.1em] max-sm:text-[0.6875rem]/4">
             Patient Profile
           </p>
           {/* "Card client age Large" twice: the name in gold, the age line in
               off-white directly under it (node I2009:3373;36:669) */}
-          <p className="type-card-age text-gold-accent mt-2 max-md:text-lg/6">
+          <p className="type-card-age text-gold-accent mt-2 max-md:text-lg/6 max-sm:mt-1 max-sm:text-base/5">
             {profile.name}
           </p>
-          <p className="type-card-age text-off-white max-md:text-lg/6">
+          <p className="type-card-age text-off-white max-md:text-lg/6 max-sm:text-base/5">
             {profile.ageSex}
           </p>
         </div>
       </div>
 
       {/* Body — verbatim case bullets, one size for every card, with the
-          abbreviation key pinned to the foot (node I2009:3373;2009:2281) */}
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 pt-4 pr-10 pb-6 pl-[1.5625rem]">
+          abbreviation key pinned to the foot (node I2009:3373;2009:2281).
+          Phone: 10px between bullets instead of 16, the design's 40px right
+          padding down to 20 so the text column is as wide as the card
+          allows, and the body type one step smaller (.type-card-body). */}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 pt-4 pr-10 pb-6 pl-[1.5625rem] max-sm:gap-2.5 max-sm:pt-3 max-sm:pr-5 max-sm:pb-4 max-sm:pl-5">
         {profile.bullets.map((bullet) => (
           <BulletRow key={bullet} text={bullet} />
         ))}

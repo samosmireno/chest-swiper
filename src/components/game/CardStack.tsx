@@ -187,11 +187,15 @@ export const CardStack = forwardRef<CardStackHandle, CardStackProps>(
     const visibleProfiles = deck.slice(currentIndex, currentIndex + 3);
 
     // The box is the tallest card's height (StackSizer) over a floor: the
-    // design's 440×480 on md+, and 32rem below md — enough for the rationale
+    // design's 440×480 on md+, and 32rem at sm — enough for the rationale
     // overlay (absolute over this box) to show the longest case's three
-    // sentence paragraphs without scrolling on a 390px phone.
+    // sentence paragraphs without scrolling. Below sm there is no floor:
+    // the tallest card (its phone ramp stepped down, see PatientCard) is
+    // what fits a 350×700 phone, and the overlay's phone ramp is sized to
+    // fit inside it (RationaleOverlay). The phone card fills its column up
+    // to 20rem; sm and md take the design widths.
     return (
-      <div className="relative min-h-128 w-76 sm:w-80 md:min-h-120 md:w-110">
+      <div className="relative w-full sm:min-h-128 sm:w-80 md:min-h-120 md:w-110">
         <StackSizer deck={deck} />
         {[...visibleProfiles].reverse().map((profile, reversedIndex) => {
           const stackPosition = visibleProfiles.length - 1 - reversedIndex;

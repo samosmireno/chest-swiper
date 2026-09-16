@@ -75,9 +75,14 @@ export function SwipeGuide({
   // this deck's 40-55-character shared-decision-making options hold three
   // lines, not four, in the 282px button. Short labels settle at the 20px.
   // Font size lives in classes (not inline style) so the md: override wins.
+  // Below md the leading follows the (smaller) font instead of .btn-card's
+  // fixed 22px, which is set for the design's 20px type: on a 350px phone a
+  // long label runs to six lines in its ~100px text zone, and 22px lines
+  // made that row 152px tall — the difference between the choice buttons
+  // sitting on the screen under the tallest card and under the fold.
   const labelFontClass = longOptions
-    ? "text-[clamp(0.75rem,3.8vw,1.0625rem)] md:text-[1.125rem]"
-    : "text-[clamp(0.9375rem,2.2vw,1.25rem)]";
+    ? "text-[clamp(0.6875rem,3.4vw,1.0625rem)] max-md:leading-[1.15] md:text-[1.125rem]"
+    : "text-[clamp(0.9375rem,2.2vw,1.25rem)] max-md:leading-[1.2]";
 
   return (
     /* Choice-button row — Figma "Buttons Client Cards" (Frame 2, nodes

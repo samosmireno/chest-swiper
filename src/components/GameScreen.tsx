@@ -29,6 +29,11 @@ export function GameScreen() {
   const handleCardShown = (at: number) => dispatch({ type: "CARD_SHOWN", at });
   const handleCardCommit = (at: number) => dispatch({ type: "CARD_COMMITTED", at });
 
+  // Below sm the two panels stack in a scrolling column, and each carries an
+  // explicit min-height (min-h-viewport). That explicit minimum replaces the
+  // flex item's content-based one, so without shrink-0 a game panel taller
+  // than the screen was squeezed to exactly one viewport and its choice
+  // buttons painted over the dashboard below.
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto sm:flex-row sm:overflow-hidden">
       <GamePanel

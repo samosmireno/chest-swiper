@@ -49,10 +49,16 @@ export function RationaleOverlay({
           scroller: the card itself must stay
           non-scrolling, because the glow ring is an absolute child that
           bleeds 0.125rem past the card edge and would otherwise register as
-          scrollable overflow. */}
+          scrollable overflow.
+
+          Below sm the box is only as tall as the deck's tallest phone card
+          (no floor, see CardStack), so the overlay's phone ramp steps down
+          with it: 20/24px top, 24/20px side padding, 12px between sentences
+          and one size smaller type (.type-rationale-* in index.css) — the
+          longest rationale then clears the verdict ring without scrolling. */}
       <div
-        className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto pr-6 pl-8 md:pr-[2.125rem] md:pl-12 ${
-          result.correct ? "pt-10 md:pt-15" : "pt-7 md:pt-11"
+        className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto pr-6 pl-8 max-sm:pr-5 max-sm:pl-6 md:pr-[2.125rem] md:pl-12 ${
+          result.correct ? "pt-10 max-sm:pt-6 md:pt-15" : "pt-7 max-sm:pt-5 md:pt-11"
         }`}
       >
         {!result.correct && (
@@ -70,7 +76,7 @@ export function RationaleOverlay({
         {/* One paragraph per sentence with a blank line between — Figma node
             I51:1458;42:1226 sets the rationale as sentence paragraphs split by
             an empty line, so the gap is the body's own line-height. */}
-        <div className="type-rationale-body text-off-white mt-4 flex flex-col gap-[1.125rem] md:mt-[1.125rem]">
+        <div className="type-rationale-body text-off-white mt-4 flex flex-col gap-[1.125rem] max-sm:mt-3 max-sm:gap-3 md:mt-[1.125rem]">
           {splitSentences(profile.explanation).map((sentence, i) => (
             <p key={i}>{sentence}</p>
           ))}
@@ -105,7 +111,7 @@ export function RationaleOverlay({
           From xl the bottom padding drops 48 → 32px: that 16px is what lets
           the one-step-larger xl type (index.css) fit the longest rationale
           without scrolling. */}
-      <div className="relative z-10 flex shrink-0 justify-center pt-2 pb-5 md:pt-4 md:pb-12 xl:pb-8">
+      <div className="relative z-10 flex shrink-0 justify-center pt-2 pb-5 max-sm:pt-1 max-sm:pb-4 md:pt-4 md:pb-12 xl:pb-8">
         <div className="verdict-pulse relative">
           {!result.correct && (
             <span className="type-verdict-label text-alert-red absolute top-[calc(50%-0.4375rem)] right-full mr-2.5 -translate-y-1/2 whitespace-nowrap max-md:text-[1.25rem]">
