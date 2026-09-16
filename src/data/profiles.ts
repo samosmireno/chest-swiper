@@ -14,7 +14,8 @@ import type { PatientProfile } from "../types";
 // - Footnotes key only abbreviations printed on the card (bullets and
 //   options), in alphabetical order. Abbreviations that appear only in a
 //   rationale are keyed by explanationFootnote (TSLP c5, GOLD c7) or spelled
-//   out inline (interleukin (IL)-5, c2).
+//   out inline (interleukin (IL)-5, c2). v2.3 keys IgE on c3 too, per the
+//   client's second round of comments (comments_v2.pdf, September 2026).
 // - Bullets: "Currently on budesonide/…" (c1, no "the"), "Comorbidity:
 //   asthma" (c9), "ILD" and "ED" for the slide's "interstitial lung disease"
 //   and "ER" (c11), "AFRS" alone (c12, still keyed in the footnote).
@@ -75,7 +76,8 @@ export const profiles: PatientProfile[] = [
       "Currently on fluticasone/vilanterol (200 mcg/25 mcg) and rescue inhaler (albuterol)",
       "FeNO: 38 ppb; EOS: 168 cells/μL; IgE: 5 IU/mL",
     ],
-    footnote: "EOS = eosinophil; FeNO = fractional exhaled nitric oxide.",
+    footnote:
+      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; IgE = immunoglobulin E.",
     leftOption: "Omalizumab",
     rightOption: "Dupilumab",
     correctSide: "right",
