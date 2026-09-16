@@ -3,10 +3,10 @@
 
 /* Short phone — a stacked-layout viewport with less height than the attract
    panel wants. The panel is a fixed stack (title, how-to, four fields,
-   consent, CTA) and needs 683px as designed, 723 once "Other" opens its
-   input, so at 385×700 the CTA fell 25px under the fold. `short-phone:`
-   carries the ~36px of padding it gives back there; keyed on height, not
-   width, so 390×844 and every taller phone keep the design's spacing. */
+   consent, CTA) and at the design's spacing ran past a 700px-tall phone,
+   with the CTA under the fold. `short-phone:` carries the ~52px of padding
+   it gives back there (see EntryPanel); keyed on height, not width, so
+   390×844 and every taller phone keep the design's spacing. */
 @custom-variant short-phone (@media (max-width: 639px) and (max-height: 740px));
 
 @theme {

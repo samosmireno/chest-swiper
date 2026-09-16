@@ -44,13 +44,14 @@ const SPECIALTIES = [
    screen scrolls if a viewport is ever too short for it.
 
    Below sm the three biggest of those (36 top, 36 bottom, 30 under the
-   title) and the form's 24 come down to 16, and `short-phone:` (index.css)
-   trims another ~36 on a viewport under 740px tall — 16 off the screen's
-   own padding, 12 off the specialty box and 8 off the two margins over the
-   CTA. Nothing there is design geometry; the type, the field sizes and the
-   panel's own 24px inset are untouched. With this project's taller panel a
-   385×700 phone still scrolls a little, but the CTA no longer sits a full
-   button under the fold. */
+   title) and the form's 24 come down to 16, and the how-to steps drop to
+   14/20 so each keeps to one line on a 350px-wide phone (at 16/24 two of
+   them wrapped, +48px). `short-phone:` (index.css) trims another ~52 on a
+   viewport under 740px tall — 16 off the screen's own padding, 16 off the
+   panel's top and bottom, 12 off the specialty box and 8 off the two
+   margins over the CTA — and eases the panel's side inset to 20px. On a
+   350×700 phone the panel is 631px tall and sits fully on screen, with
+   room for the "Other" input to open. */
 export function EntryPanel({ onStart }: EntryPanelProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -80,7 +81,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
   }
 
   return (
-    <div className="entry-panel w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:pt-9 sm:pb-9">
+    <div className="entry-panel short-phone:px-5 short-phone:pt-4 short-phone:pb-4 w-full max-w-[25.125rem] px-6 pt-6 pb-6 sm:pt-9 sm:pb-9">
       {/* "Card title" (.type-card-title), off-white. The design's second
           line, "Asthma & COPD Decisions", was dropped at the client's request. */}
       <h1 className="type-card-title text-off-white text-center">
@@ -98,7 +99,7 @@ export function EntryPanel({ onStart }: EntryPanelProps) {
               <span className="step-badge mt-1" aria-hidden>
                 {i + 1}
               </span>
-              <span className="font-dm-sans text-base/6 text-white">
+              <span className="font-dm-sans text-sm/5 text-white sm:text-base/6">
                 {text}
               </span>
             </li>
