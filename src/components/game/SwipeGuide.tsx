@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import type { SwipeSide } from "../../types";
 
 interface SwipeGuideProps {
@@ -29,6 +31,36 @@ function ArrowGlyph({ direction }: { direction: SwipeSide }) {
     >
       <path d="M18.3998 24.4178L1.60875 14.7233C-0.53625 13.4873 -0.53625 11.4608 1.60875 10.2233L18.4013 0.528815C20.5463 -0.710185 22.2983 0.303815 22.2983 2.77881V22.1678C22.2983 24.6428 20.5433 25.6568 18.4013 24.4178H18.3998Z" />
     </svg>
+  );
+}
+
+/* The arrow is positioned, not laid out, so the label's side padding only
+   *reserves* its lane — it cannot stop a word that is wider than the text zone
+   from running straight through it, and an over-wide centred line spills
+   towards the inline end, i.e. into the right button's arrow. A slash-joined
+   token has no break opportunity of its own (t2i-swiper's "Refer to
+   allergy/immunology" printed "immunology" under the glyph on a phone), so
+   splitting after each "/" gives the wrap a natural home; here that is
+   "Anti–IL-5/IL-5R". <wbr> is an empty element, so the button's accessible
+   name stays the label verbatim.
+   Deliberately no `overflow-wrap: break-word` alongside: a label that
+   overflows the text zone by a few px does it harmlessly (the left button's
+   arrow is on the far side, and the button's own 12px padding absorbs the
+   rest), and break-word turns those into mid-word breaks — "Mepolizum|ab".
+   `lg:hidden` because a display:none <wbr> is not a break opportunity at all,
+   and at lg+ the buttons take their fixed 282px design width, where nothing
+   collides and `text-balance` would otherwise spend the new opportunity
+   re-breaking a label on the screen the client signed off. */
+function OptionLabel({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(?<=\/)/).map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && <wbr className="lg:hidden" />}
+          {part}
+        </Fragment>
+      ))}
+    </>
   );
 }
 
@@ -64,7 +96,7 @@ export function SwipeGuide({
       >
         <ArrowGlyph direction="left" />
         <span className="min-w-0 px-4 text-center text-balance lg:px-9">
-          {leftOption}
+          <OptionLabel text={leftOption} />
         </span>
       </button>
 
@@ -73,7 +105,7 @@ export function SwipeGuide({
         onClick={() => onTap("right")}
       >
         <span className="min-w-0 px-4 text-center text-balance lg:px-9">
-          {rightOption}
+          <OptionLabel text={rightOption} />
         </span>
         <ArrowGlyph direction="right" />
       </button>
