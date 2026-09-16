@@ -30,3 +30,5 @@ dist-ssr
 *.7z
 *.pptx
 *.pdf
+# Client photo deliveries (source files, converted into public/patients)
+documents/RD_113L photos/
