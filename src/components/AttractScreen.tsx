@@ -145,12 +145,18 @@ export function AttractScreen() {
     dispatch({ type: "START_GAME", deck: shuffle(profiles) });
   }
 
+  // The screen scrolls whenever the panel outgrows it: a short phone, or any
+  // screen with an on-screen keyboard up, which shrinks the App root to the
+  // visible area (useKeyboardViewport). The fan and panel centre on auto
+  // margins rather than align-items, so an overflowing one gives way at the
+  // top edge instead of pushing its head out of reach, and the scroller keeps
+  // its overscroll rather than handing it on to the page.
   return (
-    <div className="short-phone:py-4 flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto px-6 py-6 sm:flex-row sm:justify-center sm:gap-16 sm:px-16 sm:py-0">
+    <div className="short-phone:py-4 flex h-full w-full flex-col items-center justify-start gap-8 overflow-y-auto overscroll-y-contain px-6 py-6 sm:flex-row sm:justify-center sm:gap-16 sm:px-16 sm:py-0">
       {/* Animated card fan. The front card stays centred on the screen as in
           Figma "Frame 1". The design's "Complete All … Cases!" heading above
           it (node 148:357) was dropped at the client's request. */}
-      <div className="relative hidden min-h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
+      <div className="relative my-auto hidden min-h-[22.6875rem] w-[14.875rem] shrink-0 sm:block">
         {/* Sizer: every fanned case's mini card laid out invisibly in one
             grid cell, so the fan is as tall as its tallest card and every
             card keeps the one type size (the same trick as CardStack's

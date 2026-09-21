@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from "react";
+import { Component, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GameProvider } from "./context/GameContext";
 import { useGameScreen } from "./context/useGame";
@@ -8,6 +8,7 @@ import { GameScreen } from "./components/GameScreen";
 import { SummaryView } from "./components/SummaryView";
 import { FpsMeter } from "./components/FpsMeter";
 import { perfFlags } from "./utils/perfFlags";
+import { useKeyboardViewport } from "./hooks/useKeyboardViewport";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -122,14 +123,22 @@ const GameContent = () => (
 );
 
 function App() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  useKeyboardViewport(rootRef);
+
   return (
     <ErrorBoundary>
       {/* h-viewport, not h-dvh: dvh tracks the visual viewport on mobile so
           the collapsing URL bar doesn't clip the layout or cause jumps, but
           engines that don't know the unit drop it and leave this box — and so
           every h-full under it — at content height. The utility pairs it with
-          a 100% fallback off the html/body/#root chain (see index.css). */}
-      <div className="h-viewport relative w-screen overflow-hidden">
+          a 100% fallback off the html/body/#root chain (see index.css). While
+          an on-screen keyboard is up, useKeyboardViewport pins it to the
+          visible area instead. */}
+      <div
+        ref={rootRef}
+        className="h-viewport relative w-screen overflow-hidden"
+      >
         <GameContent />
       </div>
     </ErrorBoundary>
