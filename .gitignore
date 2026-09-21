@@ -32,5 +32,6 @@ dist-ssr
 *.pdf
 # Client photo deliveries (source files, converted into public/patients)
 documents/RD_113L photos/
-# Background video master (transcoded into public/bg_video.mp4)
-documents/bg_video_source.mp4
+# Background video masters (current one cut into public/bg_video.mp4; _v1 is
+# the previous render)
+documents/bg_video_source*.mp4

@@ -42,9 +42,15 @@ carries the palette tokens (`dark-teal`, `mid-teal`, `gold-accent`,
 `.btn-outline` buttons, the `.patient-card` and `.entry-panel` glass shells
 and the `.type-*` text ramp, each annotated with its Figma node; components
 use those classes plus Tailwind utilities. The scene art
-(`public/bg_video.mp4` + poster) is the client's lungs-and-crowd clip, transcoded
-to 720p H.264 from the ignored master `documents/bg_video_source.mp4`;
-the poster is its first frame. Cards carry the
+(`public/bg_video.mp4` + poster) is the client's lungs-and-crowd clip, cut
+from the ignored 10 s master `documents/bg_video_source.mp4` into a 9 s loop
+(frames 24–215, then its calm close-up tail 216–239 dissolves into the wide
+opening 0–23, so it wraps without a cut) and encoded 720p H.264 CRF 28;
+the poster is the loop's first frame. The master carries Gemini's sparkle
+watermark at (1137–1184, 577–624); the shipped loop has it unblended (the
+blend of white at alpha 0.315 inverted, then per-pixel residue fitted out
+over the 240 frames), so re-cutting from the master means removing it again.
+Cards carry the
 slides' `bullets` under a gold `name` line and the age line (`PatientCard`,
 `SummaryPanel`, the attract-screen mini card), with the abbreviation
 `footnote` at the foot of the game and attract cards; abbreviations used only
