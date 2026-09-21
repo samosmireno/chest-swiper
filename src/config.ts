@@ -79,4 +79,4 @@ export const SPEED_BONUS_ZERO_MS = 30_000;
 // (IgE keyed in the Miles footnote) — scoring unchanged.
 export const APP_VERSION = "2.3";
 export const SHEETS_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbyYnb0ZFJ5n9jpKr2CziX-LEzB3kxl80HY0erLQvn9jaeh_ndptCkVCRYnDUBeBO_54cQ/exec";
+  "https://script.google.com/macros/s/AKfycbyhd-XYgDH09KYR5rZAOADVJ6nx5f9N42dkPbFiJbcvSKakJ57gXSONnLp1uNyI9Es-/exec";
