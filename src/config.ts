@@ -26,7 +26,7 @@ export const LEADERBOARD_WINDOW_MS: number | null = 12 * 60 * 60 * 1000; // 12h
 // Oldest APP_VERSION whose scores compare with today's: same deck size and
 // same formula. 2.0 introduced the 12-card asthma & COPD deck (1.x was the
 // 15-card T1D deck, so its scores sit on a different scale); 2.1 was copy
-// and payload only, 2.2 and 2.3 copy only. The leaderboard admits everything from here up, so a
+// and payload only, 2.2–2.4 copy only. The leaderboard admits everything from here up, so a
 // copy-edit bump never wipes an enduring board. The community miss-rate
 // chart stays on the exact APP_VERSION, since card wording did change
 // between bumps. Raise this whenever the deck or the scoring formula changes.
@@ -76,7 +76,8 @@ export const SPEED_BONUS_ZERO_MS = 30_000;
 // payload (the leaderboard's time column) — scoring unchanged; 2.2 = the
 // client's copy review of the Figma export (footnotes, bullet and rationale
 // edits) — scoring unchanged; 2.3 = the client's second-round comment
-// (IgE keyed in the Miles footnote) — scoring unchanged.
-export const APP_VERSION = "2.3";
+// (IgE keyed in the Miles footnote) — scoring unchanged; 2.4 = the third
+// round (BMI and GI keyed in the Owen footnote) — scoring unchanged.
+export const APP_VERSION = "2.4";
 export const SHEETS_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbyhd-XYgDH09KYR5rZAOADVJ6nx5f9N42dkPbFiJbcvSKakJ57gXSONnLp1uNyI9Es-/exec";

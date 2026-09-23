@@ -16,6 +16,7 @@ import type { PatientProfile } from "../types";
 //   rationale are keyed by explanationFootnote (TSLP c5, GOLD c7) or spelled
 //   out inline (interleukin (IL)-5, c2). v2.3 keys IgE on c3 too, per the
 //   client's second round of comments (comments_v2.pdf, September 2026).
+//   v2.4 keys BMI and GI on c6, per the third round (comments_v3.pdf).
 // - Bullets: "Currently on budesonide/…" (c1, no "the"), "Comorbidity:
 //   asthma" (c9), "ILD" and "ED" for the slide's "interstitial lung disease"
 //   and "ER" (c11), "AFRS" alone (c12, still keyed in the footnote).
@@ -141,7 +142,7 @@ export const profiles: PatientProfile[] = [
       "FeNO: 23 ppb; EOS: 342 cells/μL; NKA",
     ],
     footnote:
-      "EOS = eosinophil; FeNO = fractional exhaled nitric oxide; NKA = no known allergies.",
+      "BMI = body mass index; EOS = eosinophil; FeNO = fractional exhaled nitric oxide; GI = gastrointestinal; NKA = no known allergies.",
     leftOption: "Depemokimab",
     rightOption: "Dupilumab",
     correctSide: "right",
