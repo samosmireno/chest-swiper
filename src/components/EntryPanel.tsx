@@ -15,7 +15,7 @@ interface EntryPanelProps {
 const HOW_TO_PLAY = [
   "Read the patient’s profile card",
   "What is your next clinical action?",
-  "Swipe or tap to choose",
+  "Swipe or tap",
 ];
 
 const SPECIALTIES = [

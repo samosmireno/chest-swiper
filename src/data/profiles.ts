@@ -17,12 +17,16 @@ import type { PatientProfile } from "../types";
 //   out inline (interleukin (IL)-5, c2). v2.3 keys IgE on c3 too, per the
 //   client's second round of comments (comments_v2.pdf, September 2026).
 //   v2.4 keys BMI and GI on c6, per the third round (comments_v3.pdf).
+//   v2.5 (the fourth round, editor-comments.pdf) keeps the alphabetical
+//   order over the slides' where they differ (c7, c11).
 // - Bullets: "Currently on budesonide/…" (c1, no "the"), "Comorbidity:
 //   asthma" (c9), "ILD" and "ED" for the slide's "interstitial lung disease"
 //   and "ER" (c11), "AFRS" alone (c12, still keyed in the footnote).
 // - Rationales: c5's "his missed follow-up appointment and recent lifestyle
 //   change" and em-dash aside; a space after ≥ and < (c6, c7), no-break so
 //   the sign never ends a line on its own.
+//   v2.5 returns c3, c4 and c6 to the slides' verbatim rationale and c5's
+//   "this patient" for the name, per the fourth round.
 export const profiles: PatientProfile[] = [
   {
     id: "c1",
@@ -84,7 +88,7 @@ export const profiles: PatientProfile[] = [
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Elevated FeNO and EOS levels, along with worsening symptoms despite treatment, suggest poorly controlled severe asthma with ongoing type 2 inflammation. His history of atopic dermatitis makes dupilumab an attractive choice over omalizumab as an add-on biologic, as dupilumab is indicated to treat atopic dermatitis and asthma.",
+      "Elevated FeNO and EOS levels, along with worsening symptoms despite treatment, suggest poorly controlled severe asthma with ongoing type 2 inflammation. History of atopic dermatitis makes dupilumab an attractive choice over omalizumab as an add-on biologic, as dupilumab is indicated to treat atopic dermatitis and asthma.",
   },
   {
     id: "c4",
@@ -105,7 +109,7 @@ export const profiles: PatientProfile[] = [
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Elevated FeNO and EOS levels and a recent exacerbation despite current treatment suggest severe uncontrolled asthma that could be treated with a biologic. Steroid avoidance should be prioritized given her diabetes, and her biomarkers suggest ongoing eosinophilic inflammation, making an anti–IL-5 the preferred option over an anti-IgE — her IgE level is below the recommended dosing range for anti-IgE treatment.",
+      "Elevated FeNO and EOS levels and recent exacerbation despite current treatment suggest severe uncontrolled asthma that could be treated with a biologic. Moreover, steroid avoidance should be prioritized, given her diabetes. Her biomarkers suggest ongoing eosinophilic inflammation, making add-on treatment with an anti–IL-5 the preferred option over an anti-IgE. Her IgE levels are below recommended dosing range for anti-IgE treatment.",
   },
   {
     id: "c5",
@@ -125,7 +129,7 @@ export const profiles: PatientProfile[] = [
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Considering his missed follow-up appointment and recent lifestyle change, treatment optimization—eg, checking correct inhaler technique, adherence, considering switch to maintenance and reliever therapy (MART)—is the recommended first course of action. While Luis could qualify for an anti-TSLP agent in the future, it might be too early to add on a biologic.",
+      "Considering his missed follow-up appointment and recent lifestyle change, treatment optimization—eg, checking correct inhaler technique, adherence, considering switch to maintenance and reliever therapy (MART)—is the recommended first course of action. While this patient could qualify for an anti-TSLP agent in the future, it might be too early to add on a biologic.",
     explanationFootnote: "TSLP = thymic stromal lymphopoietin.",
   },
   {
@@ -148,7 +152,7 @@ export const profiles: PatientProfile[] = [
     correctSide: "right",
     topic: "asthma",
     explanation:
-      "Elevated FeNO and EOS levels despite current treatment suggest severe eosinophilic asthma that could be treated with an add-on biologic. His high eosinophil level and eating difficulties raise concern for eosinophilic esophagitis (EoE). Dupilumab is approved to treat severe asthma in patients age ≥\u00A06 years and EoE in patients ≥\u00A01 year, whereas depemokimab is approved to treat asthma in patients age ≥\u00A012 years.",
+      "Elevated FeNO and EOS levels despite current treatment suggest severe eosinophilic asthma that could be treated with an add-on biologic. His high level of eosinophils and eating difficulties raise concern for eosinophilic esophagitis (EoE). Dupilumab is currently approved to treat severe asthma in patients age ≥\u00A06 years and EoE in patients ≥\u00A01 year, whereas depemokimab is approved to treat asthma in patients age ≥\u00A012 years.",
   },
   {
     id: "c7",
