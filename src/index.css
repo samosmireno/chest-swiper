@@ -139,6 +139,15 @@
   body {
     font-family: var(--font-sans);
   }
+
+  /* Kiosk taps: a double-tap or a press-and-drag on a button (or on the
+     tap-to-advance rationale card) otherwise selects its label text. The
+     -webkit- form is still the one Safari reads. */
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 /* Full-viewport sizing, with a fallback for engines that don't know `dvh`.
