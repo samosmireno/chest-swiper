@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev       # Start dev server (Vite HMR)
 npm run build     # Type-check then bundle for production (tsc -b && vite build)
+npm run build:mlg # Same, with an absolute base for mlg.impetusdigital.com/breathe-swiper-speed-challenge/
 npm run lint      # ESLint across the project
 npm run preview   # Serve the production build locally
 npm test          # Vitest (watch mode; `npx vitest run` for one-shot)

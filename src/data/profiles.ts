@@ -1,4 +1,5 @@
 import type { PatientProfile } from "../types";
+import { publicAsset } from "../utils/publicAsset";
 
 // 12 cases transcribed from documents/cases.pptx (slides 2–13): 6 severe
 // asthma (biologic selection) followed by 6 COPD (GOLD 2026 escalation).
@@ -32,7 +33,7 @@ export const profiles: PatientProfile[] = [
     id: "c1",
     name: "Khloe",
     ageSex: "24-year-old female",
-    image: "./patients/khloe.webp",
+    image: publicAsset("patients/khloe.webp"),
     bullets: [
       "Diagnosed with asthma at age 20",
       "History of eczema in childhood",
@@ -53,7 +54,7 @@ export const profiles: PatientProfile[] = [
     id: "c2",
     name: "Kevin",
     ageSex: "7-year-old male",
-    image: "./patients/kevin.webp",
+    image: publicAsset("patients/kevin.webp"),
     bullets: [
       "History of dog and peanut allergies; practices avoidance strategies",
       "Frequently wakes at night coughing",
@@ -73,7 +74,7 @@ export const profiles: PatientProfile[] = [
     id: "c3",
     name: "Miles",
     ageSex: "13-year-old male",
-    image: "./patients/miles.webp",
+    image: publicAsset("patients/miles.webp"),
     bullets: [
       "Diagnosed with asthma at age 8",
       "History of atopic dermatitis (somewhat controlled with steroid cream; frequent flares)",
@@ -94,7 +95,7 @@ export const profiles: PatientProfile[] = [
     id: "c4",
     name: "Claire",
     ageSex: "47-year-old female",
-    image: "./patients/claire.webp",
+    image: publicAsset("patients/claire.webp"),
     bullets: [
       "Diagnosed with asthma at age 32, former smoker (5 pack-years); tobacco-free for 10 years",
       "Comorbidities: insulin-dependent diabetes, nasal polyps, seasonal allergies",
@@ -115,7 +116,7 @@ export const profiles: PatientProfile[] = [
     id: "c5",
     name: "Luis",
     ageSex: "19-year-old male",
-    image: "./patients/luis.webp",
+    image: publicAsset("patients/luis.webp"),
     bullets: [
       "Diagnosed with asthma at age 8",
       "Reports increased cough, chest tightness, and use of rescue inhaler",
@@ -136,7 +137,7 @@ export const profiles: PatientProfile[] = [
     id: "c6",
     name: "Owen",
     ageSex: "8-year-old male",
-    image: "./patients/owen.webp",
+    image: publicAsset("patients/owen.webp"),
     bullets: [
       "Diagnosed with asthma after hospital stay 3 months ago",
       "Underweight (20 kg; BMI: 13.5); mother reports he’s eating less due to frequent acid reflux, difficulty swallowing, and food feeling stuck in his chest; GI appointment is imminent",
@@ -158,7 +159,7 @@ export const profiles: PatientProfile[] = [
     id: "c7",
     name: "Douglas",
     ageSex: "68-year-old male",
-    image: "./patients/douglas.webp",
+    image: publicAsset("patients/douglas.webp"),
     bullets: [
       "40-year former smoker; tobacco-free for 8 years",
       "Currently on triple inhaled therapy (LABA + LAMA + ICS)",
@@ -180,7 +181,7 @@ export const profiles: PatientProfile[] = [
     id: "c8",
     name: "Mia",
     ageSex: "63-year-old female",
-    image: "./patients/mia.webp",
+    image: publicAsset("patients/mia.webp"),
     bullets: [
       "Diagnosed with COPD 1 year ago; 46-year smoker",
       "Has tried several smoking cessation plans but reports resuming smoking to cope with stress due to caring for her husband with dementia",
@@ -202,7 +203,7 @@ export const profiles: PatientProfile[] = [
     id: "c9",
     name: "Ethel",
     ageSex: "75-year-old female",
-    image: "./patients/ethel.webp",
+    image: publicAsset("patients/ethel.webp"),
     bullets: [
       "Diagnosed with COPD 3 years ago, former smoker; tobacco-free for 15 years",
       "Comorbidity: asthma",
@@ -223,7 +224,7 @@ export const profiles: PatientProfile[] = [
     id: "c10",
     name: "Olivia",
     ageSex: "82-year-old female",
-    image: "./patients/olivia.webp",
+    image: publicAsset("patients/olivia.webp"),
     bullets: [
       "Diagnosed with COPD 4 years ago; tobacco-free for 10 years",
       "Currently presenting with shortness of breath, chest tightness, and sinus pressure",
@@ -245,7 +246,7 @@ export const profiles: PatientProfile[] = [
     id: "c11",
     name: "Rohit",
     ageSex: "72-year-old male",
-    image: "./patients/rohit.webp",
+    image: publicAsset("patients/rohit.webp"),
     bullets: [
       "Nonsmoker; former industrial welder",
       "Diagnosed with COPD after hospital stay 9 months ago; previously diagnosed with ILD 2 years ago",
@@ -267,7 +268,7 @@ export const profiles: PatientProfile[] = [
     id: "c12",
     name: "Lorenzo",
     ageSex: "77-year-old male",
-    image: "./patients/lorenzo.webp",
+    image: publicAsset("patients/lorenzo.webp"),
     bullets: [
       "Vietnam veteran, former smoker",
       "Diagnosed with AFRS and COPD at age 68 after treatment at a VA center",

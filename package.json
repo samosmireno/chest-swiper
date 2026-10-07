@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:mlg": "VITE_BASE=/breathe-swiper-speed-challenge/ npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

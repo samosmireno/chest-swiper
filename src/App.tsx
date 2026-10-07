@@ -8,6 +8,7 @@ import { GameScreen } from "./components/GameScreen";
 import { SummaryView } from "./components/SummaryView";
 import { FpsMeter } from "./components/FpsMeter";
 import { perfFlags } from "./utils/perfFlags";
+import { publicAsset } from "./utils/publicAsset";
 import { useKeyboardViewport } from "./hooks/useKeyboardViewport";
 
 class ErrorBoundary extends Component<
@@ -86,7 +87,7 @@ function BackgroundVideo() {
     return (
       <img
         className="absolute inset-0 h-full w-full object-cover"
-        src="./bg_fallback.jpg"
+        src={publicAsset("bg_fallback.jpg")}
         alt=""
       />
     );
@@ -94,8 +95,8 @@ function BackgroundVideo() {
   return (
     <video
       className="absolute inset-0 h-full w-full object-cover"
-      src="./bg_video.mp4"
-      poster="./bg_fallback.jpg"
+      src={publicAsset("bg_video.mp4")}
+      poster={publicAsset("bg_fallback.jpg")}
       autoPlay
       muted
       loop
