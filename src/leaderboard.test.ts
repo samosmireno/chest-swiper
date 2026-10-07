@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { addLeaderboardEntry, calculateScore, computeSpeedBonus, getLeaderboard } from './leaderboard'
+import { describe, it, expect } from 'vitest'
+import { calculateScore, computeSpeedBonus, getSessionEntry, setSessionEntry } from './leaderboard'
 import { profiles } from './data/profiles'
 import { SPEED_BONUS_MAX_PER_CARD, STREAK_POINTS_PER_CARD } from './config'
 import type { SessionResult } from './types'
@@ -81,17 +81,10 @@ describe('scoring: accuracy always wins', () => {
   })
 })
 
-// Embedded in a cross-site iframe the browser can refuse storage outright.
-// The just-finished player's entry must survive in memory anyway: the
-// leaderboard splices it in as the YOU row until their sheet row round-trips.
-describe('local leaderboard with storage blocked', () => {
-  afterEach(() => vi.unstubAllGlobals())
-
-  it("keeps the player's entry for this page load", () => {
-    const denied = () => {
-      throw new DOMException('Access is denied for this document.', 'SecurityError')
-    }
-    vi.stubGlobal('localStorage', { getItem: denied, setItem: denied })
+// The just-finished player's entry lives in memory only: the leaderboard
+// splices it in as the YOU row until their sheet row round-trips.
+describe('session entry', () => {
+  it("is found by the player's session id only", () => {
     const entry = {
       username: 'Ada Lovelace',
       score: 1330,
@@ -103,7 +96,8 @@ describe('local leaderboard with storage blocked', () => {
       timestamp: 1_790_000_000_000,
     }
 
-    expect(() => addLeaderboardEntry(entry)).not.toThrow()
-    expect(getLeaderboard()).toContainEqual(entry)
+    setSessionEntry(entry)
+    expect(getSessionEntry('session-1')).toEqual(entry)
+    expect(getSessionEntry('session-2')).toBeUndefined()
   })
 })

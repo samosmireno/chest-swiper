@@ -6,8 +6,9 @@ import { SHEETS_WEBHOOK_URL } from '../config'
 
 // Embedded in a cross-site iframe, the browser can refuse storage outright
 // (Chrome incognito or third-party cookies blocked, `sandbox` without
-// allow-same-origin): every read and write throws a SecurityError.
-function blockStorage() {
+// allow-same-origin), so the game keeps nothing locally: the sheet is the
+// only record. Any storage access here throws and fails the test.
+function forbidStorage() {
   const denied = () => {
     throw new DOMException('Access is denied for this document.', 'SecurityError')
   }
@@ -31,19 +32,18 @@ function finishGame() {
       })),
       deck: profiles,
       maxStreak: profiles.length,
-      cumulativeStats: { totalSessions: 1, perCard: {} },
     }),
   )
 }
 
-describe('useSessionCompletion with storage blocked', () => {
-  beforeEach(blockStorage)
+describe('useSessionCompletion', () => {
+  beforeEach(forbidStorage)
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
   })
 
-  it('still submits the result to the sheet', () => {
+  it('submits the result to the sheet without touching storage', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response())
     vi.stubGlobal('fetch', fetchMock)
 

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
-import type { CumulativeStats, PatientProfile, SessionResult } from "../types";
-import { saveCumulativeStats } from "../utils/statsStorage";
-import { addLeaderboardEntry, buildLeaderboardEntry } from "../leaderboard";
+import type { PatientProfile, SessionResult } from "../types";
+import { buildLeaderboardEntry, setSessionEntry } from "../leaderboard";
 import { useSheetsSubmission } from "./useSheetsSubmission";
 
 interface SessionCompletionState {
@@ -14,7 +13,6 @@ interface SessionCompletionState {
   sessionResults: SessionResult[];
   deck: PatientProfile[];
   maxStreak: number;
-  cumulativeStats: CumulativeStats;
 }
 
 export function useSessionCompletion({
@@ -27,7 +25,6 @@ export function useSessionCompletion({
   sessionResults,
   deck,
   maxStreak,
-  cumulativeStats,
 }: SessionCompletionState): void {
   const { submitSession } = useSheetsSubmission();
   const savedSessionId = useRef("");
@@ -41,17 +38,15 @@ export function useSessionCompletion({
       return;
 
     savedSessionId.current = lastSessionId;
-    // Submit first: the sheet is the record, local storage only a cache.
+    // The sheet is the only record; nothing is kept locally.
     submitSession({ firstName, lastName, email, specialty, sessionResults, deck, maxStreak, sessionId: lastSessionId });
-    saveCumulativeStats(cumulativeStats);
     const username = `${firstName} ${lastName}`;
-    addLeaderboardEntry(
+    setSessionEntry(
       buildLeaderboardEntry(username, email, sessionResults, maxStreak, lastSessionId),
     );
   }, [
     screen,
     lastSessionId,
-    cumulativeStats,
     firstName,
     lastName,
     email,

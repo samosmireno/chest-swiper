@@ -1,7 +1,6 @@
 import { useMemo, useReducer, type ReactNode } from "react";
 import type { PatientProfile } from "../types";
 import { useSessionCompletion } from "../hooks/useSessionCompletion";
-import { loadCumulativeStats } from "../utils/statsStorage";
 import { gameReducer, initialState } from "./gameReducer";
 import {
   GameDispatchContext,
@@ -16,15 +15,11 @@ export function GameProvider({
   children: ReactNode;
   profiles: PatientProfile[];
 }) {
-  const [state, dispatch] = useReducer(gameReducer, {
-    ...initialState,
-    cumulativeStats: loadCumulativeStats(),
-  });
+  const [state, dispatch] = useReducer(gameReducer, initialState);
 
   const {
     screen,
     lastSessionId,
-    cumulativeStats,
     firstName,
     lastName,
     email,
@@ -34,7 +29,7 @@ export function GameProvider({
     deck,
   } = state;
 
-  useSessionCompletion({ screen, lastSessionId, firstName, lastName, email, specialty, sessionResults, deck, maxStreak, cumulativeStats });
+  useSessionCompletion({ screen, lastSessionId, firstName, lastName, email, specialty, sessionResults, deck, maxStreak });
 
   const dispatchValue = useMemo(() => ({ dispatch, profiles }), [profiles]);
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { LeaderboardEntry } from "../leaderboard";
-import { getLeaderboard } from "../leaderboard";
+import { getSessionEntry } from "../leaderboard";
 import { SHEETS_WEBHOOK_URL, LEADERBOARD_MIN_VERSION } from "../config";
 import { getRemoteSubmissions } from "../utils/remoteSubmissions";
 import type { RawSubmission } from "../utils/remoteSubmissions";
@@ -48,7 +48,7 @@ function attachCurrentPlayer(
   entries: LeaderboardEntry[],
   lastSessionId: string
 ): LeaderboardEntry[] {
-  const local = getLeaderboard().find((e) => e.sessionId === lastSessionId);
+  const local = getSessionEntry(lastSessionId);
   if (!local) return entries;
 
   // Exact join when session_id round-tripped; otherwise fall back to the
@@ -82,30 +82,34 @@ export function useLeaderboard(lastSessionId: string): {
   entries: LeaderboardEntry[];
   loading: boolean;
 } {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>(() =>
-    withinWindow(getLeaderboard())
-  );
+  // Until the sheet answers, the board holds only the just-finished
+  // player's own row (nothing is kept locally between sessions).
+  const [entries, setEntries] = useState<LeaderboardEntry[]>(() => {
+    const own = getSessionEntry(lastSessionId);
+    return own ? [own] : [];
+  });
   const [loading, setLoading] = useState(!!SHEETS_WEBHOOK_URL);
 
   useEffect(() => {
-    if (!SHEETS_WEBHOOK_URL) return;
-
     (async () => {
       try {
+        // Resolves [] without a webhook URL or on a failed fetch. Awaited
+        // either way, so the session entry (set in GameProvider's effect,
+        // which runs after this one) is in place before it's read below.
         const subs = await getRemoteSubmissions();
+        const own = getSessionEntry(lastSessionId);
 
         if (subs.length === 0) {
           console.info(
-            `[wwys] No remote data for v${LEADERBOARD_MIN_VERSION}+ — using local`
+            `[wwys] No remote data for v${LEADERBOARD_MIN_VERSION}+`
           );
+          setEntries(own ? [own] : []);
           return;
         }
 
         // Anchor the window on the just-finished player so the first player
         // of a new summit doesn't inherit the previous summit's board.
-        const anchorFloor = lastSessionId
-          ? getLeaderboard().find((e) => e.sessionId === lastSessionId)?.timestamp
-          : undefined;
+        const anchorFloor = own?.timestamp;
 
         // Window before splicing the current player in, so they're never
         // filtered out — they define the anchor and are always shown.

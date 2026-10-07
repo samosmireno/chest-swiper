@@ -23,33 +23,11 @@ export interface LeaderboardEntry {
   timestamp: number; // Date.now() at session end — for display/sorting
 }
 
-// _v3 suffix: entries from before the time column carry no totalMs and
-// stay out (_v2 was the speed bonus).
-const LEADERBOARD_KEY = "wwys_leaderboard_v3";
-
-// Fallback for when the browser refuses storage — embedded in a cross-site
-// iframe with third-party storage blocked, every access throws. Holds this
-// page load's entries so the just-finished player still gets their YOU row
-// before their submission round-trips from the sheet.
-let memoryEntries: LeaderboardEntry[] = [];
-
-function loadLeaderboard(): LeaderboardEntry[] {
-  try {
-    const stored = localStorage.getItem(LEADERBOARD_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return memoryEntries;
-  }
-}
-
-function saveLeaderboard(entries: LeaderboardEntry[]): void {
-  memoryEntries = entries;
-  try {
-    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
-  } catch {
-    // Storage refused; memoryEntries carries this page load.
-  }
-}
+// The just-finished player's entry, held in memory for this page load only.
+// The board itself comes from the sheet; this lets the summary splice in
+// the player's YOU row before their submission round-trips. Nothing is
+// persisted locally — a result that never reaches the sheet is gone.
+let sessionEntry: LeaderboardEntry | null = null;
 
 // The score's three components, kept together so display breakdowns can't
 // drift from the actual formula.
@@ -100,12 +78,12 @@ export function computeTotalMs(results: SessionResult[]): number {
   return results.reduce((sum, r) => sum + r.elapsedMs, 0);
 }
 
-export function getLeaderboard(): LeaderboardEntry[] {
-  return loadLeaderboard().sort((a, b) => b.score - a.score);
+export function setSessionEntry(entry: LeaderboardEntry): void {
+  sessionEntry = entry;
 }
 
-export function addLeaderboardEntry(entry: LeaderboardEntry): void {
-  saveLeaderboard([...loadLeaderboard(), entry]);
+export function getSessionEntry(sessionId: string): LeaderboardEntry | undefined {
+  return sessionEntry?.sessionId === sessionId ? sessionEntry : undefined;
 }
 
 export function buildLeaderboardEntry(
