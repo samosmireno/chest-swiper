@@ -12,5 +12,10 @@ export function loadCumulativeStats(): CumulativeStats {
 }
 
 export function saveCumulativeStats(stats: CumulativeStats): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+  } catch {
+    // Storage refused (e.g. a cross-site iframe with third-party storage
+    // blocked). Stats still live in game state for this page load.
+  }
 }

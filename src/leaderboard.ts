@@ -27,17 +27,28 @@ export interface LeaderboardEntry {
 // stay out (_v2 was the speed bonus).
 const LEADERBOARD_KEY = "wwys_leaderboard_v3";
 
+// Fallback for when the browser refuses storage — embedded in a cross-site
+// iframe with third-party storage blocked, every access throws. Holds this
+// page load's entries so the just-finished player still gets their YOU row
+// before their submission round-trips from the sheet.
+let memoryEntries: LeaderboardEntry[] = [];
+
 function loadLeaderboard(): LeaderboardEntry[] {
   try {
     const stored = localStorage.getItem(LEADERBOARD_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch {
-    return [];
+    return memoryEntries;
   }
 }
 
 function saveLeaderboard(entries: LeaderboardEntry[]): void {
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+  memoryEntries = entries;
+  try {
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+  } catch {
+    // Storage refused; memoryEntries carries this page load.
+  }
 }
 
 // The score's three components, kept together so display breakdowns can't

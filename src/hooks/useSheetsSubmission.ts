@@ -59,12 +59,13 @@ export function useSheetsSubmission() {
 
       // Apps Script doesn't respond to CORS preflight — no-cors bypasses it.
       // Response is opaque so we can't verify success, but the row still lands.
+      // A failed upload (offline kiosk, network blip) is dropped silently.
       fetch(SHEETS_WEBHOOK_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildPayload(params)),
-      }).catch((err) => console.error("[wwys] Sheet submission failed:", err));
+      }).catch(() => {});
     },
   };
 }

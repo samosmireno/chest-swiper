@@ -41,12 +41,13 @@ export function useSessionCompletion({
       return;
 
     savedSessionId.current = lastSessionId;
+    // Submit first: the sheet is the record, local storage only a cache.
+    submitSession({ firstName, lastName, email, specialty, sessionResults, deck, maxStreak, sessionId: lastSessionId });
     saveCumulativeStats(cumulativeStats);
     const username = `${firstName} ${lastName}`;
     addLeaderboardEntry(
       buildLeaderboardEntry(username, email, sessionResults, maxStreak, lastSessionId),
     );
-    submitSession({ firstName, lastName, email, specialty, sessionResults, deck, maxStreak, sessionId: lastSessionId });
   }, [
     screen,
     lastSessionId,
